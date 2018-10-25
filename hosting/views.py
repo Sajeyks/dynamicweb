@@ -32,6 +32,7 @@ from stored_messages.api import mark_read
 from stored_messages.models import Message
 from stored_messages.settings import stored_messages_settings
 
+from datacenterlight.cms_models import DCLCalculatorPluginModel
 from datacenterlight.models import VMTemplate, VMPricing
 from datacenterlight.utils import create_vm, get_cms_integration
 from hosting.models import UserCardDetail
@@ -59,7 +60,8 @@ from .forms import (
 )
 from .mixins import ProcessVMSelectionMixin, HostingContextMixin
 from .models import (
-    HostingOrder, HostingBill, HostingPlan, UserHostingKey, VMDetail
+    HostingOrder, HostingBill, HostingPlan, UserHostingKey, VMDetail,
+    GenericProduct
 )
 
 logger = logging.getLogger(__name__)
@@ -862,32 +864,20 @@ class OrdersHostingDetailView(LoginRequiredMixin, DetailView):
                 raise Http404
 
         if obj is not None:
-            # invoice for previous order
-            try:
-                vm_detail = VMDetail.objects.get(vm_id=obj.vm_id)
-                context['vm'] = vm_detail.__dict__
-                context['vm']['name'] = '{}-{}'.format(
-                    context['vm']['configuration'], context['vm']['vm_id'])
-                price, vat, vat_percent, discount = get_vm_price_with_vat(
-                    cpu=context['vm']['cores'],
-                    ssd_size=context['vm']['disk_size'],
-                    memory=context['vm']['memory'],
-                    pricing_name=(obj.vm_pricing.name
-                                  if obj.vm_pricing else 'default')
-                )
-                context['vm']['vat'] = vat
-                context['vm']['price'] = price
-                context['vm']['discount'] = discount
-                context['vm']['vat_percent'] = vat_percent
-                context['vm']['total_price'] = price + vat - discount['amount']
-                context['subscription_end_date'] = vm_detail.end_date()
-            except VMDetail.DoesNotExist:
+            if obj.generic_product_id is not None:
+                # generic payment case
+                logger.debug("Generic payment case")
+                context['product_name'] = GenericProduct.objects.get(
+                    id=obj.generic_product_id
+                ).product_name
+            else:
+                # invoice for previous order
+                logger.debug("Invoice of VM order")
                 try:
-                    manager = OpenNebulaManager(
-                        email=owner.email, password=owner.password
-                    )
-                    vm = manager.get_vm(obj.vm_id)
-                    context['vm'] = VirtualMachineSerializer(vm).data
+                    vm_detail = VMDetail.objects.get(vm_id=obj.vm_id)
+                    context['vm'] = vm_detail.__dict__
+                    context['vm']['name'] = '{}-{}'.format(
+                        context['vm']['configuration'], context['vm']['vm_id'])
                     price, vat, vat_percent, discount = get_vm_price_with_vat(
                         cpu=context['vm']['cores'],
                         ssd_size=context['vm']['disk_size'],
@@ -899,23 +889,43 @@ class OrdersHostingDetailView(LoginRequiredMixin, DetailView):
                     context['vm']['price'] = price
                     context['vm']['discount'] = discount
                     context['vm']['vat_percent'] = vat_percent
-                    context['vm']['total_price'] = (
-                            price + vat - discount['amount']
-                    )
-                except WrongIdError:
-                    messages.error(
-                        self.request,
-                        _('The VM you are looking for is unavailable at the '
-                          'moment. Please contact Data Center Light support.')
-                    )
-                    self.kwargs['error'] = 'WrongIdError'
-                    context['error'] = 'WrongIdError'
-                except ConnectionRefusedError:
-                    messages.error(
-                        self.request,
-                        _('In order to create a VM, you need to create/upload '
-                          'your SSH KEY first.')
-                    )
+                    context['vm']['total_price'] = price + vat - discount['amount']
+                    context['subscription_end_date'] = vm_detail.end_date()
+                except VMDetail.DoesNotExist:
+                    try:
+                        manager = OpenNebulaManager(
+                            email=owner.email, password=owner.password
+                        )
+                        vm = manager.get_vm(obj.vm_id)
+                        context['vm'] = VirtualMachineSerializer(vm).data
+                        price, vat, vat_percent, discount = get_vm_price_with_vat(
+                            cpu=context['vm']['cores'],
+                            ssd_size=context['vm']['disk_size'],
+                            memory=context['vm']['memory'],
+                            pricing_name=(obj.vm_pricing.name
+                                          if obj.vm_pricing else 'default')
+                        )
+                        context['vm']['vat'] = vat
+                        context['vm']['price'] = price
+                        context['vm']['discount'] = discount
+                        context['vm']['vat_percent'] = vat_percent
+                        context['vm']['total_price'] = (
+                                price + vat - discount['amount']
+                        )
+                    except WrongIdError:
+                        messages.error(
+                            self.request,
+                            _('The VM you are looking for is unavailable at the '
+                              'moment. Please contact Data Center Light support.')
+                        )
+                        self.kwargs['error'] = 'WrongIdError'
+                        context['error'] = 'WrongIdError'
+                    except ConnectionRefusedError:
+                        messages.error(
+                            self.request,
+                            _('In order to create a VM, you need to create/upload '
+                              'your SSH KEY first.')
+                        )
         else:
             # new order, confirm payment
             if 'token' in self.request.session:
@@ -1032,14 +1042,20 @@ class OrdersHostingDetailView(LoginRequiredMixin, DetailView):
         memory = specs.get('memory')
         disk_size = specs.get('disk_size')
         amount_to_be_charged = specs.get('total_price')
-        plan_name = StripeUtils.get_stripe_plan_name(cpu=cpu,
-                                                     memory=memory,
-                                                     disk_size=disk_size)
-        stripe_plan_id = StripeUtils.get_stripe_plan_id(cpu=cpu,
-                                                        ram=memory,
-                                                        ssd=disk_size,
-                                                        version=1,
-                                                        app='dcl')
+        plan_name = StripeUtils.get_stripe_plan_name(
+            cpu=cpu,
+            memory=memory,
+            disk_size=disk_size,
+            price=amount_to_be_charged
+        )
+        stripe_plan_id = StripeUtils.get_stripe_plan_id(
+            cpu=cpu,
+            ram=memory,
+            ssd=disk_size,
+            version=1,
+            app='dcl',
+            price=amount_to_be_charged
+        )
         stripe_plan = stripe_utils.get_or_create_stripe_plan(
             amount=amount_to_be_charged,
             name=plan_name,
@@ -1183,7 +1199,29 @@ class CreateVirtualMachinesView(LoginRequiredMixin, View):
             raise ValidationError(_('Invalid number of cores'))
 
     def validate_memory(self, value):
-        if (value > 200) or (value < 1):
+        if 'pid' in self.request.POST:
+            try:
+                plugin = DCLCalculatorPluginModel.objects.get(
+                             id=self.request.POST['pid']
+                         )
+            except DCLCalculatorPluginModel.DoesNotExist as dne:
+                logger.error(
+                    str(dne) + " plugin_id: " + self.request.POST['pid']
+                )
+                raise ValidationError(_('Invalid calculator properties'))
+            if plugin.enable_512mb_ram:
+                if value % 1 == 0 or value == 0.5:
+                    logger.debug(
+                        "Given ram {value} is either 0.5 or a"
+                        " whole number".format(value=value)
+                    )
+                    if (value > 200) or (value < 0.5):
+                        raise ValidationError(_('Invalid RAM size'))
+                else:
+                    raise ValidationError(_('Invalid RAM size'))
+            elif (value > 200) or (value < 1) or (value % 1 != 0):
+                raise ValidationError(_('Invalid RAM size'))
+        else:
             raise ValidationError(_('Invalid RAM size'))
 
     def validate_storage(self, value):
@@ -1203,7 +1241,7 @@ class CreateVirtualMachinesView(LoginRequiredMixin, View):
         cores = request.POST.get('cpu')
         cores_field = forms.IntegerField(validators=[self.validate_cores])
         memory = request.POST.get('ram')
-        memory_field = forms.IntegerField(validators=[self.validate_memory])
+        memory_field = forms.FloatField(validators=[self.validate_memory])
         storage = request.POST.get('storage')
         storage_field = forms.IntegerField(validators=[self.validate_storage])
         template_id = int(request.POST.get('config'))
@@ -1267,7 +1305,7 @@ class CreateVirtualMachinesView(LoginRequiredMixin, View):
             'price': price,
             'vat': vat,
             'vat_percent': vat_percent,
-            'total_price': price + vat - discount['amount'],
+            'total_price': round(price + vat - discount['amount'], 2),
             'pricing_name': vm_pricing_name
         }
 
@@ -1394,7 +1432,7 @@ class VirtualMachineView(LoginRequiredMixin, View):
         terminated = manager.delete_vm(vm.id)
 
         if not terminated:
-            logger.debug(
+            logger.error(
                 "manager.delete_vm returned False. Hence, error making "
                 "xml-rpc call to delete vm failed."
             )
@@ -1404,6 +1442,9 @@ class VirtualMachineView(LoginRequiredMixin, View):
                 try:
                     manager.get_vm(vm.id)
                 except WrongIdError:
+                    logger.error(
+                        "VM {} not found. So, its terminated.".format(vm.id)
+                    )
                     response['status'] = True
                     response['text'] = ugettext('Terminated')
                     vm_detail_obj = VMDetail.objects.filter(
@@ -1421,6 +1462,10 @@ class VirtualMachineView(LoginRequiredMixin, View):
                     break
                 else:
                     sleep(2)
+            if not response['status']:
+                response['text'] = _("VM terminate action timed out. Please "
+                                     "contact support@datacenterlight.ch for "
+                                     "further information.")
             context = {
                 'vm_name': vm_name,
                 'base_url': "{0}://{1}".format(
@@ -1441,11 +1486,13 @@ class VirtualMachineView(LoginRequiredMixin, View):
             email = BaseEmail(**email_data)
             email.send()
         admin_email_body.update(response)
+        admin_msg_sub = "VM and Subscription for VM {} and user: {}".format(
+            vm.id,
+            owner.email
+        )
         email_to_admin_data = {
-            'subject': "Deleted VM and Subscription for VM {vm_id} and "
-                       "user: {user}".format(
-                           vm_id=vm.id, user=owner.email
-                       ),
+            'subject': ("Deleted " if response['status']
+                        else "ERROR deleting ") + admin_msg_sub,
             'from_email': settings.DCL_SUPPORT_FROM_ADDRESS,
             'to': ['info@ungleich.ch'],
             'body': "\n".join(

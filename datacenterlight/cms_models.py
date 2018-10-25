@@ -180,6 +180,10 @@ class DCLNavbarPluginModel(CMSPlugin):
         default=True,
         help_text='Select to include the language selection dropdown.'
     )
+    show_login_option = models.BooleanField(
+        default=True,
+        help_text='Uncheck this if you do not want to show login/dashboard.'
+    )
 
     def get_logo_dark(self):
         # used only if atleast one logo exists
@@ -350,3 +354,11 @@ class DCLCalculatorPluginModel(CMSPlugin):
                   "in the backend to be automatically listed in this "
                   "calculator instance."
     )
+    default_selected_template = models.CharField(
+        default="Devuan Ascii",
+        null=True,
+        max_length=128,
+        help_text="Write the name of the template that you need selected as"
+                  " default when the calculator loads"
+    )
+    enable_512mb_ram = models.BooleanField(default=False)

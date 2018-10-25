@@ -9,6 +9,7 @@ from .cms_models import (
     DCLSectionPromoPluginModel, DCLCalculatorPluginModel
 )
 from .models import VMTemplate
+from datacenterlight.utils import clear_all_session_vars
 
 
 @plugin_pool.register_plugin
@@ -85,6 +86,7 @@ class DCLCalculatorPlugin(CMSPluginBase):
     require_parent = True
 
     def render(self, context, instance, placeholder):
+        clear_all_session_vars(context['request'])
         context = super(DCLCalculatorPlugin, self).render(
             context, instance, placeholder
         )
@@ -92,11 +94,13 @@ class DCLCalculatorPlugin(CMSPluginBase):
         if ids:
             context['templates'] = VMTemplate.objects.filter(
                 vm_type=instance.vm_type
-            ).filter(opennebula_vm_template_id__in=ids)
+            ).filter(opennebula_vm_template_id__in=ids).order_by('name')
         else:
             context['templates'] = VMTemplate.objects.filter(
                 vm_type=instance.vm_type
-            )
+            ).order_by('name')
+        context['instance'] = instance
+        context['min_ram'] = 0.5 if instance.enable_512mb_ram else 1
         return context
 
 
