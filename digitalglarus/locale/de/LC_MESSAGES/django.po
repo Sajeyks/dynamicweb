@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2017-11-06 00:24+0530\n"
+"POT-Creation-Date: 2018-10-25 21:14+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -51,61 +51,11 @@ msgstr "weiterlesen"
 msgid "by"
 msgstr "von"
 
-msgid "US English"
+msgid "Digital Glarus Gallery"
 msgstr ""
 
-msgid "German"
+msgid "Digital Glarus Supporters"
 msgstr ""
-
-msgid "Content"
-msgstr ""
-
-msgid "default"
-msgstr ""
-
-msgid "2 Column"
-msgstr ""
-
-msgid "3 Column"
-msgstr ""
-
-msgid "DG.About"
-msgstr ""
-
-#, fuzzy
-#| msgid "contact/?$"
-msgid "DG.Contact"
-msgstr "kontakt/?$"
-
-msgid "DG.Home"
-msgstr ""
-
-msgid "DG.CoWork"
-msgstr ""
-
-msgid "DG.OneColumn"
-msgstr ""
-
-msgid "Blog"
-msgstr ""
-
-msgid "Page"
-msgstr "Seite"
-
-msgid "Data Center Light"
-msgstr ""
-
-msgid "Glasfaser"
-msgstr ""
-
-msgid "English"
-msgstr ""
-
-msgid "Deutsch"
-msgstr ""
-
-msgid "Amount"
-msgstr "Betrag"
 
 msgid "Street Address"
 msgstr "Adresse"
@@ -119,146 +69,31 @@ msgstr "Postleitzahl"
 msgid "Country"
 msgstr "Land"
 
-msgid "My Donations"
-msgstr ""
-
-msgid "Logout"
-msgstr ""
-
-msgid "Set your new password"
-msgstr ""
-
-msgid "Reset"
-msgstr ""
-
-msgid "Already have an account ?"
-msgstr ""
-
-msgid "Log in"
-msgstr ""
-
-msgid "Invoice"
-msgstr ""
-
-msgid "Donation #"
-msgstr ""
-
-msgid "Billing Address:"
-msgstr ""
-
-msgid "Date:"
-msgstr ""
-
-msgid "Payment Method:"
-msgstr ""
-
-msgid "Donation summary"
-msgstr ""
-
-msgid "Donation"
-msgstr ""
-
-msgid "Total"
-msgstr ""
-
-msgid "Finish Configuration"
-msgstr ""
-
-msgid ""
-"Thanks for you donation, you can cancel your monthly donation at any time "
-"going to profile > subscription "
-msgstr ""
-
-msgid "View Donations"
-msgstr ""
-
-msgid "Cancel Donation"
-msgstr ""
-
-msgid "Donate"
-msgstr ""
-
-msgid "Donations Made"
-msgstr ""
-
-msgid "Date"
-msgstr ""
-
-msgid "View Detail"
-msgstr ""
+msgid "You haven been logged out"
+msgstr "Sie wurden abgemeldet"
 
 msgid "previous"
 msgstr "vorherige"
 
-msgid "next"
-msgstr "nächste"
-
-msgid "Reanude Donation"
-msgstr ""
-
-#, python-format
-msgid ""
-"You're receiving this email because you requested a password reset for your "
-"user account at %(site_name)s."
-msgstr ""
-
-msgid "Please go to the following page and choose a new password:"
-msgstr ""
-
-msgid "Thanks for using our site!"
-msgstr ""
-
-#, python-format
-msgid "The %(site_name)s team"
-msgstr ""
-
-msgid "You haven been logged out"
-msgstr "Sie wurden abgemeldet"
-
-msgid "Log in "
-msgstr ""
-
-msgid "Login"
-msgstr ""
-
-msgid "Don't have an account yet ? "
-msgstr ""
-
-msgid "Sign up"
-msgstr ""
-
-msgid "Forgot your password ? "
-msgstr ""
-
-msgid "Reset your password"
-msgstr ""
-
-msgid "DG.Detail"
-msgstr ""
-
-msgid "Page Header"
-msgstr ""
-
-msgid "Change to language:"
-msgstr "Sprache wechseln zu: "
-
-#, python-format
-msgid "No %(verbose_name)s found matching the query"
-msgstr ""
-
-msgid "Digital Glarus Gallery"
-msgstr ""
-
-msgid "Digital Glarus Supporters"
-msgstr ""
+msgid "Page"
+msgstr "Seite"
 
 msgid "of"
 msgstr "vom"
+
+msgid "next"
+msgstr "nächste"
+
+msgid "Change to language:"
+msgstr "Sprache wechseln zu: "
 
 msgid "Bookings"
 msgstr ""
 
 msgid "Membership"
+msgstr ""
+
+msgid "Logout"
 msgstr ""
 
 msgid "booking/payment/edit/?$"
@@ -327,6 +162,780 @@ msgid "supporters/?$"
 msgstr "befurworter/?$"
 
 msgid "Message Successfully Sent"
+msgstr ""
+
+msgid "US English"
+msgstr ""
+
+msgid "German"
+msgstr ""
+
+msgid "Content"
+msgstr ""
+
+msgid "default"
+msgstr ""
+
+msgid "2 Column"
+msgstr ""
+
+msgid "3 Column"
+msgstr ""
+
+msgid "DG.About"
+msgstr ""
+
+#, fuzzy
+#| msgid "contact/?$"
+msgid "DG.Contact"
+msgstr "kontakt/?$"
+
+msgid "DG.Home"
+msgstr ""
+
+msgid "DG.CoWork"
+msgstr ""
+
+msgid "DG.OneColumn"
+msgstr ""
+
+msgid "Blog"
+msgstr ""
+
+msgid "Data Center Light"
+msgstr ""
+
+msgid "Glasfaser"
+msgstr ""
+
+msgid "ungleich"
+msgstr ""
+
+msgid "English"
+msgstr ""
+
+msgid "Deutsch"
+msgstr ""
+
+msgid "Datacenterlight Navbar"
+msgstr ""
+
+msgid "Datacenterlight Footer"
+msgstr ""
+
+msgid "Datacenterlight Calculator"
+msgstr ""
+
+msgid "Amount"
+msgstr "Betrag"
+
+msgid "My Donations"
+msgstr ""
+
+msgid "Set your new password"
+msgstr ""
+
+msgid "Reset"
+msgstr ""
+
+msgid "Already have an account ?"
+msgstr ""
+
+msgid "Log in"
+msgstr ""
+
+msgid "Invoice"
+msgstr ""
+
+msgid "Donation #"
+msgstr ""
+
+msgid "Billing Address:"
+msgstr ""
+
+msgid "Date:"
+msgstr ""
+
+msgid "Payment Method:"
+msgstr ""
+
+msgid "Donation summary"
+msgstr ""
+
+msgid "Donation"
+msgstr ""
+
+msgid "Total"
+msgstr ""
+
+msgid "Finish Configuration"
+msgstr ""
+
+msgid ""
+"Thanks for you donation, you can cancel your monthly donation at any time "
+"going to profile > subscription "
+msgstr ""
+
+msgid "View Donations"
+msgstr ""
+
+msgid "Cancel Donation"
+msgstr ""
+
+msgid "Donate"
+msgstr ""
+
+msgid "Donations Made"
+msgstr ""
+
+msgid "Date"
+msgstr ""
+
+msgid "View Detail"
+msgstr ""
+
+msgid "Reanude Donation"
+msgstr ""
+
+#, python-format
+msgid ""
+"You're receiving this email because you requested a password reset for your "
+"user account at %(site_name)s."
+msgstr ""
+
+msgid "Please go to the following page and choose a new password:"
+msgstr ""
+
+msgid "Thanks for using our site!"
+msgstr ""
+
+#, python-format
+msgid "The %(site_name)s team"
+msgstr ""
+
+msgid "Log in "
+msgstr ""
+
+msgid "Login"
+msgstr ""
+
+msgid "Don't have an account yet ? "
+msgstr ""
+
+msgid "Sign up"
+msgstr ""
+
+msgid "Forgot your password ? "
+msgstr ""
+
+msgid "Reset your password"
+msgstr ""
+
+msgid "DG.Detail"
+msgstr ""
+
+msgid "Privacy policy"
+msgstr "Datenschutz-Bestimmungen"
+
+msgid ""
+"\n"
+"<strong>1. Responsibility and scope</strong><br/>\n"
+"<br/>\n"
+"Responsible in regards to EU General Data Protection Regulation (\"GDPR\") "
+"and other applicable data protection laws:<br/>\n"
+"<br/>\n"
+"ungleich glarus ag<br/>\n"
+"Bahnhofstrasse 1<br/>\n"
+"8783 Linthal (CH)<br/>\n"
+"Tel.: (044) 534-66-22<br/>\n"
+"E-Mail: info@ungleich.ch<br/>\n"
+"<br/>\n"
+"This privacy statement applies to the web content of ungleich glarus ag, "
+"available at the<br/>\n"
+"following domains:<br/>\n"
+"<br/>\n"
+"ungleich.ch<br/>\n"
+"datacenterlight.ch<br/>\n"
+"devuanhosting.com<br/>\n"
+"devuanhosting.ch<br/>\n"
+"digitalglarus.ch<br/>\n"
+"hack4lgarus.ch<br/>\n"
+"ipv6onlyhosting.com<br/>\n"
+"ipv6onlyhosting.ch<br/>\n"
+"ipv6onlyhosting.net<br/>\n"
+"django-hosting.ch<br/>\n"
+"rails-hosting.ch<br/>\n"
+"node-hosting.ch<br/>\n"
+"blog.ungleich.ch<br/>\n"
+"<br/>\n"
+"The Data Privacy Officer:<br/>\n"
+"<br/>\n"
+"Malcolm Anyakee<br/>\n"
+"ungleich glarus ag<br/>\n"
+"Bahnhofstrasse 1<br/>\n"
+"8783 Linthal (CH)<br/>\n"
+"E-Mail: <a href=\"mailto:malcolm.anyakee@ungleich.ch\">malcolm."
+"anyakee@ungleich.ch</a><br/>\n"
+"<br/>\n"
+"<br/>\n"
+"<strong>2. General</strong><br/>\n"
+"<br/>\n"
+"User data is personal data which is necessary to establish or change the "
+"contractual relations\n"
+"between ungleich glarus ag (\"us\") and you. This includes among other "
+"things for example the\n"
+"name, the address, the date of birth, the e-mail address or the IP address. "
+"We save and use\n"
+"your personal data only for the processing of your orders or for getting in "
+"contact with you.<br/>\n"
+"<br/>\n"
+"<br/>\n"
+"<strong>3. Processing of personal data</strong><br/>\n"
+"<br/>\n"
+"When you call one of our websites we collect your IP address. When you "
+"register an account with us your contact data will be stored. When you order "
+"products on our platform we also collect among others your address and your "
+"payment details.<br/>\n"
+"<br/>\n"
+"<strong>I. Registration data</strong><br/>\n"
+"<br/>\n"
+"In the process of registration we need to collect some of your personal "
+"data. For example we collect your name, your address, your telephone number, "
+"your e-mail address and your payment details to process orders. We do not "
+"collect your payment details such as credit card number, expiration date or "
+"the cvv code when you pay with credit card. You expose those data directly "
+"to the respective payment processor. Payments with credit card are processed "
+"by Stripe Payments Europe Ltd. (\"Stripe\").<br/>\n"
+"<br/>\n"
+"<br/>\n"
+"<strong>II. Server log files</strong><br/>\n"
+"<br/>\n"
+"When you call one of our websites we automatically save traffic data. "
+"Normally the IP address, the type and version of your browser, the time and "
+"the website that lead to our website (\"Referer\") will be saved. Your IP "
+"address is collected anonymously so that we cannot match it with your "
+"person. The collection of those data is necessary to provide our websites "
+"and services, according to Art. 6 par. 1 lit. f GDPR.<br/>\n"
+"<br/>\n"
+"<br/>\n"
+"<strong>4. Storage durations</strong><br/>\n"
+"<br/>\n"
+"Your data will be deleted immediately, as soon as it isn't relevant anymore "
+"for any contract between you and us. In some cases it could be necessary to "
+"store your data further, to comply with our contractual or other legal "
+"obligatons.<br/>\n"
+"<br/>\n"
+"<br/>\n"
+"<strong>5. Disclosure of your personal data</strong><br/>\n"
+"<br/>\n"
+"We don't disclose your personal data to third parties, except:<br/>\n"
+"<br/>\n"
+"a) You grant us your explicit permission according to Art. 6 par. 1 S. 1 "
+"lit. a GDPR.<br/>\n"
+"<br/>\n"
+"b) The disclosure of your data is legal and it is necessary to comply with "
+"our contractual or other legal obligations, according to Art. 6 par. 1 S. 1 "
+"lit b GDPR.<br/>\n"
+"<br/>\n"
+"c) There is a law or legal obligation to disclose your data or the "
+"disclosure is necessary for the performance of a task carried out in the "
+"public interest or in the exercise of an official authority according to "
+"Art. 6 par. 1 S. 1 lit. c GDPR.<br/>\n"
+"<br/>\n"
+"d) The disclosure of your data is necessary for the purposes of the "
+"legitimate interests pursued by us or by a third party, except where such "
+"interests are overridden by the interests or your fundamental right "
+"according to Art. 6. par. 1 S. 1 lit. f GDPR.<br/>\n"
+"<br/>\n"
+"<br/>\n"
+"<strong>6. Cookies, Google Analytics, Twitter</strong><br/>\n"
+"<br/>\n"
+"We use Cookies. When you visit one of our websites, information is stored on "
+"your terminal device in the form of a \"cookie\". Cookies are small text "
+"files that are stored on your terminal device by your browser. You can opt-"
+"out of the storage of cookies in the settings of your browser-software, but "
+"however, in this case you might not be able to fully use all functions and "
+"services on our website.<br/>\n"
+"<br/>\n"
+"We use Google Analytics, a service provided by Google Inc., 1600 "
+"Amphitheatre Parkway, Mountainview, CA 94043, USA (\"Google\"). Google uses "
+"Cookies. Google will use these cookies on our behalf to analyse how you use "
+"our websites and to generate reports about the activities on our websites. "
+"The information collected by those cookies will be transmitted to a Google "
+"server in the United States of America. We have Google's IP anonymization "
+"activated, so your IP address will be shortened before transmitting to "
+"Google. Only in exceptional cases the full IP address will be transmitted "
+"and then shortened afterwards. <br/>\n"
+"<br/>\n"
+"You may opt out from thecollection of these cookies by downloading and "
+"installing a browser plugin available at the following link:<br/>\n"
+"<br/>\n"
+"<a href=\"http://tools.google.com/dlpage/gaoptout\">http://tools.google.com/"
+"dlpage/gaoptout</a><br/>\n"
+"<br/>\n"
+"You may find further information about the processing of your personal data "
+"at the following links:<br/>\n"
+"<br/>\n"
+"<a href=\"https://policies.google.com/technologies/ads\">https://policies."
+"google.com/technologies/ads</a><br/>\n"
+"<br/>\n"
+"<a href=\"https://www.privacyshield.gov/participant?"
+"id=a2zt000000001L5AAI&status=Active\">https://www.privacyshield.gov/"
+"participant?id=a2zt000000001L5AAI&status=Active</a><br/>\n"
+"<br/>\n"
+"<a href=\"https://adssettings.google.com/authenticated\">https://adssettings."
+"google.com/authenticated</a><br/>\n"
+"<br/>\n"
+"The collected personal data will be deleted or anonymized after 14 months "
+"according to Art. 6 par. 1 lit. f GDPR.<br/>\n"
+"<br/>\n"
+"Our websites use several functions from the social network Twitter, a "
+"service provided by Twitter Inc., 1355 Market Street, Suite 900, San "
+"Francisco, CA 94103, USA. We may embed content of Twitter in our websites, "
+"such as photos, videos, texts or buttons. If you are registered with "
+"Twitter, they may combine your use of these functionalities on our websites "
+"with your Twitter account. You may find further information at https://"
+"twitter.com/de/privacy.<br/>\n"
+"<br/>\n"
+"<br/>\n"
+"<strong>7. Your rights concerning your personal data</strong><br/>\n"
+"<br/>\n"
+"Under applicable GDPR you may have the right to:<br/>\n"
+"<br/>\n"
+"a) Obtain confirmation as to whether or not personal data concerning you are "
+"being processed, and where that is the case, access to the personal data, "
+"according to Art. 15 GDPR.<br/>\n"
+"<br/>\n"
+"b) Obtain the rectification of false or inaccurate data concerning you, "
+"according to Art. 15, Art. 16 GDPR.<br/>\n"
+"<br/>\n"
+"c) Obtain the deletion of your personal data, according to Art. 17 GDPR.<br/"
+">\n"
+"<br/>\n"
+"d) Obtain the restriction of processing your personal data, according to "
+"Art. 18 GDPR.<br/>\n"
+"<br/>\n"
+"e) Obtain a digital copy of your personal data processed by us, according to "
+"Art. 20 GDPR.<br/>\n"
+"<br/>\n"
+"f) Revoke a granted permission regarding your personal data at any time, "
+"according to Art. 7 par. 3 GDPR.<br/>\n"
+"<br/>\n"
+"g) Complain at a data protection authority, according to Art. 77 GDPR.<br/>\n"
+"<br/>\n"
+"<br/>\n"
+"<br/>\n"
+"<strong>8. Hyperlinks / Disclaimer</strong><br/>\n"
+"<br/>\n"
+"This privacy policy applies only to our websites and not to other websites "
+"or applications operated by third parties. We may provide links to other "
+"websites but we are not responsible for the privacy practices of such other "
+"websites.<br/>\n"
+"<br/>\n"
+"<br/>\n"
+msgstr "<strong>1. Verantwortung und Geltungsbereich</strong>
+<br/>
+
+<br/>
+Verantwortlich im Sinne der EU-Datenschutzgrundverordnung („DSGVO“) und sonstiger
+<br/>
+datenschutzrechtlicher Bestimmungen ist:
+<br/>
+
+<br/>
+ungleich glarus ag
+<br/>
+Bahnhofstrasse 1
+<br/>
+8783 Linthal (CH)
+<br/>
+Tel.: (044) 534-66-22
+<br/>
+E-Mail: info@ungleich.ch
+<br/>
+
+<br/>
+Diese Datenschutzerklärung gilt für das Internetangebot der ungleich glarus ag, welches unter
+<br/>
+den nachfolgenden Domains erreichbar ist:
+<br/>
+
+<br/>
+ungleich.ch
+<br/>
+datacenterlight.ch
+<br/>
+devuanhosting.com
+<br/>
+digitalglarus.ch
+<br/>
+hack4lgarus.ch
+<br/>
+ipv6hosting.com
+<br/>
+django-hosting.ch
+<br/>
+rails-hosting.ch
+<br/>
+blog.ungleich.ch
+<br/>
+
+<br/>
+Der Datenschutzbeauftragte des Verantwortlichen ist:
+<br/>
+
+<br/>
+Malcolm Anyakee
+<br/>
+ungleich glarus ag
+<br/>
+Bahnhofstrasse 1
+<br/>
+8783 Linthal (CH)
+<br/>
+E-Mail: <a href="mailto:malcolm.anyakee@ungleich.ch">malcolm.anyakee@ungleich.ch</a>
+<br/>
+
+<br/>
+
+<br/>
+<strong>2. Grundsätzliches</strong>
+<br/>
+
+<br/>
+Bei personenbezogenen Daten handelt es sich um alle Informationen, die sich auf eine
+<br/>
+identifizierte oder identifizierbare natürliche Person beziehen. Hierzu gehört zum Beispiel dein
+<br/>
+Name, deine Anschrift, dein Geburtsdatum, deine E-Mail-Adresse oder deine IP-Adresse. Wir
+<br/>
+speichern und verwenden deine personenbezogenen Daten ausschließlich für die Bearbeitung
+<br/>
+deiner Aufträge und für die Kontaktaufnahme mit dir.
+<br/>
+
+<br/>
+
+<br/>
+<strong>3. Verarbeitung deiner personenbezogenen Daten</strong>
+<br/>
+
+<br/>
+Bei jedem Aufruf einer unserer Internetseiten wird u. a. deine IP-Adresse gespeichert. Wenn du
+<br/>
+dich bei uns registrierst, werden deine Kontaktdaten gespeichert. Wenn du Aufträge an uns
+<br/>
+richtest oder Produkte bei uns bestellst, werden darüber hinaus auch deine Anschrift und deine
+<br/>
+Zahlungsdaten gespeichert.
+<br/>
+
+<br/>
+<strong>I. Registrierungsdaten</strong>
+<br/>
+
+<br/>
+Im Rahmen der Registrierung müssen wir einige personenbezogene Daten von dir erheben
+<br/>
+und verarbeiten. Beispielsweise benötigen wir deinen Namen, deine Anschrift, deine
+<br/>
+Telefonnummer, deine E-Mail-Adresse und deine Zahlungsdaten um deine Aufträge zu verarbeiten. 
+<br/>
+Bei der Zahlung mittels Kreditkarte erfassen und speichern wir keine Zahlungsverkehrsinformationen wie Kreditkartennummern, das Ablaufdatum oder die Prüfziffer. 
+<br/>
+Diese gibst du ausschließlich direkt dem entsprechenden Zahlungsdienstleister bekannt. Bei der Bezahlung mit Kreditkarte erfolgt die Abwicklung der Bezahlung durch einen externen Dienstleister. 
+<br/>
+Für die Kreditkartenzahlung werden deine Angaben direkt vom Diensteanbieter Stripe Payments Europe Ltd. („Stripe“) verarbeitet.
+<br/>
+
+<br/>
+<strong>II. Serverlogdateien</strong>
+<br/>
+
+<br/>
+Bei jedem Aufruf einer unserer Internetseiten speichern wir automatisch bestimmte Daten. Dazu
+<br/>
+gehören u. a. deine IP-Adresse, Typ und Version des verwendeten Browsers, Uhrzeit, Datum
+<br/>
+und die Webseite von der du auf unsere Seite gelangst (sog. „Referer“). Deine IP-Adresse wird
+<br/>
+bei uns nur anonymisiert gespeichert, sodass ein Personenbezug nicht mehr herstellbar ist. Die
+<br/>
+Erfassung der Daten zur Bereitstellung unserer Internetseiten und die Speicherung der Daten in
+<br/>
+den Server Logfiles ist für den Betrieb der Internetseite zwingend erforderlich und dient damit
+<br/>
+der Wahrung eines berechtigten Interesses unseres Unternehmens. Die Rechtsgrundlage für
+<br/>
+diese Verarbeitung ist Art. 6. Abs. 1 lit. f DSGVO.
+<br/>
+
+<br/>
+
+<br/>
+<strong>4. Speicherdauer</strong>
+<br/>
+
+<br/>
+Sofern die verarbeiteten personenbezogenen Daten für die Durchführung eines ggf.
+<br/>
+geschlossenen Vertrages nicht mehr erforderlich sind, werden sie umgehend gelöscht. Jedoch
+<br/>
+kann es auch nach Abschluss des Vertrags erforderlich sein, personenbezogene Daten von dir
+<br/>
+zu speichern, um unseren vertraglichen oder gesetzlichen Verpflichtungen nachzukommen.
+<br/>
+
+<br/>
+
+<br/>
+<strong>5. Weitergabe von personenbezogenen Daten</strong>
+<br/>
+
+<br/>
+Wir geben deine personenbezogenen Daten grundsätzlich nicht an Dritte weiter, es sei denn:
+<br/>
+
+<br/>
+a) Du erteilst uns hierzu deine ausdrückliche Einwilligung nach Art. 6 Abs. 1 S. 1 lit. a DSGVO.
+<br/>
+
+<br/>
+b) Die Weitergabe der Daten ist gesetzlich zulässig und nach Art. 6. Abs. 1 S. 1 lit b DSGVO zur
+<br/>
+Erfüllung unserer vertraglichen Pflichten mit Ihnen erforderlich.
+<br/>
+
+<br/>
+c) Für die Weitergabe der Daten besteht nach Art. 6. Abs. 1 S. 1 lit. c DSGVO eine gesetzliche
+<br/>
+Verpflichtung.
+<br/>
+
+<br/>
+d) Die Weitergabe der Daten ist nach Art. 6. Abs. 1 S. 1 lit. f DSGVO zur Wahrung unserer
+<br/>
+berechtigten Interessen, sowie zur Geltendmachung, Ausübung oder Verteidigung von
+<br/>
+Rechtsansprüchen erforderlich und darüber hinaus kein Grund zu der Annahme besteht, dass
+<br/>
+du ein überwiegendes schutzwürdiges Interesse an der Nichtweitergabe deiner Daten hast.
+<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+<strong>6. Cookies, Google Analytics und Twitter</strong>
+<br/>
+
+<br/>
+Wir setzen auf unseren Internetseiten sog. „Cookies“ ein. Cookies sind kleine Textdateien, die
+<br/>
+im Rahmen deines Besuchs einer unserer Internetseiten von uns an den Browser deines
+<br/>
+Endgeräts gesendet und dort gespeichert werden. Einige Funktionen unseres Angebots
+<br/>
+können ohne den Einsatz bestimmter Cookies grundsätzlich aus technischen Gründen nicht
+<br/>
+angeboten werden. Du kannst deinen Browser allerdings so konfigurieren, dass er nur noch
+<br/>
+bestimmte oder auch gar keine Cookies mehr akzeptiert. Es kann jedoch passieren, dass du
+<br/>
+dadurch möglicherweise nicht mehr alle Funktionen unserer Internetseiten nutzen kannst.
+<br/>
+Andere Cookies ermöglichen es uns hingegen verschiedene Analysen deines Verhaltens oder
+<br/>
+etwa eine Verbindung zu deinen sozialen Netzwerken aufzubauen. Mithilfe dieser Cookies
+<br/>
+können wir beispielsweise unser Internetangebot für dich nutzerfreundlicher und effektiver
+<br/>
+gestalten. Daraus folgt, dass wir auf Grundlage unserer berechtigten Unternehmensinteressen
+<br/>
+(Optimierung und wirtschaftlicher Betrieb unseres Internetangebots) den Werbeanalysedienst
+<br/>
+„Google Analytics“ der Google Inc., 1600 Amphitheatre Parkway, Mountainview, CA 94043,
+<br/>
+Vereinigte Staaten von Amerika („Google“) einsetzen. Google verwendet Cookies. Die durch
+<br/>
+das Cookie erzeugten Informationen werden an einen Server von Google in den Vereinigten
+<br/>
+Staaten von Amerika übertragen und dort erhoben und gespeichert. Google nutzt diese
+<br/>
+Informationen in unserem Auftrag dafür, die Nutzung unseres Internetangebots auszuwerten
+<br/>
+und Berichte über die Aktivitäten auf unserem Onlineangebot uns gegenüber zu erbringen.
+<br/>
+Dabei werden aus den verarbeiteten Daten anonymisierte bzw. pseudonyme Nutzungsprofile
+<br/>
+einiger Nutzer erstellt. Diese Nutzungsprofile sind nicht auf eine IP-Adresse oder einen
+<br/>
+spezifischen Nutzer zurückzuführen. Darüber hinaus setzen wir Google Analytics nur mit IP-Anonymisierung
+<br/>
+ein. Das heißt, dass die IP-Adresse von Google gekürzt wird. Nur in wenigen
+<br/>
+Ausnahmefällen wird die vollständige IP-Adresse an Google übertragen und dort gekürzt. Du
+<br/>
+kannst der Verarbeitung von deinen erfassten Daten durch die Installation dieses
+<br/>
+Browserplugins widersprechen: <a href="http://tools.google.com/dlpage/gaoptout?hl=de">http://tools.google.com/dlpage/gaoptout?hl=de</a>
+<br/>
+
+<br/>
+Weitere Informationen zur Nutzung der Daten durch Google und weiterführende
+<br/>
+Widerspruchsmöglichkeiten erhältst du in der Datenschutzerklärung von Google:
+<br/>
+
+<br/>
+<a href="https://policies.google.com/technologies/ads">https://policies.google.com/technologies/ads</a>
+<br/>
+
+<br/>
+und auf den folgenden Webseiten:
+<br/>
+
+<br/>
+<a href="https://www.privacyshield.gov/participant?id=a2zt000000001L5AAI&status=Active">https://www.privacyshield.gov/participant?id=a2zt000000001L5AAI&status=Active</a>
+<br/>
+
+<br/>
+<a href="https://adssettings.google.com/authenticated">https://adssettings.google.com/authenticated</a>
+<br/>
+
+<br/>
+Die personenbezogenen Daten werden nach 14 Monaten gelöscht oder anonymisiert.
+<br/>
+Rechtliche Grundlage hierfür ist Art. 6 Abs. 1 lit. f DSGVO.
+<br/>
+
+<br/>
+Innerhalb unseres Onlineangebots können Funktionen und Inhalte des Dienstes Twitter
+<br/>
+eingebunden werden. Twitter ist ein Dienst der Twitter Inc., 1355 Market Street, Suite 900, San
+<br/>
+Francisco, CA 94103, Vereinigte Staaten von Amerika. Hierzu können beispielsweise Inhalte wie
+<br/>
+Bilder, Videos oder Texte und Schaltflächen gehören. Sofern du Mitglied der Plattform Twitter
+<br/>
+bist, kann Twitter den Aufruf der Funktionalitäten deinem dortigen Profil zuordnen.
+<br/>
+Weitere Informationen zum Datenschutz bei Twitter, findest du in der Datenschutzerklärung von
+<br/>
+Twitter unter <a href="https://twitter.com/de/privacy">https://twitter.com/de/privacy</a>.
+<br/>
+
+<br/>
+
+<br/>
+
+<br/>
+<strong>7. Rechte des Betroffenen</strong>
+<br/>
+
+<br/>
+Aus der DSGVO ergeben sich für dich als Betroffener die folgenden Rechte:
+<br/>
+
+<br/>
+a) Du kannst gem. Art. 15 DSGVO Auskunft über deine von uns verarbeiteten
+<br/>
+personenbezogenen Daten verlangen. Du kannst insbesondere Auskunft über den Zweck der
+<br/>
+Verarbeitung, die Kategorien der erhobenen personenbezogenen Daten, die Kategorien von
+<br/>
+Dritten, gegenüber denen deine Daten offengelegt werden und die voraussichtliche
+<br/>
+Speicherdauer verlangen.
+<br/>
+
+<br/>
+b) Du hast gem. Art. 15 u. Art. 16 DSGVO ein Recht auf Berichtigung, Vervollständigung,
+<br/>
+Löschung und die Bestimmung von Einschränkungen hinsichtlich der Verarbeitung deiner
+<br/>
+personenbezogenen Daten.
+<br/>
+
+<br/>
+c) Gemäß Art. 17 DSGVO kannst du von uns die Löschung deiner bei uns gespeicherten
+<br/>
+personenbezogenen Daten verlangen, soweit die Verarbeitung nicht zur Erfüllung unserer
+<br/>
+rechtlichen Verpflichtungen, aus Gründen des öffentlichen Interesses oder zur
+<br/>
+Geltendmachung, Ausübung oder Verteidigung von Rechtsansprüchen erforderlich ist.
+<br/>
+
+<br/>
+d) Gemäß Art. 18 DSGVO kannst du von uns die Einschränkung der Verarbeitung deiner
+<br/>
+personenbezogenen Daten verlangen, soweit die Richtigkeit der Daten von dir bestritten wird,
+<br/>
+die Verarbeitung grundsätzlich unrechtmäßig ist oder die Löschung deiner
+<br/>
+personenbezogenen Daten durch uns ablehnen, weil du diese zur Geltendmachung, Ausübung
+<br/>
+oder Verteidigung von Rechtsansprüchen benötigst.
+<br/>
+
+<br/>
+e) Gemäß Art. 20 DSGVO kannst du von uns verlangen, dass deine personenbezogenen
+<br/>
+Daten, die du uns zur Verfügung gestellt hast, in einem strukturierten, maschinenlesbaren und
+<br/>
+gängigen Format zu erhalten oder du kannst die Übermittlung an eine andere Stelle verlangen.
+<br/>
+
+<br/>
+f) Gemäß Art. 7 Abs. 3 DSGVO kannst du deine erteilte Einwilligung gegenüber uns jederzeit
+<br/>
+widerrufen. Dies hat zur Folge, dass wir die auf dieser Einwilligung beruhende
+<br/>
+Datenverarbeitung für die Zukunft nicht mehr fortführen dürfen.
+<br/>
+
+<br/>
+g) Gemäß Art. 77 DSGVO steht dir das Recht zu, dich bei einer Aufsichtsbehörde zu
+<br/>
+beschweren.
+<br/>
+
+<br/>
+
+<br/>
+<strong>8. Hyperlinks und Haftungsausschluss</strong>
+<br/>
+
+<br/>
+Auf unseren Internetseiten befinden sich sog. „Hyperlinks“, also Verbindungen bzw.
+<br/>
+Weiterleitungen zu den Internetseiten Dritter. Bei Aktivierung dieser Hyperlinks durch
+<br/>
+Anklicken, wirst du von unserer Internetseite direkt auf die Internetseite eines Dritten
+<br/>
+weitergeleitet. Wir können keine Verantwortung für den vertraulichen Umgang deiner Daten auf
+<br/>
+diesen Webseiten Dritter übernehmen, da wir keinen Einfluss darauf haben, dass diese
+<br/>
+Unternehmen die Datenschutzbestimmungen der DSGVO einhalten. Wir weisen dich außerdem
+<br/>
+darauf hin, dass es aufgrund der Struktur des Internets möglich ist, dass die Regelungen des
+<br/>
+Datenschutzes bzw. der DSGVO von anderen, dritten Personen oder Institutionen die nicht
+<br/>
+innerhalb unseres Verantwortungsbereichs liegen nicht beachtet werden, oder dass sich
+<br/>
+spontan, kurzfristig schwerwiegende Sicherheitslücken in verbreiteten Standards und
+<br/>
+technischen Protokollen auftun, die die Datenintegrität gefährden könnten."
+
+msgid "Page Header"
+msgstr ""
+
+#, python-format
+msgid "No %(verbose_name)s found matching the query"
 msgstr ""
 
 #~ msgid "Enter your name or company name"
