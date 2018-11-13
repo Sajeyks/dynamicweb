@@ -73,6 +73,7 @@ textarea {
 
 .navbar {
   transition: all .3s ease-in;
+  font-weight: 400;
 }
 
 .navbar-default .navbar-nav>.open>a,
