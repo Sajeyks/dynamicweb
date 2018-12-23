@@ -1,4 +1,6 @@
-Next:
+2.4.2: 2018-12-23
+    * Update djangcocms-blog version (0.7.0 -> 0.9.0)
+    * #6038: Change datacenterlight.ch message form to send email to support@ungleich.ch (MR!679)
     * bugfix: Use correct version of django-multisite (MR #676)
 2.4.1: 2018-10-18
     * bugfix: Update pycryptodome module from 3.4 to 3.6.6 (PR #674)
