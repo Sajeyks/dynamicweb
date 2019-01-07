@@ -1,3 +1,5 @@
+2.4.5: 2019-01-07
+    * bugfix: [blog] Fix DE language option not being shown in the blog (MR!684) and revert back the RSS URL to the old one
 2.4.4: 2019-01-02
     * bugfix: [blog] Create blog config for ungleich.ch and change RSS URL accordingly
 2.4.3: 2018-12-24
