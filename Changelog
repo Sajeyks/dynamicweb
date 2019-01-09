@@ -1,3 +1,5 @@
+2.4.6: 2019-01-09
+    * #6261: Add ungleich black logo to blog template for mobile view (MR!685)
 2.4.5: 2019-01-07
     * bugfix: [blog] Fix DE language option not being shown in the blog (MR!684) and revert back the RSS URL to the old one
 2.4.4: 2019-01-02
