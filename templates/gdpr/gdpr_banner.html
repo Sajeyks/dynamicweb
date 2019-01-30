@@ -19,8 +19,16 @@ div#gdprBanner {
 #gdprBanner button {
     margin-left: 25px;
 }
+.gdpr-text-letter-spacing {
+    letter-spacing: 0.5px;
+}
+.gdpr-button-text-letter-spacing {
+    letter-spacing: 0.6px;
+}
 </style>
-<div class="gdprBanner text-center" id="gdprBanner">This site uses cookies for analytics. By continuing to browse this site, you agree to use this. <a data-toggle="modal" data-target="#gdprModal">Learn more</a>  <button onclick="cookieManager.createGDPRCookie();" type="button" class="btn btn-info" data-dismiss="modal">Accept</button></div>
+<div class="gdprBanner text-center gdpr-text-letter-spacing" id="gdprBanner">
+    {% blocktrans %}This site uses cookies for analytics. By continuing to browse this site, you agree to use this.{% endblocktrans %}&nbsp;
+    <a data-toggle="modal" data-target="#gdprModal" class="gdpr-button-text-letter-spacing">{% trans "Learn more" %}</a>  <button onclick="cookieManager.createGDPRCookie();" type="button" class="btn btn-info" data-dismiss="modal">Accept</button></div>
 <div class="modal fade" id="gdprModal" role="dialog">
 <div class="modal-dialog">
 
