@@ -8,7 +8,7 @@
 			</div>
 			<div class="row">
 				{% for plugin in product_instance.child_plugin_instances %}
-					<div class="col-md-4 col-sm-6 portfolio-item wow fadeInUp" data-wow-delay="{{ forloop.counter|multiply:0.25 }}s" style="visibility: visible; animation-delay: {{ forloop.counter|multiply:0.25 }}s; animation-name: fadeInUp;">
+					<div class="col-md-4 col-sm-6 portfolio-item sameheight-{{product_instance.pk}} {% if product_instance.animate %}wow fadeInUp{%endif%}" data-wow-delay="{{ forloop.counter|multiply:0.25 }}s" style="visibility: visible; animation-delay: {{ forloop.counter|multiply:0.25 }}s; animation-name: fadeInUp;">
 						{% render_plugin plugin %}
 					</div>
 				{% endfor %}
@@ -16,3 +16,16 @@
 		</div>
 	</div>
 </section>
+
+
+<script>
+$( document ).ready(function() {
+	var equalizer = ".sameheight-{{product_instance.pk}}"
+    var heights = $(equalizer).map(function() {
+        return $(this).height();
+    }).get(),
+
+    maxHeight = Math.max.apply(null, heights);
+    $(equalizer).height(maxHeight);
+});
+</script>

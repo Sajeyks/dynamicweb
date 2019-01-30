@@ -144,6 +144,7 @@ class UngleichProductItem(ServiceItem):
 
 class UngleichProduct(Service):
     section_class = models.CharField(max_length=100, default="", blank=True)
+    animate = models.BooleanField(default=True)
 
 
 class UngleichCustomer(Service):

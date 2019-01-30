@@ -56,7 +56,9 @@ dotenv.read_dotenv("{0}/.env".format(PROJECT_DIR))
 
 from multisite import SiteID
 
-SITE_ID = SiteID(default=1)
+UNGLEICH_BLOG_SITE_ID = int_env("UNGLEICH_BLOG_SITE_ID")
+SITE_ID = SiteID(default=(UNGLEICH_BLOG_SITE_ID if
+                          UNGLEICH_BLOG_SITE_ID > 0 else 1))
 
 APP_ROOT_ENDPOINT = "/"
 APPEND_SLASH = True
