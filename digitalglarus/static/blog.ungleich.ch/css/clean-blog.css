@@ -403,3 +403,23 @@ body {
 .blog-content img {
     width: 100%;
 }
+
+#logoBlack {
+  display: none;
+}
+#logoWhite {
+  display: block;
+}
+@media (max-width: 767px) {
+  #logoBlack {
+    display: block;
+  }
+
+  #logoWhite {
+    display: none;
+  }
+}
+
+.custom-black-logo {
+  padding: 8px 15px;
+}

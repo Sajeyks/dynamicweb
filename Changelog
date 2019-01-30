@@ -1,4 +1,14 @@
-Next:
+2.4.6: 2019-01-09
+    * #6261: Add ungleich black logo to blog template for mobile view (MR!685)
+2.4.5: 2019-01-07
+    * bugfix: [blog] Fix DE language option not being shown in the blog (MR!684) and revert back the RSS URL to the old one
+2.4.4: 2019-01-02
+    * bugfix: [blog] Create blog config for ungleich.ch and change RSS URL accordingly
+2.4.3: 2018-12-24
+    * #6260: Add viewport and other missing meta tags (MR!683)
+2.4.2: 2018-12-23
+    * Update djangcocms-blog version (0.7.0 -> 0.9.0)
+    * #6038: Change datacenterlight.ch message form to send email to support@ungleich.ch (MR!679)
     * bugfix: Use correct version of django-multisite (MR #676)
 2.4.1: 2018-10-18
     * bugfix: Update pycryptodome module from 3.4 to 3.6.6 (PR #674)
