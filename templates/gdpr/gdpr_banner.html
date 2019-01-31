@@ -2,6 +2,15 @@
 {% if request.COOKIES.gdpr_accepted or IS_TENANT_SITE %}
 {% else %}
 <style>
+.gdpr {
+    font-family: "Lato", sans-serif;
+    font-size: 14px;
+    font-weight: 300;
+}
+
+h1.gdpr, h2.gpdr, h3.gpdr, h4.gdpr, h5.gdpr, h6.gdpr {
+    font-weight: 300;
+}
 div#gdprBanner {
     position: fixed;
     bottom: 0;
@@ -26,10 +35,10 @@ div#gdprBanner {
     letter-spacing: 0.6px;
 }
 </style>
-<div class="gdprBanner text-center gdpr-text-letter-spacing" id="gdprBanner">
+<div class="gdpr gdprBanner text-center gdpr-text-letter-spacing" id="gdprBanner">
     {% blocktrans %}This site uses cookies for analytics. By continuing to browse this site, you agree to use this.{% endblocktrans %}&nbsp;
     <a data-toggle="modal" data-target="#gdprModal">{% trans "Learn more" %}</a>  <button onclick="cookieManager.createGDPRCookie();" type="button" class="btn btn-info gdpr-button-text-letter-spacing" data-dismiss="modal">{% trans "Accept" %}</button></div>
-<div class="modal fade" id="gdprModal" role="dialog">
+<div class="gdpr modal fade" id="gdprModal" role="dialog">
 <div class="modal-dialog">
 
   <!-- Modal content-->
