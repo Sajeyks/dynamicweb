@@ -18,7 +18,7 @@
         bottom: 0;
         width: 100%;
         padding: 10px;
-        background-color: #29427A;
+        background-color: #26262766;
         z-index: 999;
         color: #ffffff;
     }
@@ -30,6 +30,7 @@
     }
 
     #gdprBanner button {
+        background-color: #3f44466e;
         margin-left: 25px;
         display: inline-block;
         padding: 6px 12px;
@@ -43,8 +44,7 @@
         -ms-touch-action: manipulation;
         touch-action: manipulation;
         cursor: pointer;
-        background-image: none;
-        border: 1px solid transparent;
+        border: 1.5px solid #fdfeffe3;
         border-radius: 4px;
     }
 
@@ -66,7 +66,7 @@
         %}</a>
     <button onclick="cookieManager.createGDPRCookie();" type="button"
             class="btn btn-info gdpr-button-text-letter-spacing"
-            data-dismiss="modal">{% trans "Accept" %}
+            data-dismiss="modal">{% trans "OK" %}
     </button>
 </div>
 <div class="gdpr modal fade" id="gdprModal" role="dialog">
@@ -78,8 +78,7 @@
                 <button type="button" class="close" data-dismiss="modal">
                     &times;
                 </button>
-                <h4 class="gdpr modal-title">{% blocktrans %}Privacy policy{%
-                    endblocktrans %}</h4>
+                <h4 class="gdpr modal-title">{% trans "Privacy policy" %}</h4>
             </div>
             <div class="modal-body">
                 <p>
