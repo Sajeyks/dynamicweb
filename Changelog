@@ -1,5 +1,6 @@
-Next:
+2.4.8: 2019-01-31
     * #5151: [all] Add GDPR banner (MR!678 by pcoder)
+    * #6059: [dcl] Change topnav font to 400 by default (MR! 680 by Sanghee)
 2.4.7: 2019-01-30
     * #6213: [cms] Make ungleich product items equal heights and add option to animate or not animate the contents (MR!682 by Aatish)
 2.4.6: 2019-01-09
