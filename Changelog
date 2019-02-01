@@ -1,3 +1,5 @@
+2.4.9: 2019-02-01
+    * bugfix: Fix inconsistent styles in GDPR modal (MR!679 by pcoder)
 2.4.8: 2019-01-31
     * #5151: [all] Add GDPR banner (MR!678 by pcoder)
     * #6059: [dcl] Change topnav font to 400 by default (MR! 680 by Sanghee)
