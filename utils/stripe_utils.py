@@ -123,6 +123,26 @@ class StripeUtils(object):
         return card_details
 
     @handleStripeError
+    def get_all_invoices(self, customer_id):
+        invoices = stripe.Invoice.list(limit=100, customer=customer_id)
+        return_list = []
+        for invoice in invoices:
+            invoice_details = {
+                'created': invoice.created,
+                'receipt_number': invoice.receipt_number,
+                'invoice_number': invoice.number,
+                'date_paid': invoice.date_paid,
+                'period_start': invoice.period_start,
+                'period_end': invoice.period_end,
+                'paid': invoice.paid,
+                'billing_reason': invoice.billing_reason,
+                'discount': invoice.discount.coupon.amount_off if invoice.discount else 0,
+                'total': invoice.total
+            }
+            return_list.append(invoice_details)
+        return return_list
+
+    @handleStripeError
     def get_cards_details_from_token(self, token):
         stripe_token = stripe.Token.retrieve(token)
         card_details = {

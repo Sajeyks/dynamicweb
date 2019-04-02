@@ -232,6 +232,28 @@ class HostingBill(AssignPermissionsMixin, models.Model):
         return instance
 
 
+class MonthlyHostingBill(AssignPermissionsMixin, models.Model):
+    customer = models.ForeignKey(StripeCustomer)
+    order = models.ForeignKey(HostingOrder)
+    receipt_number = models.CharField(
+        help_text="The receipt number that is generated on Stripe"
+    )
+    invoice_number = models.CharField(
+        help_text="The invoice number that is generated on Stripe"
+    )
+    billing_period = models.CharField(
+        help_text="The billing period for which the bill is valid"
+    )
+    date_paid = models.DateField(help_text="Date on which the bill was paid")
+
+    permissions = ('view_monthlyhostingbill',)
+
+    class Meta:
+        permissions = (
+            ('view_monthlyhostingbill', 'View Monthly Hosting'),
+        )
+
+
 class VMDetail(models.Model):
     user = models.ForeignKey(CustomUser)
     vm_id = models.IntegerField(default=0)
