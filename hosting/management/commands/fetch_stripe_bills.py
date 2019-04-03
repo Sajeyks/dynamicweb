@@ -43,9 +43,8 @@ class Command(BaseCommand):
                     all_invoices = all_invoices_response['response_object']
                     self.stdout.write(self.style.SUCCESS("Obtained {} invoices".format(len(all_invoices) if all_invoices is not None else 0)))
                     for invoice in all_invoices:
-                        MonthlyHostingBill.create(
-                            invoice, stripe_customer=user.stripecustomer
-                        )
+                        invoice['customer'] = user.stripecustomer
+                        MonthlyHostingBill.create(invoice)
                 else:
                     self.stdout.write(self.style.SUCCESS(
                         'Customer email %s does not have a stripe customer.' % email))

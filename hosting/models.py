@@ -1,8 +1,10 @@
 import logging
 import os
+import pytz
 
 from Crypto.PublicKey import RSA
 from dateutil.relativedelta import relativedelta
+from datetime import datetime
 from django.db import models
 from django.utils import timezone
 from django.utils.functional import cached_property
@@ -252,7 +254,8 @@ class MonthlyHostingBill(AssignPermissionsMixin, models.Model):
     total = models.IntegerField()
     lines_data_count = models.IntegerField()
     invoice_id = models.CharField(unique=True, max_length=100)
-    lines_meta_data_csv = models.TextField()
+    lines_meta_data_csv = models.TextField(default="")
+    subscription_ids_csv = models.TextField(default="")
 
     permissions = ('view_monthlyhostingbill',)
 
@@ -262,21 +265,63 @@ class MonthlyHostingBill(AssignPermissionsMixin, models.Model):
         )
 
     @classmethod
-    def create(cls, stripe_customer, **args):
-        instance = cls.objects.create(args)
-        instance.customer = stripe_customer
-        if len(instance.lines_meta_data_csv) > 0:
-            vm_ids = [vm_id.strip() for vm_id in instance.lines_meta_data_csv.split(",")]
+    def create(cls, args):
+        # Try to infer the HostingOrder from subscription id or VM_ID
+        if len(args['subscription_ids_csv']) > 0:
+            sub_ids = [sub_id.strip() for sub_id in args['subscription_ids_csv'].split(",")]
+            if len(sub_ids) == 1:
+                args['order'] = HostingOrder.objects.get(
+                    subscription_id=sub_ids[0]
+                )
+            else:
+                logger.debug(
+                    "More than one subscriptions"
+                    "for MonthlyHostingBill {}".format(args['invoice_id'])
+                )
+                logger.debug("SUB_IDS=".format(','.join(sub_ids)))
+                logger.debug("Not importing invoices")
+                return
+        elif len(args['lines_meta_data_csv']) > 0:
+            vm_ids = [vm_id.strip() for vm_id in args['lines_meta_data_csv'].split(",")]
             if len(vm_ids) == 1:
-                instance.order = HostingOrder.objects.get(vm_id=vm_ids[0])
+                args['order'] = HostingOrder.objects.get(vm_id=vm_ids[0])
             else:
                 logger.debug(
                     "More than one VM_ID"
-                    "for MonthlyHostingBill {}".format(instance.invoice_id)
+                    "for MonthlyHostingBill {}".format(args['invoice_id'])
                 )
                 logger.debug("VM_IDS=".format(','.join(vm_ids)))
-        instance.assign_permissions(stripe_customer.user)
-        instance.save()
+                logger.debug("Not importing invoices")
+                return
+        else:
+            logger.debug("Neither subscription id nor vm_id available")
+            logger.debug("Can't import invoice")
+            return
+
+        instance = cls.objects.create(
+            created=datetime.utcfromtimestamp(
+                args['created']).replace(tzinfo=pytz.utc),
+            receipt_number=(
+                args['receipt_number']
+                if args['receipt_number'] is not None else ''
+            ),
+            paid_at=datetime.utcfromtimestamp(
+                args['paid_at']).replace(tzinfo=pytz.utc),
+            period_start=datetime.utcfromtimestamp(
+                args['period_start']).replace(tzinfo=pytz.utc),
+            period_end=datetime.utcfromtimestamp(
+                args['period_end']).replace(tzinfo=pytz.utc),
+            billing_reason=args['billing_reason'],
+            discount=args['discount'],
+            total=args['total'],
+            lines_data_count=args['lines_data_count'],
+            invoice_id=args['invoice_id'],
+            lines_meta_data_csv=args['lines_meta_data_csv'],
+            stripe_customer=args['customer'],
+            subscription_ids_csv=args['subscription_ids_csv'],
+        )
+
+        instance.assign_permissions(instance.stripe_customer.user)
         return instance
 
 
