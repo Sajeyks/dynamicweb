@@ -1164,7 +1164,7 @@ class InvoiceListView(LoginRequiredMixin, ListView):
 
 
 class InvoiceDetailView(LoginRequiredMixin, DetailView):
-    template_name = "hosting/invoice-detail.html"
+    template_name = "hosting/invoice_detail.html"
     context_object_name = "invoice"
     login_url = reverse_lazy('hosting:login')
     permission_required = ['view_monthlyhostingbill']
