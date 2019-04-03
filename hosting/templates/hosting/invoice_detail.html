@@ -14,9 +14,8 @@
     {% if not error %}
     <div class="dashboard-container-head">
         <h1 class="dashboard-title-thin">
-            <img src="{% static 'hosting/img/billing.svg' %}" class="un-icon">{%
-            blocktrans with page_header_text=page_header_text|default:"Invoice"
-            %}{{page_header_text}}{% endblocktrans %}
+            <img src="{% static 'hosting/img/billing.svg' %}" class="un-icon">
+            {% blocktrans with page_header_text=page_header_text|default:"Invoice" %}{{page_header_text}}{% endblocktrans %}
         </h1>
         {% if invoice %}
         <div class="dashboard-container-options">
