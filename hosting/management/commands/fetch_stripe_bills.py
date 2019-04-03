@@ -24,9 +24,8 @@ class Command(BaseCommand):
                 if hasattr(user, 'stripecustomer'):
                     self.stdout.write(self.style.SUCCESS(
                         'Found %s. Fetching bills for him.' % email))
-                    mhb = MonthlyHostingBill.objects.last(
-                        customer=user.stripecustomer
-                    )
+                    mhb = MonthlyHostingBill.objects.filter(
+                        customer=user.stripecustomer).last()
                     created_gt = {}
                     if mhb is not None:
                         # fetch only invoices which is created after
