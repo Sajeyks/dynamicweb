@@ -338,6 +338,33 @@ class MonthlyHostingBill(AssignPermissionsMixin, models.Model):
         """
         return self.total * 0.01
 
+    def discount_in_chf(self):
+        """
+        Returns discount in chf.
+
+        :return:
+        """
+        return self.discount * 0.01
+
+    def get_vm_id(self):
+        """
+        Returns the VM_ID metadata if set in this MHB else returns None
+        :return:
+        """
+        return_value = None
+        if len(self.lines_meta_data_csv) > 0:
+            vm_ids = [vm_id.strip() for vm_id in
+                      self.lines_meta_data_csv.split(",")]
+            if len(vm_ids) == 1:
+                return vm_ids[0]
+            else:
+                logger.debug(
+                    "More than one VM_ID"
+                    "for MonthlyHostingBill {}".format(self.invoice_id)
+                )
+                logger.debug("VM_IDS=".format(','.join(vm_ids)))
+        return return_value
+
 
 class VMDetail(models.Model):
     user = models.ForeignKey(CustomUser)
