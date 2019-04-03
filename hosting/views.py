@@ -1208,8 +1208,8 @@ class InvoiceDetailView(LoginRequiredMixin, DetailView):
                     cpu=context['vm']['cores'],
                     ssd_size=context['vm']['disk_size'],
                     memory=context['vm']['memory'],
-                    pricing_name=(obj.vm_pricing.name
-                                  if obj.vm_pricing else 'default')
+                    pricing_name=(obj.order.vm_pricing.name
+                                  if obj.order.vm_pricing else 'default')
                 )
                 context['vm']['vat'] = vat
                 context['vm']['price'] = price
@@ -1229,8 +1229,8 @@ class InvoiceDetailView(LoginRequiredMixin, DetailView):
                         cpu=context['vm']['cores'],
                         ssd_size=context['vm']['disk_size'],
                         memory=context['vm']['memory'],
-                        pricing_name=(obj.vm_pricing.name
-                                      if obj.vm_pricing else 'default')
+                        pricing_name=(obj.order.vm_pricing.name
+                                      if obj.order.vm_pricing else 'default')
                     )
                     context['vm']['vat'] = vat
                     context['vm']['price'] = price
