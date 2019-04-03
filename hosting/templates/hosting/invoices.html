@@ -18,20 +18,20 @@
     <table class="table table-switch">
         <thead>
             <tr>
-                <th>{% trans "Order Nr." %}</th>
+                <th>{% trans "Invoice Nr." %}</th>
                 <th>{% trans "Date" %}</th>
                 <th>{% trans "Amount" %}</th>
                 <th></th>
             </tr>
         </thead>
         <tbody>
-            {% for order in orders %}
+            {% for invoice in invoices %}
                 <tr>
-                    <td class="xs-td-inline" data-header="{% trans 'Order Nr.' %}">{{ order.id }}</td>
-                    <td class="xs-td-bighalf locale_date" data-header="{% trans 'Date' %}">{{ order.created_at | date:'Y-m-d h:i a' }}</td>
-                    <td class="xs-td-smallhalf" data-header="{% trans 'Amount' %}">{{ order.price|floatformat:2|intcomma }}</td>
+                    <td class="xs-td-inline" data-header="{% trans 'Invoice Nr.' %}">{{ invoice.invoice_number }}</td>
+                    <td class="xs-td-bighalf locale_date" data-header="{% trans 'Date' %}">{{ invoice.paid_at | date:'Y-m-d h:i a' }}</td>
+                    <td class="xs-td-smallhalf" data-header="{% trans 'Amount' %}">{{ invoice.total_in_chf|floatformat:2|intcomma }}</td>
                     <td class="text-right last-td">
-                        <a class="btn btn-order-detail" href="{% url 'hosting:orders' order.pk %}">{% trans 'See Invoice' %}</a>
+                        <a class="btn btn-order-detail" href="{% url 'hosting:invoices' invoice.pk %}">{% trans 'See Invoice' %}</a>
                     </td>
                 </tr>
             {% endfor %}
