@@ -139,8 +139,7 @@
                         <p>
                             <small>{% trans "VAT" %} ({{ vm.vat_percent|floatformat:2|intcomma }}%)
                             </small>
-                            <strong class="pull-right">{{vm.vat|floatformat:2|intcomma}}
-                                CHF</strong>
+                            <strong class="pull-right">{{vm.vat|floatformat:2|intcomma}} CHF</strong>
                         </p>
                         {% endif %}
                         {% if vm.discount.amount > 0 %}
@@ -159,8 +158,7 @@
                 <div class="col-sm-6">
                     <p class="total-price">
                         <strong>{% trans "Total" %} </strong>
-                        <strong class="pull-right">{% if vm.total_price %}{{vm.total_price|floatformat:2|intcomma}}{% else %}{{vm.price|floatformat:2|intcomma}}{% endif %}
-                            CHF</strong>
+                        <strong class="pull-right">{{total_in_chf}} CHF</strong>
                     </p>
                 </div>
             </div>

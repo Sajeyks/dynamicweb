@@ -1173,7 +1173,9 @@ class InvoiceDetailView(LoginRequiredMixin, DetailView):
     def get_object(self, queryset=None):
         invoice_id = self.kwargs.get('invoice_id')
         try:
-            invoice_obj = MonthlyHostingBill.objects.get(invoice_number=invoice_id)
+            invoice_obj = MonthlyHostingBill.objects.get(
+                invoice_number=invoice_id
+            )
             logger.debug("Found MHB for id {invoice_id}".format(
                 invoice_id=invoice_id
             ))
@@ -1184,7 +1186,7 @@ class InvoiceDetailView(LoginRequiredMixin, DetailView):
             else:
                 logger.error("User does not have permission to access")
                 invoice_obj = None
-        except MonthlyHostingBill.DoesNotExist:
+        except MonthlyHostingBill.DoesNotExist as dne:
             logger.debug("MHB not found for id {invoice_id}".format(
                 invoice_id=invoice_id
             ))
