@@ -317,7 +317,8 @@ class MonthlyHostingBill(AssignPermissionsMixin, models.Model):
             lines_data_count=args['lines_data_count'],
             invoice_id=args['invoice_id'],
             lines_meta_data_csv=args['lines_meta_data_csv'],
-            stripe_customer=args['customer'],
+            customer=args['customer'],
+            order=args['order'],
             subscription_ids_csv=args['subscription_ids_csv'],
         )
 
