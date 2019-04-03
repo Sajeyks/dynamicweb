@@ -31,7 +31,7 @@ class Command(BaseCommand):
                         # fetch only invoices which is created after
                         # mhb.created, because we already have invoices till
                         # this date
-                        created_gt = {'gt': mhb.created}
+                        created_gt = {'gt': mhb.created.timestamp()}
 
                     all_invoices_response = stripe_utils.get_all_invoices(
                         user.stripecustomer.stripe_id,
