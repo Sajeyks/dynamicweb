@@ -38,9 +38,7 @@ class Command(BaseCommand):
                         created=created_gt
                     )
                     all_invoices = all_invoices_response['response_object']
-                    logger.debug(
-                        "Obtained {} invoices".format(len(all_invoices))
-                    )
+                    self.stdout.write(self.style.SUCCESS("Obtained {} invoices".format(len(all_invoices))))
                     for invoice in all_invoices:
                         MonthlyHostingBill.create(
                             invoice, stripe_customer=user.stripecustomer
