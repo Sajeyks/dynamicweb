@@ -37,8 +37,11 @@ class Command(BaseCommand):
                         user.stripecustomer.stripe_id,
                         created=created_gt
                     )
+                    if all_invoices_response['error'] is not None:
+                        self.stdout.write(self.style.ERROR(all_invoices_response['error']))
+                        exit(1)
                     all_invoices = all_invoices_response['response_object']
-                    self.stdout.write(self.style.SUCCESS("Obtained {} invoices".format(len(all_invoices))))
+                    self.stdout.write(self.style.SUCCESS("Obtained {} invoices".format(len(all_invoices) if all_invoices is not None else 0)))
                     for invoice in all_invoices:
                         MonthlyHostingBill.create(
                             invoice, stripe_customer=user.stripecustomer
