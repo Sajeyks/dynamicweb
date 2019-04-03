@@ -235,16 +235,24 @@ class HostingBill(AssignPermissionsMixin, models.Model):
 class MonthlyHostingBill(AssignPermissionsMixin, models.Model):
     customer = models.ForeignKey(StripeCustomer)
     order = models.ForeignKey(HostingOrder)
+    created = models.DateTimeField(help_text="When the invoice was created")
     receipt_number = models.CharField(
-        help_text="The receipt number that is generated on Stripe"
+        help_text="The receipt number that is generated on Stripe",
+        max_length=100
     )
     invoice_number = models.CharField(
-        help_text="The invoice number that is generated on Stripe"
+        help_text="The invoice number that is generated on Stripe",
+        max_length=100
     )
-    billing_period = models.CharField(
-        help_text="The billing period for which the bill is valid"
-    )
-    date_paid = models.DateField(help_text="Date on which the bill was paid")
+    paid_at = models.DateTimeField(help_text="Date on which the bill was paid")
+    period_start = models.DateTimeField()
+    period_end = models.DateTimeField()
+    billing_reason = models.CharField(max_length=25)
+    discount = models.PositiveIntegerField()
+    total = models.IntegerField()
+    lines_data_count = models.IntegerField()
+    invoice_id = models.CharField(unique=True, max_length=100)
+    lines_meta_data_csv = models.TextField()
 
     permissions = ('view_monthlyhostingbill',)
 
@@ -252,6 +260,24 @@ class MonthlyHostingBill(AssignPermissionsMixin, models.Model):
         permissions = (
             ('view_monthlyhostingbill', 'View Monthly Hosting'),
         )
+
+    @classmethod
+    def create(cls, stripe_customer, **args):
+        instance = cls.objects.create(args)
+        instance.customer = stripe_customer
+        if len(instance.lines_meta_data_csv) > 0:
+            vm_ids = [vm_id.strip() for vm_id in instance.lines_meta_data_csv.split(",")]
+            if len(vm_ids) == 1:
+                instance.order = HostingOrder.objects.get(vm_id=vm_ids[0])
+            else:
+                logger.debug(
+                    "More than one VM_ID"
+                    "for MonthlyHostingBill {}".format(instance.invoice_id)
+                )
+                logger.debug("VM_IDS=".format(','.join(vm_ids)))
+        instance.assign_permissions(stripe_customer.user)
+        instance.save()
+        return instance
 
 
 class VMDetail(models.Model):

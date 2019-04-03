@@ -1,8 +1,12 @@
+import logging
+
 from django.core.management.base import BaseCommand
 
-from hosting.models import UserCardDetail
+from hosting.models import MonthlyHostingBill
 from membership.models import CustomUser
 from utils.stripe_utils import StripeUtils
+
+logger = logging.getLogger(__name__)
 
 
 class Command(BaseCommand):
@@ -18,11 +22,32 @@ class Command(BaseCommand):
                 stripe_utils = StripeUtils()
                 user = CustomUser.objects.get(email=email)
                 if hasattr(user, 'stripecustomer'):
-                    self.stdout.write(self.style.SUCCESS('Found %s. Fetching bills for him.' % email))
-                    stripe_utils.get_all_invoices(
-                        user.stripecustomer.stripe_id
+                    self.stdout.write(self.style.SUCCESS(
+                        'Found %s. Fetching bills for him.' % email))
+                    mhb = MonthlyHostingBill.objects.last(
+                        customer=user.stripecustomer
                     )
+                    created_gt = {}
+                    if mhb is not None:
+                        # fetch only invoices which is created after
+                        # mhb.created, because we already have invoices till
+                        # this date
+                        created_gt = {'gt': mhb.created}
+
+                    all_invoices_response = stripe_utils.get_all_invoices(
+                        user.stripecustomer.stripe_id,
+                        created=created_gt
+                    )
+                    all_invoices = all_invoices_response['response_object']
+                    logger.debug(
+                        "Obtained {} invoices".format(len(all_invoices))
+                    )
+                    for invoice in all_invoices:
+                        MonthlyHostingBill.create(
+                            invoice, stripe_customer=user.stripecustomer
+                        )
                 else:
-                    self.stdout.write(self.style.SUCCESS('Customer email %s does not have a stripe customer.' % email))
+                    self.stdout.write(self.style.SUCCESS(
+                        'Customer email %s does not have a stripe customer.' % email))
         except Exception as e:
             print(" *** Error occurred. Details {}".format(str(e)))
