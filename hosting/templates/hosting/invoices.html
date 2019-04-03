@@ -31,7 +31,7 @@
                     <td class="xs-td-bighalf locale_date" data-header="{% trans 'Date' %}">{{ invoice.paid_at | date:'Y-m-d h:i a' }}</td>
                     <td class="xs-td-smallhalf" data-header="{% trans 'Amount' %}">{{ invoice.total_in_chf|floatformat:2|intcomma }}</td>
                     <td class="text-right last-td">
-                        <a class="btn btn-order-detail" href="{% url 'hosting:invoices' invoice.pk %}">{% trans 'See Invoice' %}</a>
+                        <a class="btn btn-order-detail" href="{% url 'hosting:invoices' invoice.invoice_number %}">{% trans 'See Invoice' %}</a>
                     </td>
                 </tr>
             {% endfor %}
