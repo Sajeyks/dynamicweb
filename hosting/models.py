@@ -305,6 +305,10 @@ class MonthlyHostingBill(AssignPermissionsMixin, models.Model):
                 args['receipt_number']
                 if args['receipt_number'] is not None else ''
             ),
+            invoice_number=(
+                args['invoice_number']
+                if args['invoice_number'] is not None else ''
+            ),
             paid_at=datetime.utcfromtimestamp(
                 args['paid_at']).replace(tzinfo=pytz.utc),
             period_start=datetime.utcfromtimestamp(
