@@ -1264,7 +1264,7 @@ class InvoiceDetailView(LoginRequiredMixin, DetailView):
 
     @method_decorator(decorators)
     def get(self, request, *args, **kwargs):
-        context = self.get_context_data()
+        context = self.get_context_data(object=self.get_object())
         return self.render_to_response(context)
 
 
