@@ -9,7 +9,7 @@ from .views import (
     HostingPricingView, CreateVirtualMachinesView, HostingBillListView,
     HostingBillDetailView, SSHKeyDeleteView, SSHKeyCreateView, SSHKeyListView,
     SSHKeyChoiceView, DashboardView, SettingsView, ResendActivationEmailView,
-    InvoiceListView
+    InvoiceListView, InvoiceDetailView
 )
 
 
@@ -28,7 +28,7 @@ urlpatterns = [
         name='order-confirmation'),
     url(r'orders/(?P<pk>\d+)/?$', OrdersHostingDetailView.as_view(),
         name='orders'),
-    url(r'invoices/(?P<pk>\d+)/?$', OrdersHostingDetailView.as_view(),
+    url(r'invoices/(?P<invoice_id>[-\w]+)/?$', InvoiceDetailView.as_view(),
         name='invoices'),
     url(r'bills/?$', HostingBillListView.as_view(), name='bills'),
     url(r'bills/(?P<pk>\d+)/?$', HostingBillDetailView.as_view(),

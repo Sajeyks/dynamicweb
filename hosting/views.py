@@ -1163,6 +1163,35 @@ class InvoiceListView(LoginRequiredMixin, ListView):
         return super(InvoiceListView, self).get(request, *args, **kwargs)
 
 
+class InvoiceDetailView(LoginRequiredMixin, DetailView):
+    template_name = "hosting/invoice-detail.html"
+    context_object_name = "invoice"
+    login_url = reverse_lazy('hosting:login')
+    permission_required = ['view_monthlyhostingbill']
+    model = MonthlyHostingBill
+
+    def get_object(self, queryset=None):
+        invoice_id = self.kwargs.get('invoice_id')
+        try:
+            invoice_obj = MonthlyHostingBill.objects.get(invoice_number=invoice_id)
+            logger.debug("Found MHB for id {invoice_id}".format(
+                invoice_id=invoice_id
+            ))
+            if self.request.user.has_perm(
+                    self.permission_required[0], invoice_obj
+            ) or self.request.user.email == settings.ADMIN_EMAIL:
+                logger.debug("User has permission to invoice_obj")
+            else:
+                logger.error("User does not have permission to access")
+                invoice_obj = None
+        except HostingOrder.DoesNotExist:
+            logger.debug("MHB not found for id {invoice_id}".format(
+                invoice_id=invoice_id
+            ))
+            invoice_obj = None
+        return invoice_obj
+
+
 class OrdersHostingDeleteView(LoginRequiredMixin, DeleteView):
     login_url = reverse_lazy('hosting:login')
     success_url = reverse_lazy('hosting:orders')
