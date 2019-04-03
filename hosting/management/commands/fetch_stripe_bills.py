@@ -1,4 +1,5 @@
 import logging
+import sys
 
 from django.core.management.base import BaseCommand
 
@@ -13,10 +14,32 @@ class Command(BaseCommand):
     help = '''Fetches invoices from Stripe and creates bills for a given 
     customer in the MonthlyHostingBill model'''
 
+    def set_logger(self, verbosity):
+        """
+        Set logger level based on verbosity option
+        """
+        handler = logging.StreamHandler(sys.stdout)
+        formatter = logging.Formatter('%(asctime)s|%(levelname)s|%(module)s| %(message)s')
+        handler.setFormatter(formatter)
+        logger.addHandler(handler)
+
+        if verbosity == 0:
+            self.logger.setLevel(logging.WARN)
+        elif verbosity == 1:  # default
+            self.logger.setLevel(logging.INFO)
+        elif verbosity > 1:
+            self.logger.setLevel(logging.DEBUG)
+
+        # verbosity 3: also enable all logging statements that reach the root
+        # logger
+        if verbosity > 2:
+            logging.getLogger().setLevel(logging.DEBUG)
+
     def add_arguments(self, parser):
         parser.add_argument('customer_email', nargs='+', type=str)
 
     def handle(self, *args, **options):
+        self.set_logger(options.get('verbosity'))
         try:
             for email in options['customer_email']:
                 stripe_utils = StripeUtils()
