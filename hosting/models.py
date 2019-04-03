@@ -325,6 +325,15 @@ class MonthlyHostingBill(AssignPermissionsMixin, models.Model):
         instance.assign_permissions(instance.customer.user)
         return instance
 
+    def total_in_chf(self):
+        """
+        Returns amount in chf. The total amount in this model is in cents.
+        Hence we multiply it by 0.01 to obtain the result
+
+        :return:
+        """
+        return self.total * 0.01
+
 
 class VMDetail(models.Model):
     user = models.ForeignKey(CustomUser)
