@@ -158,7 +158,8 @@
                 <div class="col-sm-6">
                     <p class="total-price">
                         <strong>{% trans "Total" %} </strong>
-                        <strong class="pull-right">{{total_in_chf}} CHF</strong>
+                        <strong class="pull-right">{% if vm.total_price %}{{vm.total_price|floatformat:2|intcomma}}{% else %}{{vm.price|floatformat:2|intcomma}}{% endif %}
+                            CHF</strong>
                     </p>
                 </div>
             </div>
