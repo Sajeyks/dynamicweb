@@ -322,7 +322,7 @@ class MonthlyHostingBill(AssignPermissionsMixin, models.Model):
             subscription_ids_csv=args['subscription_ids_csv'],
         )
 
-        instance.assign_permissions(instance.stripe_customer.user)
+        instance.assign_permissions(instance.customer.user)
         return instance
 
 
