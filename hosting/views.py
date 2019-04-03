@@ -1191,6 +1191,82 @@ class InvoiceDetailView(LoginRequiredMixin, DetailView):
             invoice_obj = None
         return invoice_obj
 
+    def get_context_data(self, **kwargs):
+        # Get context
+        context = super(InvoiceDetailView, self).get_context_data(**kwargs)
+        obj = self.get_object()
+
+        if obj is not None:
+            vm_id = obj.get_vm_id()
+            try:
+                # Try to get vm details from database
+                vm_detail = VMDetail.objects.get(vm_id=vm_id)
+                context['vm'] = vm_detail.__dict__
+                context['vm']['name'] = '{}-{}'.format(
+                    context['vm']['configuration'], context['vm']['vm_id'])
+                price, vat, vat_percent, discount = get_vm_price_with_vat(
+                    cpu=context['vm']['cores'],
+                    ssd_size=context['vm']['disk_size'],
+                    memory=context['vm']['memory'],
+                    pricing_name=(obj.vm_pricing.name
+                                  if obj.vm_pricing else 'default')
+                )
+                context['vm']['vat'] = vat
+                context['vm']['price'] = price
+                context['vm']['discount'] = discount
+                context['vm']['vat_percent'] = vat_percent
+                context['vm']['total_price'] = price + vat - discount['amount']
+            except VMDetail.DoesNotExist:
+                # fallback to get it from the infrastructure
+                try:
+                    manager = OpenNebulaManager(
+                        email=self.request.email,
+                        password=self.request.password
+                    )
+                    vm = manager.get_vm(vm_id)
+                    context['vm'] = VirtualMachineSerializer(vm).data
+                    price, vat, vat_percent, discount = get_vm_price_with_vat(
+                        cpu=context['vm']['cores'],
+                        ssd_size=context['vm']['disk_size'],
+                        memory=context['vm']['memory'],
+                        pricing_name=(obj.vm_pricing.name
+                                      if obj.vm_pricing else 'default')
+                    )
+                    context['vm']['vat'] = vat
+                    context['vm']['price'] = price
+                    context['vm']['discount'] = discount
+                    context['vm']['vat_percent'] = vat_percent
+                    context['vm']['total_price'] = (
+                            price + vat - discount['amount']
+                    )
+                except WrongIdError:
+                    logger.error("WrongIdError while accessing "
+                                 "invoice {}".format(obj.invoice_id))
+                    messages.error(
+                        self.request,
+                        _('The VM you are looking for is unavailable at the '
+                          'moment. Please contact Data Center Light support.')
+                    )
+                    self.kwargs['error'] = 'WrongIdError'
+                    context['error'] = 'WrongIdError'
+                    return context
+
+                # add context params from monthly hosting bill
+                context['period_start'] = obj.period_start
+                context['period_end'] = obj.period_end
+                context['paid_at'] = obj.paid_at
+                context['total_in_chf'] = obj.total_in_chf()
+                context['invoice_number'] = obj.invoice_number
+                context['discount_on_stripe'] = obj.discount_in_chf()
+                return context
+        else:
+            raise Http404
+
+    @method_decorator(decorators)
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data()
+        return self.render_to_response(context)
+
 
 class OrdersHostingDeleteView(LoginRequiredMixin, DeleteView):
     login_url = reverse_lazy('hosting:login')
