@@ -1146,8 +1146,9 @@ class OrdersHostingListView(LoginRequiredMixin, ListView):
         return super(OrdersHostingListView, self).get(request, *args, **kwargs)
 
 
-class InvoiceListView(OrdersHostingListView):
+class InvoiceListView(LoginRequiredMixin, ListView):
     template_name = "hosting/invoices.html"
+    login_url = reverse_lazy('hosting:login')
     context_object_name = "invoices"
     model = MonthlyHostingBill
     ordering = '-created'
