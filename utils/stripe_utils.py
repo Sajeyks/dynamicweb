@@ -151,7 +151,7 @@ class StripeUtils(object):
                     'total': invoice.total,
                     # to see how many line items we have in this invoice and
                     # then later check if we have more than 1
-                    'lines_data_count': len(invoice.lines.data),
+                    'lines_data_count': len(invoice.lines.data) if invoice.lines.data is not None else 0,
                     'invoice_id': invoice.id,
                     'lines_meta_data_csv': ','.join(
                         [line.metadata.VM_ID if line.metadata.VM_ID is not None else '' for line in invoice.lines.data]
