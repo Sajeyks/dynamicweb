@@ -157,7 +157,7 @@ class StripeUtils(object):
                         [line.metadata.VM_ID if hasattr(line.metadata, 'VM_ID') else '' for line in invoice.lines.data]
                     ),
                     'subscription_ids_csv': ','.join(
-                        [line.subscription if hasattr(line, 'subscription') else '' for line in invoice.lines.data]
+                        [line.id if line.type == 'subscription' else '' for line in invoice.lines.data]
                     ),
                 }
                 starting_after = invoice.id
