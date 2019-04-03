@@ -130,12 +130,12 @@ class StripeUtils(object):
         while has_more_invoices:
             if starting_after:
                 invoices = stripe.Invoice.list(
-                    limit=10, customer=customer_id, created=created
+                    limit=10, customer=customer_id, created=created,
+                    starting_after=starting_after
                 )
             else:
                 invoices = stripe.Invoice.list(
-                    limit=10, customer=customer_id, created=created,
-                    starting_after=starting_after
+                    limit=10, customer=customer_id, created=created
                 )
             has_more_invoices = invoices.has_more
             for invoice in invoices.data:
