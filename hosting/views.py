@@ -1251,14 +1251,14 @@ class InvoiceDetailView(LoginRequiredMixin, DetailView):
                     context['error'] = 'WrongIdError'
                     return context
 
-                # add context params from monthly hosting bill
-                context['period_start'] = obj.period_start
-                context['period_end'] = obj.period_end
-                context['paid_at'] = obj.paid_at
-                context['total_in_chf'] = obj.total_in_chf()
-                context['invoice_number'] = obj.invoice_number
-                context['discount_on_stripe'] = obj.discount_in_chf()
-                return context
+            # add context params from monthly hosting bill
+            context['period_start'] = obj.period_start
+            context['period_end'] = obj.period_end
+            context['paid_at'] = obj.paid_at
+            context['total_in_chf'] = obj.total_in_chf()
+            context['invoice_number'] = obj.invoice_number
+            context['discount_on_stripe'] = obj.discount_in_chf()
+            return context
         else:
             raise Http404
 
