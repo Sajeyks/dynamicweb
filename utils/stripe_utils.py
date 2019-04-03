@@ -154,7 +154,7 @@ class StripeUtils(object):
                     'lines_data_count': len(invoice.lines.data),
                     'invoice_id': invoice.id,
                     'lines_meta_data_csv': ','.join(
-                        [line.metadata.VM_ID for line in invoice.lines.data]
+                        [line.metadata.VM_ID if line.metadata.VM_ID is not None else '' for line in invoice.lines.data]
                     )
                 }
                 starting_after = invoice.id
