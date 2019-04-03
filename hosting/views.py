@@ -1184,7 +1184,7 @@ class InvoiceDetailView(LoginRequiredMixin, DetailView):
             else:
                 logger.error("User does not have permission to access")
                 invoice_obj = None
-        except HostingOrder.DoesNotExist:
+        except MonthlyHostingBill.DoesNotExist:
             logger.debug("MHB not found for id {invoice_id}".format(
                 invoice_id=invoice_id
             ))
