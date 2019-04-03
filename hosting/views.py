@@ -61,7 +61,7 @@ from .forms import (
 from .mixins import ProcessVMSelectionMixin, HostingContextMixin
 from .models import (
     HostingOrder, HostingBill, HostingPlan, UserHostingKey, VMDetail,
-    GenericProduct
+    GenericProduct, MonthlyHostingBill
 )
 
 logger = logging.getLogger(__name__)
@@ -1144,6 +1144,22 @@ class OrdersHostingListView(LoginRequiredMixin, ListView):
     @method_decorator(decorators)
     def get(self, request, *args, **kwargs):
         return super(OrdersHostingListView, self).get(request, *args, **kwargs)
+
+
+class InvoiceListView(OrdersHostingListView):
+    template_name = "hosting/invoices.html"
+    context_object_name = "invoices"
+    model = MonthlyHostingBill
+    ordering = '-created'
+
+    def get_queryset(self):
+        user = self.request.user
+        self.queryset = MonthlyHostingBill.objects.filter(customer__user=user)
+        return super(InvoiceListView, self).get_queryset()
+
+    @method_decorator(decorators)
+    def get(self, request, *args, **kwargs):
+        return super(InvoiceListView, self).get(request, *args, **kwargs)
 
 
 class OrdersHostingDeleteView(LoginRequiredMixin, DeleteView):
