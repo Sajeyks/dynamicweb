@@ -28,7 +28,7 @@ urlpatterns = [
         name='order-confirmation'),
     url(r'orders/(?P<pk>\d+)/?$', OrdersHostingDetailView.as_view(),
         name='orders'),
-    url(r'invoices/(?P<invoice_id>[-\w]+)/?$', InvoiceDetailView.as_view(),
+    url(r'invoice/(?P<invoice_id>[-\w]+)/?$', InvoiceDetailView.as_view(),
         name='invoices'),
     url(r'bills/?$', HostingBillListView.as_view(), name='bills'),
     url(r'bills/(?P<pk>\d+)/?$', HostingBillDetailView.as_view(),
