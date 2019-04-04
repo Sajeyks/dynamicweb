@@ -1162,6 +1162,7 @@ class InvoiceListView(LoginRequiredMixin, ListView):
     login_url = reverse_lazy('hosting:login')
     context_object_name = "invoices"
     model = MonthlyHostingBill
+    paginate_by = 10
     ordering = '-created'
 
     def get_context_data(self, **kwargs):
