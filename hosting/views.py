@@ -83,16 +83,17 @@ class DashboardView(LoginRequiredMixin, View):
     @method_decorator(decorators)
     def get(self, request, *args, **kwargs):
         context = self.get_context_data()
+        context['has_invoices'] = False
         try:
-            MonthlyHostingBill.objects.get(
+            bills = MonthlyHostingBill.objects.filter(
                 customer=self.request.user.stripecustomer
             )
-            context['has_invoices'] = True
+            if len(bills) > 0:
+                context['has_invoices'] = True
         except MonthlyHostingBill.DoesNotExist as dne:
             logger.error("{}'s monthly hosting bill not imported ?".format(
                 self.request.user.email
             ))
-            context['has_invoices'] = False
         return render(request, self.template_name, context)
 
 
