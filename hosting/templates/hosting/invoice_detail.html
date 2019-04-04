@@ -65,7 +65,7 @@
                 <h4>{% trans "Billed to" %}:</h4>
                 <p>
                     {% if invoice.order %}
-                    {{user.name}}<br>
+                    {{invoice.customer.user.name}}<br>
                     {{invoice.order.billing_address.street_address}},
                     {{invoice.order.billing_address.postal_code}}<br>
                     {{invoice.order.billing_address.city}},
@@ -81,7 +81,7 @@
                 {% if invoice.order %}
                 {{invoice.order.cc_brand}} {% trans "ending in" %} ****
                 {{invoice.order.last4}}<br>
-                {{user.email}}
+                {{invoice.customer.user.email}}
                 {% endif %}
             </p>
         </div>
