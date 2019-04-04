@@ -1164,6 +1164,24 @@ class InvoiceListView(LoginRequiredMixin, ListView):
     model = MonthlyHostingBill
     ordering = '-created'
 
+    def get_context_data(self, **kwargs):
+        context = super(InvoiceListView, self).get_context_data(**kwargs)
+        mabs = MonthlyHostingBill.objects.filter(
+            customer__user=self.request.user
+        )
+        ips_dict = {}
+        for mab in mabs:
+            try:
+                vm_detail = VMDetail.get(vm_id=mab.order.vm_id)
+                ips_dict[mab.invoice_number] = [vm_detail.ipv6, vm_detail.ipv4]
+            except VMDetail.DoesNotExist as dne:
+                ips_dict[mab.invoice_number] = ['--']
+                logger.debug("VMDetail for {} doesn't exist".format(
+                    mab.order.vm_id
+                ))
+        context['ips'] = ips_dict
+        return context
+
     def get_queryset(self):
         user = self.request.user
         self.queryset = MonthlyHostingBill.objects.filter(customer__user=user)
