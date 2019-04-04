@@ -18,9 +18,9 @@
     <table class="table table-switch">
         <thead>
             <tr>
+                <th>{% trans "VM ID" %}</th>
                 <th>{% trans "IP Address" %}</th>
                 <th>{% trans "Period" %}</th>
-                <th>{% trans "Date" %}</th>
                 <th>{% trans "Amount" %}</th>
                 <th></th>
             </tr>
@@ -28,10 +28,10 @@
         <tbody>
             {% for invoice in invoices %}
                 <tr>
+                    <td class="xs-td-inline" data-header="{% trans 'VM ID' %}">{{ invoice.order.vm_id }}</td>
                     <td class="xs-td-inline" data-header="{% trans 'IP Address' %}">{{ ips|get_value_from_dict:invoice.invoice_number|join:"<br/>" }}</td>
                     <td class="xs-td-inline" data-header="{% trans 'Period' %}">{{ invoice.period_start | date:'Y-m-d' }} &mdash; {{ invoice.period_end | date:'Y-m-d' }}</td>
-                    <td class="xs-td-bighalf locale_date" data-header="{% trans 'Date' %}">{{ invoice.paid_at | date:'Y-m-d h:i a' }}</td>
-                    <td class="xs-td-smallhalf" data-header="{% trans 'Amount' %}">{{ invoice.total_in_chf|floatformat:2|intcomma }}</td>
+                    <td class="xs-td-inline" data-header="{% trans 'Amount' %}">{{ invoice.total_in_chf|floatformat:2|intcomma }}</td>
                     <td class="text-right last-td">
                         <a class="btn btn-order-detail" href="{% url 'hosting:invoices' invoice.invoice_number %}">{% trans 'See Invoice' %}</a>
                     </td>
