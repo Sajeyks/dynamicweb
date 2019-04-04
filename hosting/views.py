@@ -1172,7 +1172,7 @@ class InvoiceListView(LoginRequiredMixin, ListView):
         ips_dict = {}
         for mab in mabs:
             try:
-                vm_detail = VMDetail.get(vm_id=mab.order.vm_id)
+                vm_detail = VMDetail.objects.get(vm_id=mab.order.vm_id)
                 ips_dict[mab.invoice_number] = [vm_detail.ipv6, vm_detail.ipv4]
             except VMDetail.DoesNotExist as dne:
                 ips_dict[mab.invoice_number] = ['--']
