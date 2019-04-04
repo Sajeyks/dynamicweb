@@ -26,7 +26,7 @@
                         <img class="svg-img" src="{% static 'hosting/img/key.svg' %}">
                     </div>
                 </a>
-                <a href="{% url 'hosting:invoices' %}" class="hosting-dashboard-item">
+                <a href="{% if has_invoices %}{% url 'hosting:invoices' %}{% else %}{% url 'hosting:orders' %}{% endif %}" class="hosting-dashboard-item">
                     <h2>{% trans "My Bills" %}</h2>
                     <div class="hosting-dashboard-image">
                         <img class="svg-img" src="{% static 'hosting/img/billing.svg' %}">
