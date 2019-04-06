@@ -85,9 +85,11 @@ class DashboardView(LoginRequiredMixin, View):
         context = self.get_context_data()
         context['has_invoices'] = False
         try:
-            bills = MonthlyHostingBill.objects.filter(
-                customer=self.request.user.stripecustomer
-            )
+            bills = []
+            if hasattr(self.request.user, 'stripecustomer'):
+                bills = MonthlyHostingBill.objects.filter(
+                    customer=self.request.user.stripecustomer
+                )
             if len(bills) > 0:
                 context['has_invoices'] = True
         except MonthlyHostingBill.DoesNotExist as dne:
