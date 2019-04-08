@@ -46,7 +46,7 @@ class VirtualMachineSerializer(serializers.Serializer):
     """Serializer to map the virtual machine instance into JSON format."""
 
     name = serializers.SerializerMethodField()
-    cores = serializers.IntegerField(source='template.vcpu')
+    cores = serializers.SerializerMethodField()
     disk = serializers.IntegerField(write_only=True)
     set_memory = serializers.IntegerField(write_only=True, label='Memory')
     memory = serializers.SerializerMethodField()
@@ -98,6 +98,9 @@ class VirtualMachineSerializer(serializers.Serializer):
             )
 
         return manager.get_vm(opennebula_id)
+
+    def get_cores(self, obj):
+        return (obj.template.cpu) * 10
 
     def get_memory(self, obj):
         return int(obj.template.memory) / 1024
