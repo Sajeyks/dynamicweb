@@ -137,12 +137,15 @@ class VirtualMachineSerializer(serializers.Serializer):
         return price
 
     def get_configuration(self, obj):
-        template_id = obj.template.template_id
-        template = OpenNebulaManager().get_template(template_id)
-        if template.name.startswith('public-'):
-            return template.name.lstrip('public-')
+        if hasattr(obj, 'template'):
+            template_id = obj.template.template_id
+            template = OpenNebulaManager().get_template(template_id)
+            if template.name.startswith('public-'):
+                return template.name.lstrip('public-')
+            else:
+                return template.name
         else:
-            return template.name
+            return ""
 
     def get_ipv4(self, obj):
         """
