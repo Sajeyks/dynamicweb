@@ -138,12 +138,13 @@ class VirtualMachineSerializer(serializers.Serializer):
 
     def get_configuration(self, obj):
         if hasattr(obj, 'template'):
-            template_id = obj.template.template_id
-            template = OpenNebulaManager().get_template(template_id)
-            if template.name.startswith('public-'):
-                return template.name.lstrip('public-')
-            else:
-                return template.name
+            if hasattr(obj, 'template.template_id'):
+                template_id = obj.template.template_id
+                template = OpenNebulaManager().get_template(template_id)
+                if template.name.startswith('public-'):
+                    return template.name.lstrip('public-')
+                else:
+                    return template.name
         else:
             return ""
 
