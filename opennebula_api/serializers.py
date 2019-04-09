@@ -100,7 +100,7 @@ class VirtualMachineSerializer(serializers.Serializer):
         return manager.get_vm(opennebula_id)
 
     def get_cores(self, obj):
-        return (obj.template.cpu) * 10
+        return float(obj.template.cpu) * 10
 
     def get_memory(self, obj):
         return int(obj.template.memory) / 1024
