@@ -168,10 +168,21 @@ class OpenNebulaManager():
             raise
         return user_pool
 
-    def _get_vm_pool(self):
+    def _get_vm_pool(self, vm_id=None, infoextended=True):
+        """
+        vm_id: int - the id of the VM that needs to looked up in the vm pool;
+                     when set to None, looks for everything in the infoextended
+        """
         try:
             vm_pool = oca.VirtualMachinePool(self.client)
-            vm_pool.info()
+            if infoextended:
+                vm_pool.infoextended(
+                    filter_key_value_str='ID={vm_id}'.format(vm_id=vm_id) if
+                    vm_id is not None else '',
+                    vm_state=3 # look for VMs only in ACTIVE state
+                )
+            else:
+                vm_pool.info()
             return vm_pool
         except AttributeError:
             logger.error('Could not connect via client, using oneadmin instead')
@@ -202,7 +213,7 @@ class OpenNebulaManager():
     def get_vm(self, vm_id):
         vm_id = int(vm_id)
         try:
-            vm_pool = self._get_vm_pool()
+            vm_pool = self._get_vm_pool(vm_id)
             return vm_pool.get_by_id(vm_id)
         except WrongIdError:
             raise WrongIdError
