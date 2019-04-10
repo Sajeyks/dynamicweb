@@ -179,7 +179,7 @@ class OpenNebulaManager():
                 vm_pool.infoextended(
                     filter_key_value_str='ID={vm_id}'.format(vm_id=vm_id) if
                     vm_id is not None else '',
-                    vm_state=3 # look for VMs only in ACTIVE state
+                    vm_state=-1 # Look for VMs in any state, except DONE
                 )
             else:
                 vm_pool.info()

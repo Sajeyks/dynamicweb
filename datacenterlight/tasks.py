@@ -245,6 +245,8 @@ def create_vm_task(self, vm_template_id, user, specs, template, order_id):
                             }
                             email = EmailMessage(**email_data)
                             email.send()
+            else:
+                logger.debug("VM's ipv6 is None. Hence not created VMDetail")
     except Exception as e:
         logger.error(str(e))
         try:
