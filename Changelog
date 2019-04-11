@@ -1,3 +1,6 @@
+2.5: 2019-04-11
+    * #6589: [vm creation, listing] Fix obtaining ip address/template related info from oca api call (MR!690, MR!691 and MR!692)
+             [python-oca] VirtualMachinePool infoextended (https://github.com/ungleich/python-oca/pull/3)
 2.4.10: 2019-02-14
     * #6451: [dg, gdpr banner] Update phone number (MR!688 by pcoder)
 2.4.9: 2019-02-01
