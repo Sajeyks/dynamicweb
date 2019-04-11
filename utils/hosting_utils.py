@@ -47,8 +47,7 @@ def get_or_create_vm_detail(user, manager, vm_id):
         vm_detail_obj = VMDetail.objects.create(
             user=user, vm_id=vm_id, disk_size=vm['disk_size'],
             cores=vm['cores'], memory=vm['memory'],
-            configuration="" if vm['configuration'] is None else vm['configuration'],
-            ipv4=vm['ipv4'],
+            configuration=vm['configuration'], ipv4=vm['ipv4'],
             ipv6=vm['ipv6']
         )
     return vm_detail_obj

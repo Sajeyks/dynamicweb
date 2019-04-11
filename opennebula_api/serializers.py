@@ -46,7 +46,7 @@ class VirtualMachineSerializer(serializers.Serializer):
     """Serializer to map the virtual machine instance into JSON format."""
 
     name = serializers.SerializerMethodField()
-    cores = serializers.SerializerMethodField()
+    cores = serializers.IntegerField(source='template.vcpu')
     disk = serializers.IntegerField(write_only=True)
     set_memory = serializers.IntegerField(write_only=True, label='Memory')
     memory = serializers.SerializerMethodField()
@@ -99,9 +99,6 @@ class VirtualMachineSerializer(serializers.Serializer):
 
         return manager.get_vm(opennebula_id)
 
-    def get_cores(self, obj):
-        return int(float(obj.template.cpu) * 10)
-
     def get_memory(self, obj):
         return int(obj.template.memory) / 1024
 
@@ -130,23 +127,19 @@ class VirtualMachineSerializer(serializers.Serializer):
 
     def get_price(self, obj):
         template = obj.template
-        price = float(template.cpu) * 10 * 5.0
+        price = float(template.vcpu) * 5.0
         price += (int(template.memory) / 1024 * 2.0)
         for disk in template.disks:
             price += int(disk.size) / 1024 * 0.6
         return price
 
     def get_configuration(self, obj):
-        if hasattr(obj, 'template'):
-            if hasattr(obj, 'template.template_id'):
-                template_id = obj.template.template_id
-                template = OpenNebulaManager().get_template(template_id)
-                if template.name.startswith('public-'):
-                    return template.name.lstrip('public-')
-                else:
-                    return template.name
+        template_id = obj.template.template_id
+        template = OpenNebulaManager().get_template(template_id)
+        if template.name.startswith('public-'):
+            return template.name.lstrip('public-')
         else:
-            return ""
+            return template.name
 
     def get_ipv4(self, obj):
         """
