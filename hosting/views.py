@@ -1176,7 +1176,7 @@ class InvoiceListView(LoginRequiredMixin, ListView):
                 "user_email = {}".format(user_email)
             )
             try:
-                cu = CustomUser.objects.get(user_email)
+                cu = CustomUser.objects.get(email=user_email)
             except CustomUser.DoesNotExist as dne:
                 logger.debug("User does not exist")
                 cu = self.request.user
