@@ -1171,9 +1171,16 @@ class InvoiceListView(LoginRequiredMixin, ListView):
         context = super(InvoiceListView, self).get_context_data(**kwargs)
         if ('user_email' in self.request.GET
             and self.request.user.email == settings.ADMIN_EMAIL):
-            mabs = MonthlyHostingBill.objects.filter(
-                customer__user=self.request.GET['user_email']
+            user_email = self.request.GET['user_email']
+            logger.debug(
+                "user_email = {}".format(user_email)
             )
+            try:
+                cu = CustomUser.objects.get(user_email)
+            except CustomUser.DoesNotExist as dne:
+                logger.debug("User does not exist")
+                cu = self.request.user
+            mabs = MonthlyHostingBill.objects.filter(customer__user=cu)
         else:
             mabs = MonthlyHostingBill.objects.filter(
                 customer__user=self.request.user
