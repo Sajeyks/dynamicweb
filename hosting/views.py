@@ -1169,9 +1169,15 @@ class InvoiceListView(LoginRequiredMixin, ListView):
 
     def get_context_data(self, **kwargs):
         context = super(InvoiceListView, self).get_context_data(**kwargs)
-        mabs = MonthlyHostingBill.objects.filter(
-            customer__user=self.request.user
-        )
+        if ('user_email' in self.request.GET
+            and self.request.user.email == settings.ADMIN_EMAIL):
+            mabs = MonthlyHostingBill.objects.filter(
+                customer__user=self.request.GET['user_email']
+            )
+        else:
+            mabs = MonthlyHostingBill.objects.filter(
+                customer__user=self.request.user
+            )
         ips_dict = {}
         for mab in mabs:
             try:
