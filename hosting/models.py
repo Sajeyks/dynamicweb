@@ -1,3 +1,4 @@
+import json
 import logging
 import os
 import pytz
@@ -235,6 +236,9 @@ class HostingBill(AssignPermissionsMixin, models.Model):
 
 
 class MonthlyHostingBill(AssignPermissionsMixin, models.Model):
+    """
+    Corresponds to Invoice object of Stripe
+    """
     customer = models.ForeignKey(StripeCustomer)
     order = models.ForeignKey(HostingOrder)
     created = models.DateTimeField(help_text="When the invoice was created")
@@ -326,6 +330,21 @@ class MonthlyHostingBill(AssignPermissionsMixin, models.Model):
             subscription_ids_csv=args['subscription_ids_csv'],
         )
 
+        if 'line_items' in args['line_items']:
+            line_items = args['line_items']
+            for item in line_items:
+                line_item_instance = HostingBillLineItem.objects.create(
+                    monthly_hosting_bill=instance,
+                    amount=item.amount,
+                    description=item.description,
+                    discountable=item.discountable,
+                    metadata=json.dumps(item.metadata),
+                    period_start=datetime.utcfromtimestamp(item.period.start).replace(tzinfo=pytz.utc),                                            period_end=datetime.utcfromtimestamp(item.period.end).replace(tzinfo=pytz.utc),
+                    proration=item.proration,
+                    quantity=item.quantity,
+                    unit_amount=item.unit_amount
+                )
+                line_item_instance.assign_permission(instance.customer.user)
         instance.assign_permissions(instance.customer.user)
         return instance
 
@@ -364,6 +383,28 @@ class MonthlyHostingBill(AssignPermissionsMixin, models.Model):
                 )
                 logger.debug("VM_IDS=".format(','.join(vm_ids)))
         return return_value
+
+
+class HostingBillLineItem(AssignPermissionsMixin, models.Model):
+    """
+    Corresponds to InvoiceItem object of Stripe
+    """
+    monthly_hosting_bill = models.ForeignKey(MonthlyHostingBill)
+    amount = models.PositiveSmallIntegerField()
+    description = models.CharField(max_length=255)
+    discountable = models.BooleanField()
+    metadata = models.CharField(max_length=128)
+    period_start = models.DateTimeField()
+    period_end = models.DateTimeField()
+    proration = models.BooleanField()
+    quantity = models.PositiveIntegerField()
+    unit_amount = models.PositiveIntegerField()
+    permissions = ('view_hostingbilllineitem',)
+
+    class Meta:
+        permissions = (
+            ('view_hostingbilllineitem', 'View Monthly Hosting Bill Line Item'),
+        )
 
 
 class VMDetail(models.Model):

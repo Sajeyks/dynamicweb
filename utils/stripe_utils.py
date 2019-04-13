@@ -159,6 +159,7 @@ class StripeUtils(object):
                     'subscription_ids_csv': ','.join(
                         [line.id if line.type == 'subscription' else '' for line in invoice.lines.data]
                     ),
+                    'line_items': invoice.lines.data
                 }
                 starting_after = invoice.id
                 return_list.append(invoice_details)
