@@ -351,7 +351,7 @@ class MonthlyHostingBill(AssignPermissionsMixin, models.Model):
                     # found in the line item
                     unit_amount=item.unit_amount if hasattr(item, "unit_amount") else 0
                 )
-                line_item_instance.assign_permission(instance.customer.user)
+                line_item_instance.assign_permissions(instance.customer.user)
         instance.assign_permissions(instance.customer.user)
         return instance
 
