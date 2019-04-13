@@ -391,6 +391,28 @@ class MonthlyHostingBill(AssignPermissionsMixin, models.Model):
                 logger.debug("VM_IDS=".format(','.join(vm_ids)))
         return return_value
 
+    def get_period_start(self):
+        """
+        Return the period start of the invoice for the line items
+        :return:
+        """
+        items = HostingBillLineItem.objects.filter(monthly_hosting_bill=self)
+        if len(items) > 0:
+            return items[0].period_start
+        else:
+            return self.period_start
+
+    def get_period_end(self):
+        """
+        Return the period end of the invoice for the line items
+        :return:
+        """
+        items = HostingBillLineItem.objects.filter(monthly_hosting_bill=self)
+        if len(items) > 0:
+            return items[0].period_end
+        else:
+            return self.period_end
+
 
 class HostingBillLineItem(AssignPermissionsMixin, models.Model):
     """

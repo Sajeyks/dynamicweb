@@ -1230,7 +1230,7 @@ class InvoiceDetailView(LoginRequiredMixin, DetailView):
     context_object_name = "invoice"
     login_url = reverse_lazy('hosting:login')
     permission_required = ['view_monthlyhostingbill']
-    model = MonthlyHostingBill
+    # model = MonthlyHostingBill
 
     def get_object(self, queryset=None):
         invoice_id = self.kwargs.get('invoice_id')
@@ -1316,8 +1316,8 @@ class InvoiceDetailView(LoginRequiredMixin, DetailView):
                     return context
 
             # add context params from monthly hosting bill
-            context['period_start'] = obj.period_start
-            context['period_end'] = obj.period_end
+            context['period_start'] = obj.get_period_start()
+            context['period_end'] = obj.get_period_end()
             context['paid_at'] = obj.paid_at
             context['total_in_chf'] = obj.total_in_chf()
             context['invoice_number'] = obj.invoice_number
