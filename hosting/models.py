@@ -342,7 +342,12 @@ class MonthlyHostingBill(AssignPermissionsMixin, models.Model):
                     period_start=datetime.utcfromtimestamp(item.period.start).replace(tzinfo=pytz.utc),                                            period_end=datetime.utcfromtimestamp(item.period.end).replace(tzinfo=pytz.utc),
                     proration=item.proration,
                     quantity=item.quantity,
-                    unit_amount=item.unit_amount
+                    # Strange that line item does not have unit_amount but api
+                    # states that it is present
+                    # https://stripe.com/docs/api/invoiceitems/object#invoiceitem_object-unit_amount
+                    # So, for the time being I set the unit_amount to 0 if not
+                    # found in the line item
+                    unit_amount=item.unit_amount if hasattr(item, "unit_amount") else 0
                 )
                 line_item_instance.assign_permission(instance.customer.user)
         instance.assign_permissions(instance.customer.user)
