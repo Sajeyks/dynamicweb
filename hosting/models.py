@@ -336,7 +336,9 @@ class MonthlyHostingBill(AssignPermissionsMixin, models.Model):
                 line_item_instance = HostingBillLineItem.objects.create(
                     monthly_hosting_bill=instance,
                     amount=item.amount,
-                    description=item.description,
+                    # description seems to be set to null in the Stripe
+                    # response for an invoice
+                    description="" if item.description is None else item.description,
                     discountable=item.discountable,
                     metadata=json.dumps(item.metadata),
                     period_start=datetime.utcfromtimestamp(item.period.start).replace(tzinfo=pytz.utc),                                            period_end=datetime.utcfromtimestamp(item.period.end).replace(tzinfo=pytz.utc),
