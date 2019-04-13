@@ -685,18 +685,26 @@ if ENABLE_LOGGING:
     custom_handler_item = {
         'custom_file': {
             'level': LOG_LEVEL,
-            'class': 'logging.FileHandler',
+            'class': 'logging.handlers.RotatingFileHandler',
             'filename':
-                "{PROJECT_DIR}/{LEVEL}.log".format(
+                "{PROJECT_DIR}/logs/{LEVEL}.log".format(
                     LEVEL=LOG_LEVEL.lower(),
                     PROJECT_DIR=PROJECT_DIR
-                )
+                ),
+            'maxBytes': 1024 * 1024 * 5,
+            'backupCount': 10,
+            'formatter': 'standard',
         }
     }
     handlers_dict.update(custom_handler_item)
     LOGGING = {
         'version': 1,
         'disable_existing_loggers': False,
+        'formatters': {
+            'standard': {
+                'format': '%(asctime)s %(levelname)s %(name)s: %(message)s'
+            }
+        },
         'handlers': handlers_dict,
         'loggers': loggers_dict
     }
