@@ -35,7 +35,7 @@ class Command(BaseCommand):
 
                     all_invoices_response = stripe_utils.get_all_invoices(
                         user.stripecustomer.stripe_id,
-                        created=created_gt
+                        created_gt=created_gt
                     )
                     if all_invoices_response['error'] is not None:
                         self.stdout.write(self.style.ERROR(all_invoices_response['error']))

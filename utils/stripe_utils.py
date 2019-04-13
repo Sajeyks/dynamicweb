@@ -123,19 +123,19 @@ class StripeUtils(object):
         return card_details
 
     @handleStripeError
-    def get_all_invoices(self, customer_id, created):
+    def get_all_invoices(self, customer_id, created_gt):
         return_list = []
         has_more_invoices = True
         starting_after = False
         while has_more_invoices:
             if starting_after:
                 invoices = stripe.Invoice.list(
-                    limit=10, customer=customer_id, created=created,
+                    limit=10, customer=customer_id, created={'gt': created_gt},
                     starting_after=starting_after
                 )
             else:
                 invoices = stripe.Invoice.list(
-                    limit=10, customer=customer_id, created=created
+                    limit=10, customer=customer_id, created={'gt': created_gt}
                 )
             has_more_invoices = invoices.has_more
             for invoice in invoices.data:
