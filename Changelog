@@ -1,3 +1,6 @@
+Next:
+    * #6561: [hosting] Make monthly invoices available to customers (MR!689)
+    *        [logging] Enhance logger, Include timestamp + module name in the logging messages (MR!693)
 2.5: 2019-04-11
     * #6589: [vm creation, listing] Fix obtaining ip address/template related info from oca api call (MR!690, MR!691 and MR!692)
              [python-oca] VirtualMachinePool infoextended (https://github.com/ungleich/python-oca/pull/3)
