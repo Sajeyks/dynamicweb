@@ -330,7 +330,7 @@ class MonthlyHostingBill(AssignPermissionsMixin, models.Model):
             subscription_ids_csv=args['subscription_ids_csv'],
         )
 
-        if 'line_items' in args['line_items']:
+        if 'line_items' in args:
             line_items = args['line_items']
             for item in line_items:
                 line_item_instance = HostingBillLineItem.objects.create(
