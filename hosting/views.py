@@ -1163,7 +1163,6 @@ class InvoiceListView(LoginRequiredMixin, ListView):
     template_name = "hosting/invoices.html"
     login_url = reverse_lazy('hosting:login')
     context_object_name = "invoices"
-    model = MonthlyHostingBill
     paginate_by = 10
     ordering = '-created'
 
@@ -1200,7 +1199,22 @@ class InvoiceListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         user = self.request.user
-        self.queryset = MonthlyHostingBill.objects.filter(customer__user=user)
+        if ('user_email' in self.request.GET
+            and self.request.user.email == settings.ADMIN_EMAIL):
+            user_email = self.request.GET['user_email']
+            logger.debug(
+                "user_email = {}".format(user_email)
+            )
+            try:
+                cu = CustomUser.objects.get(email=user_email)
+            except CustomUser.DoesNotExist as dne:
+                logger.debug("User does not exist")
+                cu = self.request.user
+            self.queryset = MonthlyHostingBill.objects.filter(customer__user=cu)
+        else:
+            self.queryset = MonthlyHostingBill.objects.filter(
+                customer__user=self.request.user
+            )
         return super(InvoiceListView, self).get_queryset()
 
     @method_decorator(decorators)
