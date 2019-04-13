@@ -61,7 +61,7 @@ from .forms import (
 from .mixins import ProcessVMSelectionMixin, HostingContextMixin
 from .models import (
     HostingOrder, HostingBill, HostingPlan, UserHostingKey, VMDetail,
-    GenericProduct, MonthlyHostingBill
+    GenericProduct, MonthlyHostingBill, HostingBillLineItem
 )
 
 logger = logging.getLogger(__name__)
@@ -1179,21 +1179,24 @@ class InvoiceListView(LoginRequiredMixin, ListView):
             except CustomUser.DoesNotExist as dne:
                 logger.debug("User does not exist")
                 cu = self.request.user
-            mabs = MonthlyHostingBill.objects.filter(customer__user=cu)
+            mhbs = MonthlyHostingBill.objects.filter(customer__user=cu)
         else:
-            mabs = MonthlyHostingBill.objects.filter(
+            mhbs = MonthlyHostingBill.objects.filter(
                 customer__user=self.request.user
             )
         ips_dict = {}
-        for mab in mabs:
+        line_items_dict = {}
+        for mhb in mhbs:
             try:
-                vm_detail = VMDetail.objects.get(vm_id=mab.order.vm_id)
-                ips_dict[mab.invoice_number] = [vm_detail.ipv6, vm_detail.ipv4]
+                vm_detail = VMDetail.objects.get(vm_id=mhb.order.vm_id)
+                ips_dict[mhb.invoice_number] = [vm_detail.ipv6, vm_detail.ipv4]
+                line_items_dict[mhb.invoice_number] = HostingBillLineItem.objects.filter(monthly_hosting_bill=mhb)
             except VMDetail.DoesNotExist as dne:
-                ips_dict[mab.invoice_number] = ['--']
+                ips_dict[mhb.invoice_number] = ['--']
                 logger.debug("VMDetail for {} doesn't exist".format(
-                    mab.order.vm_id
+                    mhb.order.vm_id
                 ))
+        context['line_items'] = line_items_dict
         context['ips'] = ips_dict
         return context
 

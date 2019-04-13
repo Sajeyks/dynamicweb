@@ -30,7 +30,9 @@
                 <tr>
                     <td class="xs-td-inline" data-header="{% trans 'VM ID' %}">{{ invoice.order.vm_id }}</td>
                     <td class="xs-td-inline" data-header="{% trans 'IP Address' %}">{{ ips|get_value_from_dict:invoice.invoice_number|join:"<br/>" }}</td>
-                    <td class="xs-td-inline" data-header="{% trans 'Period' %}">{{ invoice.period_start | date:'Y-m-d' }} &mdash; {{ invoice.period_end | date:'Y-m-d' }}</td>
+                    {% with line_items|get_value_from_dict:invoice.invoice_number as line_items_to_show %}
+                    <td class="xs-td-inline" data-header="{% trans 'Period' %}">{{ line_items_to_show.period_start | date:'Y-m-d' }} &mdash; {{ line_items_to_show.period_end | date:'Y-m-d' }}</td>
+                    {% endwith %}
                     <td class="xs-td-inline" data-header="{% trans 'Amount' %}">{{ invoice.total_in_chf|floatformat:2|intcomma }}</td>
                     <td class="text-right last-td">
                         <a class="btn btn-order-detail" href="{% url 'hosting:invoices' invoice.invoice_number %}">{% trans 'See Invoice' %}</a>
