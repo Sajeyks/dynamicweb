@@ -123,6 +123,49 @@ class StripeUtils(object):
         return card_details
 
     @handleStripeError
+    def get_all_invoices(self, customer_id, created_gt):
+        return_list = []
+        has_more_invoices = True
+        starting_after = False
+        while has_more_invoices:
+            if starting_after:
+                invoices = stripe.Invoice.list(
+                    limit=10, customer=customer_id, created={'gt': created_gt},
+                    starting_after=starting_after
+                )
+            else:
+                invoices = stripe.Invoice.list(
+                    limit=10, customer=customer_id, created={'gt': created_gt}
+                )
+            has_more_invoices = invoices.has_more
+            for invoice in invoices.data:
+                invoice_details = {
+                    'created': invoice.created,
+                    'receipt_number': invoice.receipt_number,
+                    'invoice_number': invoice.number,
+                    'paid_at': invoice.status_transitions.paid_at if invoice.paid else 0,
+                    'period_start': invoice.period_start,
+                    'period_end': invoice.period_end,
+                    'billing_reason': invoice.billing_reason,
+                    'discount': invoice.discount.coupon.amount_off if invoice.discount else 0,
+                    'total': invoice.total,
+                    # to see how many line items we have in this invoice and
+                    # then later check if we have more than 1
+                    'lines_data_count': len(invoice.lines.data) if invoice.lines.data is not None else 0,
+                    'invoice_id': invoice.id,
+                    'lines_meta_data_csv': ','.join(
+                        [line.metadata.VM_ID if hasattr(line.metadata, 'VM_ID') else '' for line in invoice.lines.data]
+                    ),
+                    'subscription_ids_csv': ','.join(
+                        [line.id if line.type == 'subscription' else '' for line in invoice.lines.data]
+                    ),
+                    'line_items': invoice.lines.data
+                }
+                starting_after = invoice.id
+                return_list.append(invoice_details)
+        return return_list
+
+    @handleStripeError
     def get_cards_details_from_token(self, token):
         stripe_token = stripe.Token.retrieve(token)
         card_details = {

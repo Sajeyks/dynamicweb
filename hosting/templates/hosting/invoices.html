@@ -1,0 +1,61 @@
+{% extends "hosting/base_short.html" %}
+{% load staticfiles bootstrap3 humanize i18n custom_tags %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="dashboard-container-head">
+        <h3 class="dashboard-title-thin"><img src="{% static 'hosting/img/shopping-cart.svg' %}" class="un-icon" style="margin-top: -4px; width: 30px;"> {% trans "My Bills" %}</h3>
+        {% if messages %}
+            <div class="alert alert-warning">
+                {% for message in messages %}
+                <span>{{ message }}</span>
+                {% endfor %}
+            </div>
+        {% endif %}
+        <div class="dashboard-subtitle"></div>
+    </div>
+
+    <table class="table table-switch">
+        <thead>
+            <tr>
+                <th>{% trans "VM ID" %}</th>
+                <th>{% trans "IP Address" %}</th>
+                <th>{% trans "Period" %}</th>
+                <th>{% trans "Amount" %}</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for invoice in invoices %}
+                <tr>
+                    <td class="xs-td-inline" data-header="{% trans 'VM ID' %}">{{ invoice.order.vm_id }}</td>
+                    <td class="xs-td-inline" data-header="{% trans 'IP Address' %}">{{ ips|get_value_from_dict:invoice.invoice_number|join:"<br/>" }}</td>
+                    {% with line_items|get_value_from_dict:invoice.invoice_number as line_items_to_show %}
+                    <td class="xs-td-inline" data-header="{% trans 'Period' %}">{{ line_items_to_show.0.period_start | date:'Y-m-d' }} &mdash; {{ line_items_to_show.0.period_end | date:'Y-m-d' }}</td>
+                    {% endwith %}
+                    <td class="xs-td-inline" data-header="{% trans 'Amount' %}">{{ invoice.total_in_chf|floatformat:2|intcomma }}</td>
+                    <td class="text-right last-td">
+                        <a class="btn btn-order-detail" href="{% url 'hosting:invoices' invoice.invoice_number %}">{% trans 'See Invoice' %}</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if is_paginated %}
+        <div class="pagination">
+            <span class="page-links">
+                {% if page_obj.has_previous %}
+                    <a href="{{request.path}}?page={{ page_obj.previous_page_number }}">{% trans "previous" %}</a>
+                {% endif %}
+                <span class="page-current">
+                    {% trans "Page" %} {{ page_obj.number }} {% trans "of" %} {{ page_obj.paginator.num_pages }}.
+                </span>
+                {% if page_obj.has_next %}
+                    <a href="{{request.path}}?page={{ page_obj.next_page_number }}">{% trans "next" %}</a>
+                {% endif %}
+            </span>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

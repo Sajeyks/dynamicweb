@@ -1,8 +1,11 @@
+import json
 import logging
 import os
+import pytz
 
 from Crypto.PublicKey import RSA
 from dateutil.relativedelta import relativedelta
+from datetime import datetime
 from django.db import models
 from django.utils import timezone
 from django.utils.functional import cached_property
@@ -230,6 +233,207 @@ class HostingBill(AssignPermissionsMixin, models.Model):
         instance = cls.objects.create(customer=customer,
                                       billing_address=billing_address)
         return instance
+
+
+class MonthlyHostingBill(AssignPermissionsMixin, models.Model):
+    """
+    Corresponds to Invoice object of Stripe
+    """
+    customer = models.ForeignKey(StripeCustomer)
+    order = models.ForeignKey(HostingOrder)
+    created = models.DateTimeField(help_text="When the invoice was created")
+    receipt_number = models.CharField(
+        help_text="The receipt number that is generated on Stripe",
+        max_length=100
+    )
+    invoice_number = models.CharField(
+        help_text="The invoice number that is generated on Stripe",
+        max_length=100
+    )
+    paid_at = models.DateTimeField(help_text="Date on which the bill was paid")
+    period_start = models.DateTimeField()
+    period_end = models.DateTimeField()
+    billing_reason = models.CharField(max_length=25)
+    discount = models.PositiveIntegerField()
+    total = models.IntegerField()
+    lines_data_count = models.IntegerField()
+    invoice_id = models.CharField(unique=True, max_length=100)
+    lines_meta_data_csv = models.TextField(default="")
+    subscription_ids_csv = models.TextField(default="")
+
+    permissions = ('view_monthlyhostingbill',)
+
+    class Meta:
+        permissions = (
+            ('view_monthlyhostingbill', 'View Monthly Hosting'),
+        )
+
+    @classmethod
+    def create(cls, args):
+        # Try to infer the HostingOrder from subscription id or VM_ID
+        if len(args['subscription_ids_csv']) > 0:
+            sub_ids = [sub_id.strip() for sub_id in args['subscription_ids_csv'].split(",")]
+            if len(sub_ids) == 1:
+                args['order'] = HostingOrder.objects.get(
+                    subscription_id=sub_ids[0]
+                )
+            else:
+                logger.debug(
+                    "More than one subscriptions"
+                    "for MonthlyHostingBill {}".format(args['invoice_id'])
+                )
+                logger.debug("SUB_IDS=".format(','.join(sub_ids)))
+                logger.debug("Not importing invoices")
+                return
+        elif len(args['lines_meta_data_csv']) > 0:
+            vm_ids = [vm_id.strip() for vm_id in args['lines_meta_data_csv'].split(",")]
+            if len(vm_ids) == 1:
+                args['order'] = HostingOrder.objects.get(vm_id=vm_ids[0])
+            else:
+                logger.debug(
+                    "More than one VM_ID"
+                    "for MonthlyHostingBill {}".format(args['invoice_id'])
+                )
+                logger.debug("VM_IDS=".format(','.join(vm_ids)))
+                logger.debug("Not importing invoices")
+                return
+        else:
+            logger.debug("Neither subscription id nor vm_id available")
+            logger.debug("Can't import invoice")
+            return
+
+        instance = cls.objects.create(
+            created=datetime.utcfromtimestamp(
+                args['created']).replace(tzinfo=pytz.utc),
+            receipt_number=(
+                args['receipt_number']
+                if args['receipt_number'] is not None else ''
+            ),
+            invoice_number=(
+                args['invoice_number']
+                if args['invoice_number'] is not None else ''
+            ),
+            paid_at=datetime.utcfromtimestamp(
+                args['paid_at']).replace(tzinfo=pytz.utc),
+            period_start=datetime.utcfromtimestamp(
+                args['period_start']).replace(tzinfo=pytz.utc),
+            period_end=datetime.utcfromtimestamp(
+                args['period_end']).replace(tzinfo=pytz.utc),
+            billing_reason=args['billing_reason'],
+            discount=args['discount'],
+            total=args['total'],
+            lines_data_count=args['lines_data_count'],
+            invoice_id=args['invoice_id'],
+            lines_meta_data_csv=args['lines_meta_data_csv'],
+            customer=args['customer'],
+            order=args['order'],
+            subscription_ids_csv=args['subscription_ids_csv'],
+        )
+
+        if 'line_items' in args:
+            line_items = args['line_items']
+            for item in line_items:
+                line_item_instance = HostingBillLineItem.objects.create(
+                    monthly_hosting_bill=instance,
+                    amount=item.amount,
+                    # description seems to be set to null in the Stripe
+                    # response for an invoice
+                    description="" if item.description is None else item.description,
+                    discountable=item.discountable,
+                    metadata=json.dumps(item.metadata),
+                    period_start=datetime.utcfromtimestamp(item.period.start).replace(tzinfo=pytz.utc),                                            period_end=datetime.utcfromtimestamp(item.period.end).replace(tzinfo=pytz.utc),
+                    proration=item.proration,
+                    quantity=item.quantity,
+                    # Strange that line item does not have unit_amount but api
+                    # states that it is present
+                    # https://stripe.com/docs/api/invoiceitems/object#invoiceitem_object-unit_amount
+                    # So, for the time being I set the unit_amount to 0 if not
+                    # found in the line item
+                    unit_amount=item.unit_amount if hasattr(item, "unit_amount") else 0
+                )
+                line_item_instance.assign_permissions(instance.customer.user)
+        instance.assign_permissions(instance.customer.user)
+        return instance
+
+    def total_in_chf(self):
+        """
+        Returns amount in chf. The total amount in this model is in cents.
+        Hence we multiply it by 0.01 to obtain the result
+
+        :return:
+        """
+        return self.total * 0.01
+
+    def discount_in_chf(self):
+        """
+        Returns discount in chf.
+
+        :return:
+        """
+        return self.discount * 0.01
+
+    def get_vm_id(self):
+        """
+        Returns the VM_ID metadata if set in this MHB else returns None
+        :return:
+        """
+        return_value = None
+        if len(self.lines_meta_data_csv) > 0:
+            vm_ids = [vm_id.strip() for vm_id in
+                      self.lines_meta_data_csv.split(",")]
+            if len(vm_ids) == 1:
+                return vm_ids[0]
+            else:
+                logger.debug(
+                    "More than one VM_ID"
+                    "for MonthlyHostingBill {}".format(self.invoice_id)
+                )
+                logger.debug("VM_IDS=".format(','.join(vm_ids)))
+        return return_value
+
+    def get_period_start(self):
+        """
+        Return the period start of the invoice for the line items
+        :return:
+        """
+        items = HostingBillLineItem.objects.filter(monthly_hosting_bill=self)
+        if len(items) > 0:
+            return items[0].period_start
+        else:
+            return self.period_start
+
+    def get_period_end(self):
+        """
+        Return the period end of the invoice for the line items
+        :return:
+        """
+        items = HostingBillLineItem.objects.filter(monthly_hosting_bill=self)
+        if len(items) > 0:
+            return items[0].period_end
+        else:
+            return self.period_end
+
+
+class HostingBillLineItem(AssignPermissionsMixin, models.Model):
+    """
+    Corresponds to InvoiceItem object of Stripe
+    """
+    monthly_hosting_bill = models.ForeignKey(MonthlyHostingBill)
+    amount = models.PositiveSmallIntegerField()
+    description = models.CharField(max_length=255)
+    discountable = models.BooleanField()
+    metadata = models.CharField(max_length=128)
+    period_start = models.DateTimeField()
+    period_end = models.DateTimeField()
+    proration = models.BooleanField()
+    quantity = models.PositiveIntegerField()
+    unit_amount = models.PositiveIntegerField()
+    permissions = ('view_hostingbilllineitem',)
+
+    class Meta:
+        permissions = (
+            ('view_hostingbilllineitem', 'View Monthly Hosting Bill Line Item'),
+        )
 
 
 class VMDetail(models.Model):

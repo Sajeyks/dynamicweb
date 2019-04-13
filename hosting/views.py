@@ -61,7 +61,7 @@ from .forms import (
 from .mixins import ProcessVMSelectionMixin, HostingContextMixin
 from .models import (
     HostingOrder, HostingBill, HostingPlan, UserHostingKey, VMDetail,
-    GenericProduct
+    GenericProduct, MonthlyHostingBill, HostingBillLineItem
 )
 
 logger = logging.getLogger(__name__)
@@ -83,6 +83,19 @@ class DashboardView(LoginRequiredMixin, View):
     @method_decorator(decorators)
     def get(self, request, *args, **kwargs):
         context = self.get_context_data()
+        context['has_invoices'] = False
+        try:
+            bills = []
+            if hasattr(self.request.user, 'stripecustomer'):
+                bills = MonthlyHostingBill.objects.filter(
+                    customer=self.request.user.stripecustomer
+                )
+            if len(bills) > 0:
+                context['has_invoices'] = True
+        except MonthlyHostingBill.DoesNotExist as dne:
+            logger.error("{}'s monthly hosting bill not imported ?".format(
+                self.request.user.email
+            ))
         return render(request, self.template_name, context)
 
 
@@ -1144,6 +1157,180 @@ class OrdersHostingListView(LoginRequiredMixin, ListView):
     @method_decorator(decorators)
     def get(self, request, *args, **kwargs):
         return super(OrdersHostingListView, self).get(request, *args, **kwargs)
+
+
+class InvoiceListView(LoginRequiredMixin, ListView):
+    template_name = "hosting/invoices.html"
+    login_url = reverse_lazy('hosting:login')
+    context_object_name = "invoices"
+    paginate_by = 10
+    ordering = '-created'
+
+    def get_context_data(self, **kwargs):
+        context = super(InvoiceListView, self).get_context_data(**kwargs)
+        if ('user_email' in self.request.GET
+            and self.request.user.email == settings.ADMIN_EMAIL):
+            user_email = self.request.GET['user_email']
+            logger.debug(
+                "user_email = {}".format(user_email)
+            )
+            try:
+                cu = CustomUser.objects.get(email=user_email)
+            except CustomUser.DoesNotExist as dne:
+                logger.debug("User does not exist")
+                cu = self.request.user
+            mhbs = MonthlyHostingBill.objects.filter(customer__user=cu)
+        else:
+            mhbs = MonthlyHostingBill.objects.filter(
+                customer__user=self.request.user
+            )
+        ips_dict = {}
+        line_items_dict = {}
+        for mhb in mhbs:
+            try:
+                vm_detail = VMDetail.objects.get(vm_id=mhb.order.vm_id)
+                ips_dict[mhb.invoice_number] = [vm_detail.ipv6, vm_detail.ipv4]
+                line_items_dict[mhb.invoice_number] = HostingBillLineItem.objects.filter(monthly_hosting_bill=mhb)
+            except VMDetail.DoesNotExist as dne:
+                ips_dict[mhb.invoice_number] = ['--']
+                logger.debug("VMDetail for {} doesn't exist".format(
+                    mhb.order.vm_id
+                ))
+        context['line_items'] = line_items_dict
+        context['ips'] = ips_dict
+        return context
+
+    def get_queryset(self):
+        user = self.request.user
+        if ('user_email' in self.request.GET
+            and self.request.user.email == settings.ADMIN_EMAIL):
+            user_email = self.request.GET['user_email']
+            logger.debug(
+                "user_email = {}".format(user_email)
+            )
+            try:
+                cu = CustomUser.objects.get(email=user_email)
+            except CustomUser.DoesNotExist as dne:
+                logger.debug("User does not exist")
+                cu = self.request.user
+            self.queryset = MonthlyHostingBill.objects.filter(customer__user=cu)
+        else:
+            self.queryset = MonthlyHostingBill.objects.filter(
+                customer__user=self.request.user
+            )
+        return super(InvoiceListView, self).get_queryset()
+
+    @method_decorator(decorators)
+    def get(self, request, *args, **kwargs):
+        return super(InvoiceListView, self).get(request, *args, **kwargs)
+
+
+class InvoiceDetailView(LoginRequiredMixin, DetailView):
+    template_name = "hosting/invoice_detail.html"
+    context_object_name = "invoice"
+    login_url = reverse_lazy('hosting:login')
+    permission_required = ['view_monthlyhostingbill']
+    # model = MonthlyHostingBill
+
+    def get_object(self, queryset=None):
+        invoice_id = self.kwargs.get('invoice_id')
+        try:
+            invoice_obj = MonthlyHostingBill.objects.get(
+                invoice_number=invoice_id
+            )
+            logger.debug("Found MHB for id {invoice_id}".format(
+                invoice_id=invoice_id
+            ))
+            if self.request.user.has_perm(
+                    self.permission_required[0], invoice_obj
+            ) or self.request.user.email == settings.ADMIN_EMAIL:
+                logger.debug("User has permission to invoice_obj")
+            else:
+                logger.error("User does not have permission to access")
+                invoice_obj = None
+        except MonthlyHostingBill.DoesNotExist as dne:
+            logger.debug("MHB not found for id {invoice_id}".format(
+                invoice_id=invoice_id
+            ))
+            invoice_obj = None
+        return invoice_obj
+
+    def get_context_data(self, **kwargs):
+        # Get context
+        context = super(InvoiceDetailView, self).get_context_data(**kwargs)
+        obj = self.get_object()
+
+        if obj is not None:
+            vm_id = obj.get_vm_id()
+            try:
+                # Try to get vm details from database
+                vm_detail = VMDetail.objects.get(vm_id=vm_id)
+                context['vm'] = vm_detail.__dict__
+                context['vm']['name'] = '{}-{}'.format(
+                    context['vm']['configuration'], context['vm']['vm_id'])
+                price, vat, vat_percent, discount = get_vm_price_with_vat(
+                    cpu=context['vm']['cores'],
+                    ssd_size=context['vm']['disk_size'],
+                    memory=context['vm']['memory'],
+                    pricing_name=(obj.order.vm_pricing.name
+                                  if obj.order.vm_pricing else 'default')
+                )
+                context['vm']['vat'] = vat
+                context['vm']['price'] = price
+                context['vm']['discount'] = discount
+                context['vm']['vat_percent'] = vat_percent
+                context['vm']['total_price'] = price + vat - discount['amount']
+            except VMDetail.DoesNotExist:
+                # fallback to get it from the infrastructure
+                try:
+                    manager = OpenNebulaManager(
+                        email=self.request.email,
+                        password=self.request.password
+                    )
+                    vm = manager.get_vm(vm_id)
+                    context['vm'] = VirtualMachineSerializer(vm).data
+                    price, vat, vat_percent, discount = get_vm_price_with_vat(
+                        cpu=context['vm']['cores'],
+                        ssd_size=context['vm']['disk_size'],
+                        memory=context['vm']['memory'],
+                        pricing_name=(obj.order.vm_pricing.name
+                                      if obj.order.vm_pricing else 'default')
+                    )
+                    context['vm']['vat'] = vat
+                    context['vm']['price'] = price
+                    context['vm']['discount'] = discount
+                    context['vm']['vat_percent'] = vat_percent
+                    context['vm']['total_price'] = (
+                            price + vat - discount['amount']
+                    )
+                except WrongIdError:
+                    logger.error("WrongIdError while accessing "
+                                 "invoice {}".format(obj.invoice_id))
+                    messages.error(
+                        self.request,
+                        _('The VM you are looking for is unavailable at the '
+                          'moment. Please contact Data Center Light support.')
+                    )
+                    self.kwargs['error'] = 'WrongIdError'
+                    context['error'] = 'WrongIdError'
+                    return context
+
+            # add context params from monthly hosting bill
+            context['period_start'] = obj.get_period_start()
+            context['period_end'] = obj.get_period_end()
+            context['paid_at'] = obj.paid_at
+            context['total_in_chf'] = obj.total_in_chf()
+            context['invoice_number'] = obj.invoice_number
+            context['discount_on_stripe'] = obj.discount_in_chf()
+            return context
+        else:
+            raise Http404
+
+    @method_decorator(decorators)
+    def get(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        context = self.get_context_data(object=self.get_object())
+        return self.render_to_response(context)
 
 
 class OrdersHostingDeleteView(LoginRequiredMixin, DeleteView):
