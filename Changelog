@@ -1,5 +1,5 @@
-Next:
-    * #6561: [hosting] Make monthly invoices available to customers (MR!689)
+2.5.1: 2019-04-17
+    * #6561: [hosting] Preparation for monthly invoices for customers (MR!689)
     *        [logging] Enhance logger, Include timestamp + module name in the logging messages (MR!693)
 2.5: 2019-04-11
     * #6589: [vm creation, listing] Fix obtaining ip address/template related info from oca api call (MR!690, MR!691 and MR!692)
