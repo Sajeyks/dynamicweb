@@ -282,7 +282,7 @@ class MonthlyHostingBill(AssignPermissionsMixin, models.Model):
                     "More than one subscriptions"
                     "for MonthlyHostingBill {}".format(args['invoice_id'])
                 )
-                logger.debug("SUB_IDS=".format(','.join(sub_ids)))
+                logger.debug("SUB_IDS={}".format(','.join(sub_ids)))
                 logger.debug("Not importing invoices")
                 return
         elif len(args['lines_meta_data_csv']) > 0:
@@ -294,7 +294,7 @@ class MonthlyHostingBill(AssignPermissionsMixin, models.Model):
                     "More than one VM_ID"
                     "for MonthlyHostingBill {}".format(args['invoice_id'])
                 )
-                logger.debug("VM_IDS=".format(','.join(vm_ids)))
+                logger.debug("VM_IDS={}".format(','.join(vm_ids)))
                 logger.debug("Not importing invoices")
                 return
         else:
