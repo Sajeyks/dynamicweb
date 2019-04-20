@@ -1,3 +1,5 @@
+2.5.2: 2019-04-20
+    * #6561: [bills] Fix fetch_stripe_bills to import bills containing multiple line items belonging to same subscription (MR!695)
 2.5.1: 2019-04-17
     * #6561: [hosting] Preparation for monthly invoices for customers (MR!689)
     *        [logging] Enhance logger, Include timestamp + module name in the logging messages (MR!693)
