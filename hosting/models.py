@@ -10,7 +10,7 @@ from django.db import models
 from django.utils import timezone
 from django.utils.functional import cached_property
 
-from datacenterlight.models import VMPricing, VMTemplate
+from datacenterlight.models import VMPricing, VMTemplate, StripePlan
 from membership.models import StripeCustomer, CustomUser
 from utils.mixins import AssignPermissionsMixin
 from utils.models import BillingAddress
@@ -431,7 +431,10 @@ class HostingBillLineItem(AssignPermissionsMixin, models.Model):
     """
     Corresponds to InvoiceItem object of Stripe
     """
-    monthly_hosting_bill = models.ForeignKey(MonthlyHostingBill)
+    monthly_hosting_bill = models.ForeignKey(MonthlyHostingBill,
+                                             on_delete=models.CASCADE)
+    stripe_plan = models.ForeignKey(StripePlan, null=True,
+                                    on_delete=models.CASCADE)
     amount = models.PositiveSmallIntegerField()
     description = models.CharField(max_length=255)
     discountable = models.BooleanField()
