@@ -1,4 +1,5 @@
 import logging
+import re
 import stripe
 from django.conf import settings
 from datacenterlight.models import StripePlan
@@ -375,6 +376,32 @@ class StripeUtils(object):
             return stripe_plan_id_string_with_price
         else:
             return stripe_plan_id_string
+
+    @staticmethod
+    def get_vm_config_from_stripe_id(stripe_id):
+        """
+        Given a string like "dcl-v1-cpu-2-ram-5gb-ssd-10gb" return different
+        configuration params as a dict
+
+        :param stripe_id|str
+        :return: dict
+        """
+        pattern = re.compile(r'^dcl-v(\d+)-cpu-(\d+)-ram-(\d+\.?\d*)gb-ssd-(\d+)gb-?(\d*\.?\d*)(chf)?$')
+        match_res = pattern.match(stripe_id)
+        if match_res is not None:
+            price = None
+            try:
+                price=match_res.group(5)
+            except IndexError as ie:
+                logger.debug("Did not find price in {}".format(stripe_id))
+            return {
+                'version': match_res.group(1),
+                'cores': match_res.group(2),
+                'ram': match_res.group(3),
+                'ssd': match_res.group(4),
+                'price': price
+            }
+
 
     @staticmethod
     def get_stripe_plan_name(cpu, memory, disk_size, price):
