@@ -397,7 +397,7 @@ class MonthlyHostingBill(AssignPermissionsMixin, models.Model):
                     "More than one VM_ID"
                     "for MonthlyHostingBill {}".format(self.invoice_id)
                 )
-                logger.debug("VM_IDS=".format(','.join(vm_ids)))
+                logger.debug("VM_IDS={}".format(','.join(vm_ids)))
         return return_value
 
     def get_period_start(self):
