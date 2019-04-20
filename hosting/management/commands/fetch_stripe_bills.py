@@ -42,9 +42,13 @@ class Command(BaseCommand):
                         exit(1)
                     all_invoices = all_invoices_response['response_object']
                     self.stdout.write(self.style.SUCCESS("Obtained {} invoices".format(len(all_invoices) if all_invoices is not None else 0)))
+                    num_invoice_created = 0
                     for invoice in all_invoices:
                         invoice['customer'] = user.stripecustomer
-                        MonthlyHostingBill.create(invoice)
+                        num_invoice_created += 1 if MonthlyHostingBill.create(invoice) is not None else logger.error("Did not import invoice for %s" % str(invoice))
+                    self.stdout.write(
+                        self.style.SUCCESS("Number of invoices imported = %s" % num_invoice_created)
+                    )
                 else:
                     self.stdout.write(self.style.SUCCESS(
                         'Customer email %s does not have a stripe customer.' % email))
