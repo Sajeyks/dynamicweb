@@ -93,7 +93,7 @@
                     <table>
                         <tr><th style="width: 35%">Product</th><th style="width: 20%">Period</th><th style="text-align: center; width: 10%">Qty</th><th align="center"  style="width: 10%; text-align: center;">Unit Price</th><th  style="width: 10%; text-align: right;">Total</th></tr>
                         {% for line_item in line_items %}
-                        <tr class="border_bottom"><td>{% if line_item.description|length > 0 %}{{line_item.description}}{% else %}{{line_item.get_item_detail_str|safe}}{% endif %}</td><td>{{ line_item.period_start | date:'Y-m-d' }} &mdash; {{ line_item.period_end | date:'Y-m-d' }}</td><td align="center">{{line_item.quantity}}</td><td align="center">{{line_item.unit_amount_in_chf}}</td><td align="right">{{line_item.amount_in_chf}}</td></tr>
+                        <tr class="border_bottom"><td>{% if line_item.description|length > 0 %}{{line_item.description}}{% elif line_item.stripe_plan.stripe_plan_name|length > 0 %}{{line_item.stripe_plan.stripe_plan_name}}{% else %}{{line_item.get_item_detail_str|safe}}{% endif %}</td><td>{{ line_item.period_start | date:'Y-m-d' }} &mdash; {{ line_item.period_end | date:'Y-m-d' }}</td><td align="center">{{line_item.quantity}}</td><td align="center">{{line_item.unit_amount_in_chf}}</td><td align="right">{{line_item.amount_in_chf}}</td></tr>
 
                         {% endfor %}
                         <tr class="grand-total-padding"><td colspan="4">Grand Total</td><td align="right">{{total_in_chf}}</td></tr>
