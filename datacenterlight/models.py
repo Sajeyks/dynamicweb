@@ -103,6 +103,9 @@ class StripePlan(models.Model):
     A model to store Data Center Light's created Stripe plans
     """
     stripe_plan_id = models.CharField(max_length=256, null=True)
+    stripe_plan_name = models.CharField(max_length=512, default="", null=True)
+    amount = models.PositiveIntegerField(default=0)
+    interval = models.CharField(max_length=128, default="", null=True)
 
     @classmethod
     def create(cls, stripe_plan_id):
