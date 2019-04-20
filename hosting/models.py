@@ -513,10 +513,12 @@ class HostingBillLineItem(AssignPermissionsMixin, models.Model):
             vm_conf = StripeUtils.get_vm_config_from_stripe_id(
                 self.stripe_plan.stripe_plan_id
             )
-            item_detail += ("<b>Cores</b>: {}<br/><b>RAM</b>: {} GB<br/>"
-                            "<b>SSD</b>: {} GB<br/>").format(
-                vm_conf['cores'], int(float(vm_conf['ram'])), vm_conf['ssd']
-            )
+            if vm_conf is not None:
+                item_detail += ("<b>Cores</b>: {}<br/><b>RAM</b>: {} GB<br/>"
+                                "<b>SSD</b>: {} GB<br/>").format(
+                    vm_conf['cores'], int(float(vm_conf['ram'])),
+                    vm_conf['ssd']
+                )
         return item_detail
 
 class VMDetail(models.Model):
