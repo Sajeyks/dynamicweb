@@ -348,7 +348,7 @@ class MonthlyHostingBill(AssignPermissionsMixin, models.Model):
                     stripe_plan_id = item.plan.id
                     try:
                         stripe_plan = StripePlan.objects.get(
-                            stripe_plan_name=stripe_plan_id
+                            stripe_plan_id=stripe_plan_id
                         )
                     except StripePlan.DoesNotExist as dne:
                         logger.error(
