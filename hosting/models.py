@@ -473,6 +473,51 @@ class HostingBillLineItem(AssignPermissionsMixin, models.Model):
             ('view_hostingbilllineitem', 'View Monthly Hosting Bill Line Item'),
         )
 
+    def amount_in_chf(self):
+        """
+        Returns amount in chf. The amount in this model is in cents (as in
+        Stripe). Hence we multiply it by 0.01 to obtain the result
+
+        :return:
+        """
+        return self.amount * 0.01
+
+    def unit_amount_in_chf(self):
+        """
+        Returns unit amount in chf. If its 0, we obtain it from amount and
+        quantity.
+
+        :return:
+        """
+        if self.unit_amount == 0:
+            return round((self.amount / self.quantity) * 0.01, 2)
+        else:
+            return self.unit_amount * 0.01
+
+    def get_item_detail_str(self):
+        """
+        Returns line item html string representation
+        :return:
+        """
+        item_detail = ""
+        if self.metadata is not None and len(self.metadata) > 0:
+            try:
+                vm_dict = json.loads(self.metadata)
+                item_detail = "VM ID: {}<br/>".format(vm_dict["VM_ID"])
+            except ValueError as ve:
+                logger.error(
+                    "Could not parse VM in metadata {}. Detail {}".format(
+                        self.metadata, str(ve)
+                    )
+                )
+            vm_conf = StripeUtils.get_vm_config_from_stripe_id(
+                self.stripe_plan.stripe_plan_id
+            )
+            item_detail += ("<b>Cores</b>: {}<br/><b>RAM</b>: {} GB<br/>"
+                            "<b>SSD</b>: {} GB<br/>").format(
+                vm_conf['cores'], int(float(vm_conf['ram'])), vm_conf['ssd']
+            )
+        return item_detail
 
 class VMDetail(models.Model):
     user = models.ForeignKey(CustomUser)

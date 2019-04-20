@@ -1284,8 +1284,8 @@ class InvoiceDetailView(LoginRequiredMixin, DetailView):
                 # fallback to get it from the infrastructure
                 try:
                     manager = OpenNebulaManager(
-                        email=self.request.email,
-                        password=self.request.password
+                        email=self.request.user.email,
+                        password=self.request.user.password
                     )
                     vm = manager.get_vm(vm_id)
                     context['vm'] = VirtualMachineSerializer(vm).data
@@ -1322,6 +1322,9 @@ class InvoiceDetailView(LoginRequiredMixin, DetailView):
             context['total_in_chf'] = obj.total_in_chf()
             context['invoice_number'] = obj.invoice_number
             context['discount_on_stripe'] = obj.discount_in_chf()
+            if obj.lines_data_count > 1:
+                # special case, we pass the details of each of the line items
+                context['line_items'] = obj.hostingbilllineitem_set.all()
             return context
         else:
             raise Http404
