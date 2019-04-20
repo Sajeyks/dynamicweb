@@ -1284,8 +1284,8 @@ class InvoiceDetailView(LoginRequiredMixin, DetailView):
                 # fallback to get it from the infrastructure
                 try:
                     manager = OpenNebulaManager(
-                        email=self.request.email,
-                        password=self.request.password
+                        email=self.request.user.email,
+                        password=self.request.user.password
                     )
                     vm = manager.get_vm(vm_id)
                     context['vm'] = VirtualMachineSerializer(vm).data
