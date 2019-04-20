@@ -139,6 +139,14 @@ class StripeUtils(object):
                 )
             has_more_invoices = invoices.has_more
             for invoice in invoices.data:
+                sub_ids = []
+                for line in invoice.lines.data:
+                    if line.type == 'subscription':
+                        sub_ids.append(line.id)
+                    elif line.type == 'invoiceitem':
+                        sub_ids.append(line.subscription)
+                    else:
+                        sub_ids.append('')
                 invoice_details = {
                     'created': invoice.created,
                     'receipt_number': invoice.receipt_number,
@@ -156,9 +164,7 @@ class StripeUtils(object):
                     'lines_meta_data_csv': ','.join(
                         [line.metadata.VM_ID if hasattr(line.metadata, 'VM_ID') else '' for line in invoice.lines.data]
                     ),
-                    'subscription_ids_csv': ','.join(
-                        [line.id if line.type == 'subscription' else '' for line in invoice.lines.data]
-                    ),
+                    'subscription_ids_csv': ','.join(sub_ids),
                     'line_items': invoice.lines.data
                 }
                 starting_after = invoice.id
