@@ -309,7 +309,7 @@ class MonthlyHostingBill(AssignPermissionsMixin, models.Model):
         else:
             logger.debug("Neither subscription id nor vm_id available")
             logger.debug("Can't import invoice")
-            return
+            return None
 
         instance = cls.objects.create(
             created=datetime.utcfromtimestamp(
