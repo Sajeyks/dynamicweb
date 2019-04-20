@@ -273,10 +273,19 @@ class MonthlyHostingBill(AssignPermissionsMixin, models.Model):
         # Try to infer the HostingOrder from subscription id or VM_ID
         if len(args['subscription_ids_csv']) > 0:
             sub_ids = [sub_id.strip() for sub_id in args['subscription_ids_csv'].split(",")]
-            if len(sub_ids) == 1:
-                args['order'] = HostingOrder.objects.get(
-                    subscription_id=sub_ids[0]
-                )
+            set_sub_ids = set(sub_ids)
+            if len(set_sub_ids) == 1:
+                # the multiple line items belong to the same subscription
+                sub_id = set_sub_ids.pop()
+                try:
+                    args['order'] = HostingOrder.objects.get(
+                        subscription_id=sub_id
+                    )
+                except HostingOrder.DoesNotExist as dne:
+                    logger.error("Hosting order for {} doesn't exist".format(
+                        sub_id
+                    ))
+                    args['order'] = None
             else:
                 logger.debug(
                     "More than one subscriptions"
@@ -284,7 +293,7 @@ class MonthlyHostingBill(AssignPermissionsMixin, models.Model):
                 )
                 logger.debug("SUB_IDS={}".format(','.join(sub_ids)))
                 logger.debug("Not importing invoices")
-                return
+                return None
         elif len(args['lines_meta_data_csv']) > 0:
             vm_ids = [vm_id.strip() for vm_id in args['lines_meta_data_csv'].split(",")]
             if len(vm_ids) == 1:
@@ -296,7 +305,7 @@ class MonthlyHostingBill(AssignPermissionsMixin, models.Model):
                 )
                 logger.debug("VM_IDS={}".format(','.join(vm_ids)))
                 logger.debug("Not importing invoices")
-                return
+                return None
         else:
             logger.debug("Neither subscription id nor vm_id available")
             logger.debug("Can't import invoice")
