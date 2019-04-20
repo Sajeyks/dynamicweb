@@ -342,6 +342,27 @@ class MonthlyHostingBill(AssignPermissionsMixin, models.Model):
         if 'line_items' in args:
             line_items = args['line_items']
             for item in line_items:
+                stripe_plan = None
+                if item.type == "subscription" or item.type == "invoiceitem":
+                    # Check stripe plan and prepare it for linking to bill item
+                    stripe_plan_id = item.plan.id
+                    try:
+                        stripe_plan = StripePlan.objects.get(
+                            stripe_plan_name=stripe_plan_id
+                        )
+                    except StripePlan.DoesNotExist as dne:
+                        logger.error(
+                            "StripePlan %s doesn't exist" % stripe_plan_id
+                        )
+                        if stripe_plan_id is not None:
+                            # Create Stripe Plan because we don't have it
+                            stripe_plan = StripePlan.objects.create(
+                                stripe_plan_id=stripe_plan_id,
+                                stripe_plan_name=item.plan.name,
+                                amount=item.plan.amount,
+                                interval=item.plan.interval
+                            )
+                            logger.debug("Creatd StripePlan " + stripe_plan_id)
                 line_item_instance = HostingBillLineItem.objects.create(
                     monthly_hosting_bill=instance,
                     amount=item.amount,
@@ -358,7 +379,8 @@ class MonthlyHostingBill(AssignPermissionsMixin, models.Model):
                     # https://stripe.com/docs/api/invoiceitems/object#invoiceitem_object-unit_amount
                     # So, for the time being I set the unit_amount to 0 if not
                     # found in the line item
-                    unit_amount=item.unit_amount if hasattr(item, "unit_amount") else 0
+                    unit_amount=item.unit_amount if hasattr(item, "unit_amount") else 0,
+                    stripe_plan=stripe_plan
                 )
                 line_item_instance.assign_permissions(instance.customer.user)
         instance.assign_permissions(instance.customer.user)
