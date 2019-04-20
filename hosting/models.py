@@ -390,14 +390,18 @@ class MonthlyHostingBill(AssignPermissionsMixin, models.Model):
         if len(self.lines_meta_data_csv) > 0:
             vm_ids = [vm_id.strip() for vm_id in
                       self.lines_meta_data_csv.split(",")]
-            if len(vm_ids) == 1:
-                return vm_ids[0]
+            unique_vm_ids=set(vm_ids)
+            unique_vm_ids.discard("")
+            if len(unique_vm_ids) == 1:
+                vm_id = unique_vm_ids.pop()
+                logger.debug("Getting invoice for {}".format(vm_id))
+                return vm_id
             else:
                 logger.debug(
                     "More than one VM_ID"
                     "for MonthlyHostingBill {}".format(self.invoice_id)
                 )
-                logger.debug("VM_IDS={}".format(','.join(vm_ids)))
+                logger.debug("VM_IDS={}".format(unique_vm_ids))
         return return_value
 
     def get_period_start(self):
