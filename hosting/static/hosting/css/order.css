@@ -113,3 +113,16 @@
 .dcl-place-order-text {
   color: #808080;
 }
+
+table {
+  border-collapse: collapse;
+}
+
+tr.border_bottom td {
+  border-bottom:1pt solid #eee;
+}
+
+tr.grand-total-padding td {
+    padding-top: 10px;
+    font-weight: bold;
+}
