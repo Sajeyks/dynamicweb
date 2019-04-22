@@ -500,7 +500,8 @@ class HostingBillLineItem(AssignPermissionsMixin, models.Model):
         :return:
         """
         item_detail = ""
-        if self.metadata is not None and len(self.metadata) > 0:
+        # metadata is a dict; a dict with nothing has two chars at least {}
+        if self.metadata is not None and len(self.metadata) > 2:
             try:
                 vm_dict = json.loads(self.metadata)
                 item_detail = "VM ID: {}<br/>".format(vm_dict["VM_ID"])

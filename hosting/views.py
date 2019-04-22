@@ -1185,7 +1185,7 @@ class InvoiceListView(LoginRequiredMixin, ListView):
                 customer__user=self.request.user
             )
         ips_dict = {}
-        line_items_dict = {}
+        line_item_period_dict = {}
         for mhb in mhbs:
             try:
                 vm_detail = VMDetail.objects.get(vm_id=mhb.order.vm_id)
@@ -1193,17 +1193,18 @@ class InvoiceListView(LoginRequiredMixin, ListView):
                 all_line_items = HostingBillLineItem.objects.filter(monthly_hosting_bill=mhb)
                 for line_item in all_line_items:
                     if line_item.get_item_detail_str() != "":
-                        context['period_start'] = line_item.period_start
-                        context['period_end'] = line_item.period_end
+                        line_item_period_dict[mhb.invoice_number] = {
+                            "period_start": line_item.period_start,
+                            "period_end": line_item.period_end
+                        }
                         break
-                line_items_dict[mhb.invoice_number] = all_line_items
             except VMDetail.DoesNotExist as dne:
                 ips_dict[mhb.invoice_number] = ['--']
                 logger.debug("VMDetail for {} doesn't exist".format(
                     mhb.order.vm_id
                 ))
-        context['line_items'] = line_items_dict
         context['ips'] = ips_dict
+        context['period'] = line_item_period_dict
         return context
 
     def get_queryset(self):
