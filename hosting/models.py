@@ -521,6 +521,7 @@ class HostingBillLineItem(AssignPermissionsMixin, models.Model):
                 )
         return item_detail
 
+
 class VMDetail(models.Model):
     user = models.ForeignKey(CustomUser)
     vm_id = models.IntegerField(default=0)

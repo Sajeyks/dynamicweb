@@ -1190,7 +1190,13 @@ class InvoiceListView(LoginRequiredMixin, ListView):
             try:
                 vm_detail = VMDetail.objects.get(vm_id=mhb.order.vm_id)
                 ips_dict[mhb.invoice_number] = [vm_detail.ipv6, vm_detail.ipv4]
-                line_items_dict[mhb.invoice_number] = HostingBillLineItem.objects.filter(monthly_hosting_bill=mhb)
+                all_line_items = HostingBillLineItem.objects.filter(monthly_hosting_bill=mhb)
+                for line_item in all_line_items:
+                    if line_item.get_item_detail_str() != "":
+                        context['period_start'] = line_item.period_start
+                        context['period_end'] = line_item.period_end
+                        break
+                line_items_dict[mhb.invoice_number] = all_line_items
             except VMDetail.DoesNotExist as dne:
                 ips_dict[mhb.invoice_number] = ['--']
                 logger.debug("VMDetail for {} doesn't exist".format(
