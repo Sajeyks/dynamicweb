@@ -67,10 +67,10 @@ class Command(BaseCommand):
                                      "not exist".format(email))
                         sys.exit(1)
                     stripe_customer = cus_user.stripecustomer
-                    del_response = stripe.Customer.delete(
+                    c = stripe.Customer.retrieve(
                         stripe_customer.stripe_id
                     )
-                    if del_response.deleted:
+                    if c.delete():
                         logger.debug(
                             "StripeCustomer {} associated with {} deleted"
                             "".format(stripe_customer.stripe_id, email)
