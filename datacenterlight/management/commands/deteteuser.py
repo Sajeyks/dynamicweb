@@ -1,4 +1,5 @@
 import logging
+import oca
 import sys
 import stripe
 
@@ -7,6 +8,7 @@ from membership.models import CustomUser
 from hosting.models import (
     HostingOrder, HostingBill, VMDetail, UserCardDetail, UserHostingKey
 )
+from opennebula_api.models import OpenNebulaManager
 logger = logging.getLogger(__name__)
 
 
@@ -123,6 +125,13 @@ class Command(BaseCommand):
 
                     # delete CustomUesr
                     cus_user.delete()
+
+                    # remove user from OpenNebula
+                    manager = OpenNebulaManager()
+                    manager.oneadmin_client.call(
+                        oca.User.METHODS['delete'], email
+                    )
+
                     logger.debug("Deleted {} SUCCESSFULLY.".format(email))
         except Exception as e:
             print(" *** Error occurred. Details {}".format(str(e)))
