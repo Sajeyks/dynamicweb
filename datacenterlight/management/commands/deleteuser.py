@@ -70,7 +70,8 @@ class Command(BaseCommand):
                     c = stripe.Customer.retrieve(
                         stripe_customer.stripe_id
                     )
-                    if c.delete():
+                    cus_delete_obj = c.delete()
+                    if cus_delete_obj.deleted:
                         logger.debug(
                             "StripeCustomer {} associated with {} deleted"
                             "".format(stripe_customer.stripe_id, email)
@@ -87,10 +88,8 @@ class Command(BaseCommand):
                         vm_ids.append(order.vm_id)
                         # Delete Billing Address
                         order.billing_address.delete()
-
                         # Delete Order Detail
                         order.order_detail.delete()
-
                         # Delete order
                         order.delete()
 
@@ -105,17 +104,19 @@ class Command(BaseCommand):
 
                     # delete VMDetail
                     for vm_id in vm_ids:
-                        VMDetail.objects.get(vm_id=vm_id)
+                        vm_detail = VMDetail.objects.get(vm_id=vm_id)
+                        vm_detail.delete()
 
                     # delete UserCardDetail
-                    ucd = UserCardDetail.objects.filter(
-                        customer=stripe_customer.id
+                    ucds = UserCardDetail.objects.filter(
+                        stripe_customer=stripe_customer
                     )
-                    ucd.delete()
+                    for ucd in ucds:
+                        ucd.delete()
 
                     # delete UserHostingKey
                     uhks = UserHostingKey.objects.filter(
-                        user=cus_user.id
+                        user=cus_user
                     )
                     for uhk in uhks:
                         uhk.delete()
