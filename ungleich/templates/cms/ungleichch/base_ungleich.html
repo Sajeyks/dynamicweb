@@ -9,7 +9,7 @@
     <meta name="author" content="ungleich glarus ag">
     <title>
       {% block title %}
-      {% page_attribute "page_title" %}
+      {% if request.GET.page_title %}{{request.GET.page_title}}{% else %}{% page_attribute "page_title" %}{% endif %}
       {% endblock %}
     </title>
     {% addtoblock "external-css" %}
