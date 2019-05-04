@@ -1,3 +1,5 @@
+2.5.4: 2019-05-04
+    * #6124: [blog] Allow setting title, subtitle of the blog page by passing GET params (MR!698)
 2.5.3: 2019-04-20
     * #6561: [bills] Show mutiple line items in the invoice details (MR!697)
     * #6561: [bills] Link line item to a Stripe Plan (MR!697)
