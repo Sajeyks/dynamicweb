@@ -124,7 +124,7 @@ class Command(BaseCommand):
                     # delete stripe customer
                     stripe_customer.delete()
 
-                    # delete CustomUesr
+                    # delete CustomUser
                     cus_user.delete()
 
                     # remove user from OpenNebula
