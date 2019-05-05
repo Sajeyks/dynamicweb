@@ -1,3 +1,5 @@
+2.5.6: 2019-05-05
+    *        [blog] Check if the blog page is IPv6.Blog and load header image accordingly
 2.5.5: 2019-05-04
     *        [blog] Use modified djangocms_blog module to not show "Category - ... " (MR!699)
 2.5.4: 2019-05-04
