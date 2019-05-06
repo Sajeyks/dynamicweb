@@ -213,8 +213,11 @@ class UserHostingKey(models.Model):
         return private_key, public_key
 
     def delete(self,*args,**kwargs):
-        if os.path.isfile(self.private_key.path):
+        if bool(self.private_key) and os.path.isfile(self.private_key.path):
+            logger.debug("Removing private key {}".format(self.private_key.path))
             os.remove(self.private_key.path)
+        else:
+            logger.debug("No private_key to remove")
 
         super(UserHostingKey, self).delete(*args,**kwargs)
 
