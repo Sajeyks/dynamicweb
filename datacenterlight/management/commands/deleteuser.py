@@ -89,33 +89,33 @@ class Command(BaseCommand):
 
                         # Delete Billing Address
                         if order.billing_address is not None:
-                            order.billing_address.delete()
                             logger.debug(
                                 "Billing Address {} associated with {} deleted"
                                 "".format(order.billing_address.id, email)
                             )
+                            order.billing_address.delete()
                         else:
                             logger.error(
                                 "Error while deleting the billing_address")
 
                         # Delete Order Detail
                         if order.order_detail is not None:
-                            order.order_detail.delete()
                             logger.debug(
                                 "Order Detail {} associated with {} deleted"
                                 "".format(order.order_detail.id, email)
                             )
+                            order.order_detail.delete()
                         else:
                             logger.error(
                                 "Error while deleting the order_detail. None")
 
                         # Delete order
                         if order is not None:
-                            order.delete()
                             logger.debug(
                                 "Order {} associated with {} deleted"
                                 "".format(order.id, email)
                             )
+                            order.delete()
                         else:
                             logger.error(
                                 "Error while deleting the Order")
@@ -127,21 +127,21 @@ class Command(BaseCommand):
                     # delete hosting bills
                     for bill in hosting_bills:
                         if bill.billing_address is not None:
-                            bill.billing_address.delete()
                             logger.debug(
                                 "HostingBills billing address {} associated with {} deleted"
                                 "".format(bill.billing_address.id, email)
                             )
+                            bill.billing_address.delete()
                         else:
                             logger.error(
                                 "Error while deleting the HostingBill's Billing address")
 
                         if bill is not None:
-                            bill.delete()
                             logger.debug(
                                 "HostingBill {} associated with {} deleted"
                                 "".format(bill.id, email)
                             )
+                            bill.delete()
                         else:
                             logger.error(
                                 "Error while deleting the HostingBill")
@@ -150,11 +150,11 @@ class Command(BaseCommand):
                     for vm_id in vm_ids:
                         vm_detail = VMDetail.objects.get(vm_id=vm_id)
                         if vm_detail is not None:
-                            vm_detail.delete()
                             logger.debug(
                                 "vm_detail {} associated with {} deleted"
                                 "".format(vm_detail.id, email)
                             )
+                            vm_detail.delete()
                         else:
                             logger.error(
                                 "Error while deleting the vm_detail")
@@ -165,11 +165,11 @@ class Command(BaseCommand):
                     )
                     for ucd in ucds:
                         if ucd is not None:
-                            ucd.delete()
                             logger.debug(
                                 "User Card Detail {} associated with {} deleted"
                                 "".format(ucd.id, email)
                             )
+                            ucd.delete()
                         else:
                             logger.error(
                                 "Error while deleting the User Card Detail")
