@@ -451,10 +451,10 @@ USE_X_FORWARDED_HOST = True
 BOOTSTRAP3 = {
 
     # The URL to the jQuery JavaScript file
-    'jquery_url': '//code.jquery.com/jquery.min.js',
+    'jquery_url': '%sdatacenterlight/js/jquery-1.11.1.min.js' % STATIC_URL,
 
     # The Bootstrap base URL
-    'base_url': '//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/',
+    'base_url': '%sdatacenterlight/bootstrap-3.3.4/' % STATIC_URL,
 
     # The complete URL to the Bootstrap CSS file
     # (None means derive it from base_url)
