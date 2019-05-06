@@ -4,7 +4,7 @@ import sys
 import stripe
 
 from django.core.management.base import BaseCommand
-from membership.models import CustomUser
+from membership.models import CustomUser, DeletedUser
 from hosting.models import (
     HostingOrder, HostingBill, VMDetail, UserCardDetail, UserHostingKey
 )
@@ -124,14 +124,32 @@ class Command(BaseCommand):
                     # delete stripe customer
                     stripe_customer.delete()
 
+                    # add user to deleteduser
+                    DeletedUser.objects.create(
+                        email=cus_user.email, name=cus_user.name,
+                        user_id = cus_user.id
+                    )
+
                     # delete CustomUser
                     cus_user.delete()
 
                     # remove user from OpenNebula
                     manager = OpenNebulaManager()
-                    manager.oneadmin_client.call(
-                        oca.User.METHODS['delete'], email
-                    )
+                    user_pool = manager._get_user_pool()
+                    on_user = user_pool.get_by_name(email)
+                    if on_user.id > 0:
+                        logger.debug(
+                            "Deleting user {} => ID={} from opennebula".format(
+                                email, on_user.id)
+                        )
+                        manager.oneadmin_client.call(
+                            oca.User.METHODS['delete'], on_user.id
+                        )
+                    else:
+                        logger.error(
+                            "User not found with email {}. "
+                            "Not doing anything".format(email)
+                        )
 
                     logger.debug("Deleted {} SUCCESSFULLY.".format(email))
         except Exception as e:
