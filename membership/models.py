@@ -265,6 +265,15 @@ class CreditCards(models.Model):
         pass
 
 
+class DeletedUser(models.Model):
+    user_id = models.PositiveIntegerField()
+
+    # why 254 ? => to be consistent with legacy code
+    name = models.CharField(max_length=254)
+    email = models.EmailField(unique=True, max_length=254)
+    deleted_at = models.DateTimeField(auto_now_add=True)
+
+
 class Calendar(models.Model):
     datebooked = models.DateField()
     user = models.ForeignKey(CustomUser)

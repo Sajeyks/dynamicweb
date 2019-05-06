@@ -212,6 +212,12 @@ class UserHostingKey(models.Model):
         # self.save(update_fields=['public_key'])
         return private_key, public_key
 
+    def delete(self,*args,**kwargs):
+        if os.path.isfile(self.private_key.path):
+            os.remove(self.private_key.path)
+
+        super(UserHostingKey, self).delete(*args,**kwargs)
+
 
 class HostingBill(AssignPermissionsMixin, models.Model):
     customer = models.ForeignKey(StripeCustomer)
