@@ -1,3 +1,5 @@
+2.5.8: 2019-05-06
+   *  #6631: Add `deleteuser` management command (MR!701)
 2.5.7: 2019-05-05
    *  #6657: [all] Remove dependency on code.jquery.com, maxcdn.bootstrapcdn.com and oss.maxcdn.com and add them locally (MR!700)
 2.5.6: 2019-05-05
