@@ -168,17 +168,12 @@ class OpenNebulaManager():
             raise
         return user_pool
 
-    def _get_vm_pool(self, vm_id=None, infoextended=True):
-        """
-        vm_id: int - the id of the VM that needs to looked up in the vm pool;
-                     when set to None, looks for everything in the infoextended
-        """
+    def _get_vm_pool(self, infoextended=True):
         try:
             vm_pool = oca.VirtualMachinePool(self.client)
             if infoextended:
                 vm_pool.infoextended(
-                    filter_key_value_str='ID={vm_id}'.format(vm_id=vm_id) if
-                    vm_id is not None else '',
+                    filter=-1,
                     vm_state=-1 # Look for VMs in any state, except DONE
                 )
             else:
