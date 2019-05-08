@@ -169,18 +169,47 @@ class OpenNebulaManager():
         return user_pool
 
     def _get_vm_pool(self, infoextended=True):
+        """
+        # filter:
+        # -4: Resources belonging to the user’s primary group
+        # -3: Resources belonging to the user
+        # -2: All resources
+        # -1: Resources belonging to the user and any of his groups
+        # >= 0: UID User’s Resources
+
+        # vm states:
+        # *-2   Any state, including DONE
+        # *-1   Any state, except DONE (Default)
+        # *0    INIT
+        # *1    PENDING
+        # *2    HOLD
+        # *3    ACTIVE
+        # *4    STOPPED
+        # *5    SUSPENDED
+        # *6    DONE
+        # *7    FAILED
+        # *8    POWEROFF
+        # *9    UNDEPLOYED
+
+        :param infoextended: When True calls infoextended api method introduced
+         in OpenNebula 5.8 else falls base to info which has limited attributes
+         of a VM
+
+        :return: the oca VirtualMachinePool object
+        """
         try:
             vm_pool = oca.VirtualMachinePool(self.client)
             if infoextended:
                 vm_pool.infoextended(
-                    filter=-1,
-                    vm_state=-1 # Look for VMs in any state, except DONE
+                    filter=-1,   # User's resources and any of his groups
+                    vm_state=-1  # Look for VMs in any state, except DONE
                 )
             else:
                 vm_pool.info()
             return vm_pool
         except AttributeError:
-            logger.error('Could not connect via client, using oneadmin instead')
+            logger.error(
+                'Could not connect via client, using oneadmin instead')
             try:
                 vm_pool = oca.VirtualMachinePool(self.oneadmin_client)
                 vm_pool.info(filter=-2)
@@ -208,7 +237,7 @@ class OpenNebulaManager():
     def get_vm(self, vm_id):
         vm_id = int(vm_id)
         try:
-            vm_pool = self._get_vm_pool(vm_id)
+            vm_pool = self._get_vm_pool()
             return vm_pool.get_by_id(vm_id)
         except WrongIdError:
             raise WrongIdError
