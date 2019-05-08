@@ -538,7 +538,7 @@ class VMDetail(models.Model):
     disk_size = models.FloatField(default=0.0)
     cores = models.FloatField(default=0.0)
     memory = models.FloatField(default=0.0)
-    configuration = models.CharField(default='', max_length=25)
+    configuration = models.CharField(default='', max_length=128)
     ipv4 = models.TextField(default='')
     ipv6 = models.TextField(default='')
     created_at = models.DateTimeField(auto_now_add=True)
