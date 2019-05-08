@@ -192,7 +192,7 @@ class OpenNebulaManager():
         # *9    UNDEPLOYED
 
         :param infoextended: When True calls infoextended api method introduced
-         in OpenNebula 5.8 else falls base to info which has limited attributes
+         in OpenNebula 5.8 else falls back to info which has limited attributes
          of a VM
 
         :return: the oca VirtualMachinePool object
