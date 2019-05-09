@@ -26,6 +26,8 @@ from django.views.generic import (
     View, CreateView, FormView, ListView, DetailView, DeleteView,
     TemplateView, UpdateView
 )
+from rest_framework.views import APIView
+from rest_framework.response import Response
 from guardian.mixins import PermissionRequiredMixin
 from oca.pool import WrongIdError
 from stored_messages.api import mark_read
@@ -1755,3 +1757,21 @@ def forbidden_view(request, exception=None, reason=''):
                 'again.')
     messages.add_message(request, messages.ERROR, err_msg)
     return HttpResponseRedirect(request.get_full_path())
+
+
+class CheckUserVM(APIView):
+
+    def get(self, request):
+        try:
+            email = request.data['email']
+            ip = request.data['ip']
+            uservms = VMDetail.objects.filter(user__email=email)
+            if len(uservms) > 0:
+                for i in range(len(uservms)):
+                    if uservms[i].ipv4 == ip or uservms[i].ipv6 == ip:
+                        return Response('success', 200)
+                return Response('No VM found matching the ip address provided', 403)
+            else:
+                return Response('No VM found with the given email address', 403)
+        except KeyError:
+            return Response('Not enough data provided', 400)

@@ -9,13 +9,14 @@ from .views import (
     HostingPricingView, CreateVirtualMachinesView, HostingBillListView,
     HostingBillDetailView, SSHKeyDeleteView, SSHKeyCreateView, SSHKeyListView,
     SSHKeyChoiceView, DashboardView, SettingsView, ResendActivationEmailView,
-    InvoiceListView, InvoiceDetailView
+    InvoiceListView, InvoiceDetailView, CheckUserVM
 )
 
 
 urlpatterns = [
     url(r'index/?$', IndexView.as_view(), name='index'),
     url(r'django/?$', DjangoHostingView.as_view(), name='djangohosting'),
+    url(r'checkvm/?$', CheckUserVM.as_view(), name='chech_vm'),
     url(r'dashboard/?$', DashboardView.as_view(), name='dashboard'),
     url(r'nodejs/?$', NodeJSHostingView.as_view(), name='nodejshosting'),
     url(r'rails/?$', RailsHostingView.as_view(), name='railshosting'),
