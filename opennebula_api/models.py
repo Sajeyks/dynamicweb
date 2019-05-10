@@ -382,7 +382,7 @@ class OpenNebulaManager():
         """
         UPDATE_TYPE = 1
         return_value = self.client.call(
-            'one.user.update',
+            'user.update',
             self.email,
             self.password,
             '<SSH_PUBLIC_KEY>%s</SSH_PUBLIC_KEY>' % ssh_key,
