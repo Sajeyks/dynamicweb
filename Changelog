@@ -1,3 +1,5 @@
+Next:
+   *  #6670: [hosting/save_ssh_key] Upgrade cdist version to 5.0.1 to manage keys on Alpine linux
 2.5.9: 2019-05-09
    *  #6669: [hosting] Fix opennebula vm query takes long (MR!703)
    *         [hosting] Increase VMDetail model's configuration parameter length to 128 (MR!702)
