@@ -371,6 +371,31 @@ class OpenNebulaManager():
 
         return vm_terminated
 
+    def save_key_in_opennebula(self, ssh_key):
+        """
+        Save the given ssh key in OpenNebula user
+
+        # Update type: 0: Replace the whole template.
+                       1: Merge new template with the existing one.
+        :param ssh_key: The ssh key to be saved
+        :return:
+        """
+        UPDATE_TYPE = 1
+        return_value = self.client.call(
+            'one.user.update',
+            self.email,
+            self.password,
+            '<SSH_PUBLIC_KEY>%s</SSH_PUBLIC_KEY>' % ssh_key,
+            UPDATE_TYPE
+        )
+        if type(return_value) == int:
+            logger.debug(
+                "Saved the key in opennebula successfully : %s" % return_value)
+        else:
+            logger.error(
+                "Could not save the key in opennebula. %s" % return_value)
+        return
+
     def _get_template_pool(self):
         try:
             template_pool = oca.VmTemplatePool(self.oneadmin_client)

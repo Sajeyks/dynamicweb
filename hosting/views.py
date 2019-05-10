@@ -36,6 +36,7 @@ from datacenterlight.cms_models import DCLCalculatorPluginModel
 from datacenterlight.models import VMTemplate, VMPricing
 from datacenterlight.utils import create_vm, get_cms_integration
 from hosting.models import UserCardDetail
+from utils.hosting_utils import get_all_public_keys
 from membership.models import CustomUser, StripeCustomer
 from opennebula_api.models import OpenNebulaManager
 from opennebula_api.serializers import (
@@ -460,7 +461,9 @@ class SSHKeyDeleteView(LoginRequiredMixin, DeleteView):
         pk = self.kwargs.get('pk')
         # Get user ssh key
         public_key = UserHostingKey.objects.get(pk=pk).public_key
-        manager.manage_public_key([{'value': public_key, 'state': False}])
+        keys = UserHostingKey.objects.filter(user=self.request.user)
+        keys_to_save = [k.public_key for k in keys if k != public_key]
+        manager.save_key_in_opennebula('\n'.join(keys_to_save))
 
         return super(SSHKeyDeleteView, self).delete(request, *args, **kwargs)
 
@@ -509,8 +512,8 @@ class SSHKeyChoiceView(LoginRequiredMixin, View):
             email=owner.email,
             password=owner.password
         )
-        public_key_str = public_key.decode()
-        manager.manage_public_key([{'value': public_key_str, 'state': True}])
+        keys = get_all_public_keys(request.user)
+        manager.save_key_in_opennebula('\n'.join(keys))
         return redirect(reverse_lazy('hosting:ssh_keys'), foo='bar')
 
 
@@ -563,7 +566,9 @@ class SSHKeyCreateView(LoginRequiredMixin, FormView):
         public_key = form.cleaned_data['public_key']
         if type(public_key) is bytes:
             public_key = public_key.decode()
-        manager.manage_public_key([{'value': public_key, 'state': True}])
+        keys = UserHostingKey.objects.filter(user=self.request.user)
+        keys_to_save = [k.public_key for k in keys]
+        manager.save_key_in_opennebula('\n'.join(keys_to_save))
         return HttpResponseRedirect(self.success_url)
 
     def post(self, request, *args, **kwargs):
