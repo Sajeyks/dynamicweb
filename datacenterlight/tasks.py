@@ -190,17 +190,8 @@ def create_vm_task(self, vm_template_id, user, specs, template, order_id):
             email = BaseEmail(**email_data)
             email.send()
 
-            # try to see if we have the IPv6 of the new vm and that if the ssh
-            # keys can be configured
-            vm_ipv6 = manager.get_ipv6(vm_id)
             logger.debug("New VM ID is {vm_id}".format(vm_id=vm_id))
-            if vm_ipv6 is not None:
-                get_or_create_vm_detail(custom_user, manager, vm_id)
-                if custom_user is not None:
-                    public_keys = get_all_public_keys(custom_user)
-                    manager.save_key_in_opennebula('\n'.join(public_keys))
-            else:
-                logger.debug("VM's ipv6 is None. Hence not created VMDetail")
+            get_or_create_vm_detail(custom_user, manager, vm_id)
     except Exception as e:
         logger.error(str(e))
         try:
