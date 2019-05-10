@@ -79,10 +79,12 @@ def create_vm_task(self, vm_template_id, user, specs, template, order_id):
         # Create OpenNebulaManager
         manager = OpenNebulaManager(email=on_user, password=on_pass)
 
+        custom_user = CustomUser.objects.get(email=user.get('email'))
+        pub_keys = get_all_public_keys(custom_user)
         vm_id = manager.create_vm(
             template_id=vm_template_id,
             specs=specs,
-            ssh_key=settings.ONEADMIN_USER_SSH_PUBLIC_KEY,
+            ssh_key='\n'.join(pub_keys),
             vm_name=vm_name
         )
 
@@ -193,7 +195,6 @@ def create_vm_task(self, vm_template_id, user, specs, template, order_id):
             vm_ipv6 = manager.get_ipv6(vm_id)
             logger.debug("New VM ID is {vm_id}".format(vm_id=vm_id))
             if vm_ipv6 is not None:
-                custom_user = CustomUser.objects.get(email=user.get('email'))
                 get_or_create_vm_detail(custom_user, manager, vm_id)
                 if custom_user is not None:
                     public_keys = get_all_public_keys(custom_user)
