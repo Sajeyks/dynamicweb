@@ -384,7 +384,7 @@ class OpenNebulaManager():
         return_value = self.client.call(
             'user.update',
             self.opennebula_user.id,
-            '<SSH_PUBLIC_KEY>%s</SSH_PUBLIC_KEY>' % ssh_key,
+            '<CONTEXT><SSH_PUBLIC_KEY>%s</SSH_PUBLIC_KEY></CONTEXT>' % ssh_key,
             UPDATE_TYPE
         )
         if type(return_value) == int:
