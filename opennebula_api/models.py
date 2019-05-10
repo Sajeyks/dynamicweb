@@ -371,7 +371,31 @@ class OpenNebulaManager():
 
         return vm_terminated
 
-    def save_key_in_opennebula(self, ssh_key):
+    def save_key_in_vm_template(self, vm_id, ssh_key):
+        """
+        Update the template of a given VM and set the ssh key of the user
+        :param vm_id: the identifier of the VM object
+        :param ssh_key: a newline(\n) separated ssh key string that needs to be
+        set in the VM template
+        :return:
+        """
+        UPDATE_TYPE = 1
+        return_value = self.client.call(
+            'vm.updateconf',
+            vm_id,
+            '<CONTEXT><SSH_PUBLIC_KEY>%s</SSH_PUBLIC_KEY></CONTEXT>' % ssh_key,
+            UPDATE_TYPE
+        )
+        if type(return_value) == int:
+            logger.debug(
+                "Saved the key in VM Template success : %s" % return_value)
+        else:
+            logger.error(
+                "Could not save the key in VM Template. %s" % return_value)
+
+        return
+
+    def save_key_in_opennebula_user(self, ssh_key):
         """
         Save the given ssh key in OpenNebula user
 
@@ -612,6 +636,19 @@ class OpenNebulaManager():
             logger.debug(
                 "Keys and/or hosts are empty, so not managing any keys"
             )
+
+    def get_all_vmids(self):
+        owner = CustomUser.objects.filter(email=self.email).first()
+        all_orders = HostingOrder.objects.filter(customer__user=owner)
+        vm_ids = []
+        if len(all_orders) > 0:
+            logger.debug("The user {} has 1 or more VMs. We need to configure "
+                         "the ssh keys.".format(self.email))
+            vm_ids = [order.vm_id for order in all_orders]
+        else:
+            logger.debug("The user {} has no VMs. We don't need to configure "
+                         "the ssh keys.".format(self.email))
+        return vm_ids
 
     def get_all_hosts(self):
         """
