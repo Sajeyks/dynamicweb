@@ -464,10 +464,6 @@ class SSHKeyDeleteView(LoginRequiredMixin, DeleteView):
         keys = UserHostingKey.objects.filter(user=self.request.user)
         keys_to_save = [k.public_key for k in keys if k != public_key]
         manager.save_key_in_opennebula_user('\n'.join(keys_to_save))
-        vm_ids = manager.get_all_active_vmids()
-        if len(vm_ids) > 0 and len(keys_to_save) > 0:
-            for vm_id in vm_ids:
-                manager.save_key_in_vm_template(vm_id, '\n'.join(keys_to_save))
 
         return super(SSHKeyDeleteView, self).delete(request, *args, **kwargs)
 
@@ -517,11 +513,7 @@ class SSHKeyChoiceView(LoginRequiredMixin, View):
             password=owner.password
         )
         keys = get_all_public_keys(request.user)
-        vm_ids = manager.get_all_active_vmids()
         manager.save_key_in_opennebula_user('\n'.join(keys))
-        if len(vm_ids) > 0 and len(keys) > 0:
-            for vm_id in vm_ids:
-                manager.save_key_in_vm_template(vm_id, '\n'.join(keys))
         return redirect(reverse_lazy('hosting:ssh_keys'), foo='bar')
 
 
@@ -571,13 +563,8 @@ class SSHKeyCreateView(LoginRequiredMixin, FormView):
             email=owner.email,
             password=owner.password
         )
-        keys = UserHostingKey.objects.filter(user=self.request.user)
-        keys_to_save = [k.public_key for k in keys]
+        keys_to_save = get_all_public_keys(self.request.user)
         manager.save_key_in_opennebula_user('\n'.join(keys_to_save))
-        vm_ids = manager.get_all_active_vmids()
-        if len(vm_ids) > 0 and len(keys) > 0:
-            for vm_id in vm_ids:
-                manager.save_key_in_vm_template(vm_id, '\n'.join(keys_to_save))
         return HttpResponseRedirect(self.success_url)
 
     def post(self, request, *args, **kwargs):

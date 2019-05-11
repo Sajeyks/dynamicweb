@@ -168,7 +168,7 @@ class OpenNebulaManager():
             raise
         return user_pool
 
-    def _get_vm_pool(self, infoextended=True, vm_state=-1):
+    def _get_vm_pool(self, infoextended=True):
         """
         # filter:
         # -4: Resources belonging to the user’s primary group
@@ -201,15 +201,14 @@ class OpenNebulaManager():
             vm_pool = oca.VirtualMachinePool(self.client)
             if infoextended:
                 vm_pool.infoextended(
-                    filter=-1,         # User's resources and any of his groups
-                    vm_state=vm_state
+                    filter=-1,   # User's resources and any of his groups
+                    vm_state=-1  # Look for VMs in any state, except DONE
                 )
             else:
                 vm_pool.info()
             return vm_pool
-        except AttributeError:
-            logger.error(
-                'Could not connect via client, using oneadmin instead')
+        except AttributeError as ae:
+            logger.error("AttributeError : %s" % str(ae))
         except ConnectionRefusedError:
             logger.error(
                 'Could not connect to host: {host} via protocol {protocol}'.format(
@@ -221,9 +220,9 @@ class OpenNebulaManager():
         except:
             raise ConnectionRefusedError
 
-    def get_vms(self, vm_state=-1):
+    def get_vms(self):
         try:
-            return self._get_vm_pool(vm_state=vm_state)
+            return self._get_vm_pool()
         except ConnectionRefusedError:
             raise ConnectionRefusedError
 
@@ -629,11 +628,6 @@ class OpenNebulaManager():
             logger.debug(
                 "Keys and/or hosts are empty, so not managing any keys"
             )
-
-    def get_all_active_vmids(self):
-        vm_pool = self.get_vms(vm_state=3) # get active vms of the user
-        vm_ids = [vm.id for vm in vm_pool]
-        return vm_ids
 
     def get_all_hosts(self):
         """
