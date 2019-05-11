@@ -464,7 +464,7 @@ class SSHKeyDeleteView(LoginRequiredMixin, DeleteView):
         keys = UserHostingKey.objects.filter(user=self.request.user)
         keys_to_save = [k.public_key for k in keys if k != public_key]
         manager.save_key_in_opennebula_user('\n'.join(keys_to_save))
-        vm_ids = manager.get_vms()
+        vm_ids = manager.get_all_active_vmids()
         if len(vm_ids) > 0 and len(keys_to_save) > 0:
             for vm_id in vm_ids:
                 manager.save_key_in_vm_template(vm_id, '\n'.join(keys_to_save))
