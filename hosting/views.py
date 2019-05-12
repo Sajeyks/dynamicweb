@@ -2,6 +2,7 @@ import logging
 import uuid
 from datetime import datetime
 from time import sleep
+from urllib import parse
 
 from django import forms
 from django.conf import settings
@@ -34,9 +35,9 @@ from stored_messages.settings import stored_messages_settings
 
 from datacenterlight.cms_models import DCLCalculatorPluginModel
 from datacenterlight.models import VMTemplate, VMPricing
+from datacenterlight.tasks import save_ssh_key_in_vm_template_task
 from datacenterlight.utils import create_vm, get_cms_integration
 from hosting.models import UserCardDetail
-from utils.hosting_utils import get_all_public_keys
 from membership.models import CustomUser, StripeCustomer
 from opennebula_api.models import OpenNebulaManager
 from opennebula_api.serializers import (
@@ -47,6 +48,7 @@ from utils.forms import (
     BillingAddressForm, PasswordResetRequestForm, UserBillingAddressForm,
     ResendActivationEmailForm
 )
+from utils.hosting_utils import get_all_public_keys
 from utils.hosting_utils import get_vm_price_with_vat, HostingUtils
 from utils.mailer import BaseEmail
 from utils.stripe_utils import StripeUtils
@@ -1512,6 +1514,59 @@ class CreateVirtualMachinesView(LoginRequiredMixin, View):
         return redirect(reverse('hosting:payment'))
 
 
+class AddSshKeyToVMView(LoginRequiredMixin, View):
+
+    def respond_with_error(self):
+        response = {'status': False}
+        response['msg_title'] = str(_("No ssh keys provided"))
+        response['msg_body'] = str(
+            _("Please retry and select one of the keys"))
+        json_response = JsonResponse(response)
+        return json_response
+
+    @method_decorator(decorators)
+    def post(self, request, *args, **kwargs):
+        try:
+            vm_id = int(self.kwargs.get('pk'))
+        except ValueError as ve:
+            logger.error("Value error {}".format(str(ve)))
+            self.respond_with_error()
+        if 'selected_key' not in request.POST:
+            self.respond_with_error()
+        else:
+            posted_keys = parse.unquote_plus(request.POST['selected_key'])
+            if posted_keys.strip() == "":
+                self.respond_with_error()
+            keys = posted_keys.split(",")
+            uh_keys = [
+                UserHostingKey.objects.get(
+                    user=request.user, name=key)
+                for key in keys if key is not None and key is not ""
+            ]
+            # Add public_keys to vm_id now
+            public_keys = [uh_key.public_key for uh_key in uh_keys]
+            keys_str = '\n'.join(public_keys)
+            user = {
+                'email': request.user.email,
+                'pass': request.user.password,
+                'request_scheme': request.scheme,
+                'request_host': request.get_host(),
+                'language': get_language(),
+            }
+            save_ssh_key_in_vm_template_task(user,vm_id, keys_str)
+            response = dict()
+            response['status'] = True
+            response['msg_title'] = str(_(
+                "Adding of your SSH key add is under process"
+            ))
+            response['msg_body'] = str(_(
+                "Your keys %s will be added to the VM in the next couple of "
+                "minutes. You will receive a confirmation email once this has "
+                "been done. Thank you." % posted_keys
+            ))
+            return JsonResponse(response)
+
+
 class VirtualMachineView(LoginRequiredMixin, View):
     template_name = "hosting/virtual_machine_detail.html"
     login_url = reverse_lazy('hosting:login')
@@ -1568,7 +1623,8 @@ class VirtualMachineView(LoginRequiredMixin, View):
                 'virtual_machine': serializer.data,
                 'order': HostingOrder.objects.get(
                     vm_id=serializer.data['vm_id']
-                )
+                ),
+                'keys': UserHostingKey.objects.filter(user=request.user)
             }
         except Exception as ex:
             logger.debug("Exception generated {}".format(str(ex)))
@@ -1634,7 +1690,7 @@ class VirtualMachineView(LoginRequiredMixin, View):
                 "manager.delete_vm returned False. Hence, error making "
                 "xml-rpc call to delete vm failed."
             )
-            response['text'] = ugettext('Error terminating VM') + vm.id
+            response['text'] = str(_('Error terminating VM ')) + str(vm.id)
         else:
             for t in range(15):
                 try:
