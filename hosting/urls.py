@@ -1,5 +1,6 @@
 from django.conf.urls import url
 from django.contrib.auth import views as auth_views
+
 from .views import (
     DjangoHostingView, RailsHostingView, PaymentVMView, NodeJSHostingView,
     LoginView, SignupView, SignupValidateView, SignupValidatedView, IndexView,
@@ -9,9 +10,8 @@ from .views import (
     HostingPricingView, CreateVirtualMachinesView, HostingBillListView,
     HostingBillDetailView, SSHKeyDeleteView, SSHKeyCreateView, SSHKeyListView,
     SSHKeyChoiceView, DashboardView, SettingsView, ResendActivationEmailView,
-    InvoiceListView, InvoiceDetailView
+    InvoiceListView, InvoiceDetailView, AddSshKeyToVMView
 )
-
 
 urlpatterns = [
     url(r'index/?$', IndexView.as_view(), name='index'),
@@ -41,6 +41,8 @@ urlpatterns = [
         VirtualMachinesPlanListView.as_view(), name='virtual_machines'),
     url(r'my-virtual-machines/(?P<pk>\d+)/?$', VirtualMachineView.as_view(),
         name='virtual_machines'),
+    url(r'add-key-vm/(?P<pk>\d+)/?$', AddSshKeyToVMView.as_view(),
+        name='add_key_vm'),
     url(r'ssh_keys/?$', SSHKeyListView.as_view(),
         name='ssh_keys'),
     url(r'ssh_keys_choice/?$', SSHKeyChoiceView.as_view(),
