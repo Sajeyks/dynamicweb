@@ -1,4 +1,5 @@
 from datetime import datetime
+from time import sleep
 
 from celery import current_task
 from celery.exceptions import MaxRetriesExceededError
@@ -8,7 +9,6 @@ from django.core.mail import EmailMessage
 from django.core.urlresolvers import reverse
 from django.utils import translation
 from django.utils.translation import ugettext_lazy as _
-from time import sleep
 
 from dynamicweb.celery import app
 from hosting.models import HostingOrder
@@ -16,7 +16,7 @@ from membership.models import CustomUser
 from opennebula_api.models import OpenNebulaManager
 from opennebula_api.serializers import VirtualMachineSerializer
 from utils.hosting_utils import (
-    get_all_public_keys, get_or_create_vm_detail, ping_ok
+    get_all_public_keys, get_or_create_vm_detail
 )
 from utils.mailer import BaseEmail
 from utils.stripe_utils import StripeUtils
@@ -176,7 +176,7 @@ def create_vm_task(self, vm_template_id, user, specs, template, order_id):
                                      kwargs={'pk': order_id}),
                 'page_header': _(
                     'Your New VM %(vm_name)s at Data Center Light') % {
-                    'vm_name': vm.get('name')},
+                                   'vm_name': vm.get('name')},
                 'vm_name': vm.get('name')
             }
             email_data = {
@@ -213,3 +213,84 @@ def create_vm_task(self, vm_template_id, user, specs, template, order_id):
             return
 
     return vm_id
+
+
+@app.task(bind=True, max_retries=settings.CELERY_MAX_RETRIES)
+def save_ssh_key_in_vm_template_task(self, user, vm_id, ssh_key_str):
+    logger.debug("Inside save_ssh_key_in_vm_template_task %s" % vm_id)
+
+    on_user = user.get('email')
+    on_pass = user.get('pass')
+
+    if on_user is None or on_pass is None:
+        logger.error(
+            "Either email or password not supplied. Can't save ssh key"
+        )
+        return
+
+    manager = OpenNebulaManager(email=on_user, password=on_pass)
+
+    # poweroff the vm
+    vm = manager.power_off_vm(vm_id)
+
+    powered_off = False
+    for t in range(15):
+        vm = manager.get_vm(vm_id)
+        if vm.str_state == 'POWEROFF':
+            logger.debug(
+                "VM %s has been powered off. Now adding ssh keys" % vm.id
+            )
+            powered_off = True
+            break
+        else:
+            logger.debug(
+                "VM {} has state {}. Waiting 2 more seconds to see if it " 
+                "powers off".format(vm.id, vm.str_state)
+            )
+            sleep(2)
+
+    if powered_off:
+        logger.debug(
+            "VM %s was powered off by api call" % vm.id
+        )
+        if manager.save_key_in_vm_template(vm_id=vm_id, ssh_key=ssh_key_str) > 0:
+            logger.debug(
+                "Added ssh_keys of user %s to VM %s successfully" %
+                (on_user, vm_id)
+            )
+            manager.resume(vm_id)
+            lang = 'en-us'
+            if user.get('language') is not None:
+                logger.debug(
+                    "Language is set to {}".format(user.get('language')))
+                lang = user.get('language')
+            translation.activate(lang)
+            # Send notification to the user as soon as VM has been booked
+            context = {
+                'page_header': str(_("Adding of SSH key completed")),
+                'base_url': "{0}://{1}".format(user.get('request_scheme'),
+                                               user.get('request_host')),
+                'vm_detail_url': reverse('hosting:virtual_machines',
+                                     kwargs={'pk': vm_id}),
+                'vm_name': vm.name
+            }
+            email_data = {
+                'subject': context.get('page_header'),
+                'to': user.get('email'),
+                'context': context,
+                'template_name': 'new_booked_vm',
+                'template_path': 'hosting/emails/',
+                'from_address': settings.DCL_SUPPORT_FROM_ADDRESS,
+            }
+            email = BaseEmail(**email_data)
+            email.send()
+        else:
+            logger.error(
+                "There was an error updating ssh keys of the VM %s" % vm_id
+            )
+    else:
+        logger.error(
+            "VM {} did not poweroff within 30 seconds after the poweroff api "
+            "call. Please, ask the admin to poweroff and add the key "
+            "manually.".format(vm_id)
+        )
