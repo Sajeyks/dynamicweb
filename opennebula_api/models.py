@@ -421,21 +421,22 @@ class OpenNebulaManager():
 
         return return_value
 
-    def save_key_in_opennebula_user(self, ssh_key):
+    def save_key_in_opennebula_user(self, ssh_key, update_type=1):
         """
         Save the given ssh key in OpenNebula user
 
         # Update type: 0: Replace the whole template.
                        1: Merge new template with the existing one.
         :param ssh_key: The ssh key to be saved
+        :param update_type: The update type as explained above
+
         :return:
         """
-        UPDATE_TYPE = 1
         return_value = self.client.call(
             'user.update',
             self.opennebula_user.id,
             '<CONTEXT><SSH_PUBLIC_KEY>%s</SSH_PUBLIC_KEY></CONTEXT>' % ssh_key,
-            UPDATE_TYPE
+            update_type
         )
         if type(return_value) == int:
             logger.debug(
