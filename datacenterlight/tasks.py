@@ -278,7 +278,7 @@ def save_ssh_key_in_vm_template_task(self, user, vm_id, ssh_key_str):
                 'subject': context.get('page_header'),
                 'to': user.get('email'),
                 'context': context,
-                'template_name': 'new_booked_vm',
+                'template_name': 'ssh_key_added_to_vm',
                 'template_path': 'hosting/emails/',
                 'from_address': settings.DCL_SUPPORT_FROM_ADDRESS,
             }
