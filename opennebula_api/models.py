@@ -363,6 +363,40 @@ class OpenNebulaManager():
 
         return vm_terminated
 
+    def power_off_vm(self, vm_id):
+        vm = None
+        try:
+            vm = self.get_vm(vm_id)
+            vm.poweroff()
+        except socket.timeout as socket_err:
+            logger.error("Socket timeout error: {0}".format(socket_err))
+        except OpenNebulaException as opennebula_err:
+            logger.error(
+                "OpenNebulaException error: {0}".format(opennebula_err))
+        except OSError as os_err:
+            logger.error("OSError : {0}".format(os_err))
+        except ValueError as value_err:
+            logger.error("ValueError : {0}".format(value_err))
+
+        return vm
+
+    def resume(self, vm_id):
+        vm = None
+        try:
+            vm = self.get_vm(vm_id)
+            vm.resume()
+        except socket.timeout as socket_err:
+            logger.error("Socket timeout error: {0}".format(socket_err))
+        except OpenNebulaException as opennebula_err:
+            logger.error(
+                "OpenNebulaException error: {0}".format(opennebula_err))
+        except OSError as os_err:
+            logger.error("OSError : {0}".format(os_err))
+        except ValueError as value_err:
+            logger.error("ValueError : {0}".format(value_err))
+
+        return vm
+
     def save_key_in_vm_template(self, vm_id, ssh_key):
         """
         Update the template of a given VM and set the ssh key of the user
@@ -385,7 +419,7 @@ class OpenNebulaManager():
             logger.error(
                 "Could not save the key in VM Template. %s" % return_value)
 
-        return
+        return return_value
 
     def save_key_in_opennebula_user(self, ssh_key):
         """
