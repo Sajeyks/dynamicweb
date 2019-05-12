@@ -1530,13 +1530,13 @@ class AddSshKeyToVMView(LoginRequiredMixin, View):
             vm_id = int(self.kwargs.get('pk'))
         except ValueError as ve:
             logger.error("Value error {}".format(str(ve)))
-            self.respond_with_error()
+            return self.respond_with_error()
         if 'selected_key' not in request.POST:
-            self.respond_with_error()
+            return self.respond_with_error()
         else:
             posted_keys = parse.unquote_plus(request.POST['selected_key'])
             if posted_keys.strip() == "":
-                self.respond_with_error()
+                return self.respond_with_error()
             keys = posted_keys.split(",")
             uh_keys = [
                 UserHostingKey.objects.get(
