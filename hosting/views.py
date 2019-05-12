@@ -464,8 +464,8 @@ class SSHKeyDeleteView(LoginRequiredMixin, DeleteView):
         # Get user ssh key
         public_key = UserHostingKey.objects.get(pk=pk).public_key
         keys = UserHostingKey.objects.filter(user=self.request.user)
-        keys_to_save = [k.public_key for k in keys if k != public_key]
-        manager.save_key_in_opennebula_user('\n'.join(keys_to_save))
+        keys_to_save = [k.public_key for k in keys if k.public_key != public_key]
+        manager.save_key_in_opennebula_user('\n'.join(keys_to_save), update_type=0)
 
         return super(SSHKeyDeleteView, self).delete(request, *args, **kwargs)
 
@@ -1553,7 +1553,7 @@ class AddSshKeyToVMView(LoginRequiredMixin, View):
                 'request_host': request.get_host(),
                 'language': get_language(),
             }
-            save_ssh_key_in_vm_template_task(user,vm_id, keys_str)
+            save_ssh_key_in_vm_template_task.delay(user,vm_id, keys_str)
             response = dict()
             response['status'] = True
             response['msg_title'] = str(_(
