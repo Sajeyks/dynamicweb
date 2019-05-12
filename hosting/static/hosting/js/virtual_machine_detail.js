@@ -81,16 +81,7 @@ $(document).ready(function() {
             })
     });
 
-    $('#modal-add-ssh-key').on('hidden.bs.modal', function () {
-        location.reload();
-    });
-
-    haveResponse = false;
-    $('#modal-add-ssh-key').on('click', '.btn-ok', function(e) {
-        if(haveResponse) {
-            console.log("We had response, so reload");
-            location.reload();
-        }
+    $('#modal-add-ssh-key-button').click(function(e) {
         var url = $('#add_ssh_key_to_vm_form').attr('action');
         console.log("Url to POST " + url);
 
@@ -106,7 +97,7 @@ $(document).ready(function() {
         console.log("Encoded data = " + encoded_data);
 
         fa_icon = $('#ssh-key-modal-icon');
-        modal_btn = $('#ssh-key-modal-button');
+        modal_btn = $('#modal-add-ssh-key-button');
         modal_btn.prop("disabled", true);
         modal_btn.html('<i class="fa fa-cog fa-spin" aria-hidden="true"></i>');
         $.post(url, {selected_key: encoded_data})
@@ -115,7 +106,7 @@ $(document).ready(function() {
                 modal_btn.prop("disabled", false);
                 modal_btn.html("OK");
                 if (data.status === true) {
-                    fa_icon.html('<i class="fa fa-check" aria-hidden="true"></i>');
+                    fa_icon.html('<i class="checkmark" aria-hidden="true"></i>');
                 } else {
                     fa_icon.html('<i class="fa fa-close" aria-hidden="true"></i>');
                     modal_btn.attr('class', '').addClass('btn btn-danger btn-ok btn-wide');
@@ -136,7 +127,9 @@ $(document).ready(function() {
             })
             .always(function () {
                 console.log("changing href to location: " + location);
-                haveResponse = true;
+                $('#modal-add-ssh-key-button').unbind('click').click(function () {
+                    location.reload();
+                });
             })
     });
 
