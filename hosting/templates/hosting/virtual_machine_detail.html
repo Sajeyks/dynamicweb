@@ -80,6 +80,21 @@
 				</div>
 			</div>
 		</div>
+			{% if keys|length > 0 %}
+			    {% if not virtual_machine.status == 'canceled' %}
+				<div class="text-center">
+			        <button data-toggle="modal" data-target="#modal-add-ssh-key" class="btn btn-vm-invoice">{% trans "Add SSH Key" %}</button>
+			        <div class="alert alert-danger hide">
+						{% trans "Sorry, there was an unexpected error. Kindly retry." %}
+					</div>
+				</div>
+			    {% endif %}
+			{% else %}
+		        <div class="text-center">
+			        <a class="btn btn-vm-invoice" href="{% url 'hosting:ssh_keys' %}" class="hosting-dashboard-item">Add SSH Key</a>
+				</div>
+			{% endif %}
+
 		<div class="vm-contact-us">
 			<div>
 				<h2 class="vm-detail-title">{% trans "Support / Contact" %} <img class="un-icon visible-xs" src="{% static 'hosting/img/24-hours-support.svg' %}"></h2>
@@ -98,6 +113,41 @@
 			<a class="btn btn-vm-back" href="{% url 'hosting:virtual_machines' %}">{% trans "BACK TO LIST" %}</a>
 		</div>
 	</div>
+	<!-- Add SSH Modal -->
+	<div class="modal fade" id="modal-add-ssh-key" tabindex="-1" role="dialog" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+		  <div id="add-ssh-key-orig">
+            <form method="POST" id="add_ssh_key_to_vm_form" class="cancel-form" action="{% url 'hosting:add_key_vm' virtual_machine.vm_id %}">
+                {% csrf_token %}
+
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Confirm"><span aria-hidden="true">&times;</span></button>
+				</div>
+      	        <div class="modal-body">
+					<div class="modal-icon" id="ssh-key-modal-icon"><i class="fa fa-key" aria-hidden="true"></i></div>
+					<h4 class="modal-title" id="ssh-key-modal-title">{% trans "Select the keys that you want to add to the VM" %}</h4>
+					<div class="modal-text" id="ssh-key-modal-description">
+						<p>
+							<ul>
+								{% for key in keys %}
+									<li><input type="checkbox" name="selected_key" value="{{key.name}}" class="chk-ssh-key">{{key.name}}</li>
+								{% endfor %}
+							</ul>
+						</p>
+						<p>{% trans "The VM will reboot with the new key(s) installed. OK ?" %}</p>
+						<p><strong>{{virtual_machine.name}}</strong></p>
+					</div>
+                    <div class="modal-footer">
+                        <a class="btn btn-ok btn-wide btn-vm-back" id="ssh-key-modal-footer">{% trans "OK" %}</a>
+                    </div>
+                </div>
+            </form>
+          </div>
+      </div>
+    </div>
+	</div>
+	<!-- / Add ssh key Modal -->
 	<!-- Cancel Modal -->
 	<div class="modal fade" id="confirm-cancel" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
