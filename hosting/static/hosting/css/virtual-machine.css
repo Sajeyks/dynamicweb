@@ -199,6 +199,11 @@
   /* text-align: center; */
 }
 
+.vm-add-ssh-key {
+  margin: 25px 0 30px;
+  /* text-align: center; */
+}
+
 @media(min-width: 768px) {
   .vm-detail-contain {
     display: flex;

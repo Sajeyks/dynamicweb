@@ -82,7 +82,7 @@
 		</div>
 			{% if keys|length > 0 %}
 			    {% if not virtual_machine.status == 'canceled' %}
-				<div class="text-center">
+				<div class="text-center vm-add-ssh-key">
 			        <button data-toggle="modal" data-target="#modal-add-ssh-key" class="btn btn-vm-invoice">{% trans "Add SSH Key" %}</button>
 			        <div class="alert alert-danger hide">
 						{% trans "Sorry, there was an unexpected error. Kindly retry." %}
