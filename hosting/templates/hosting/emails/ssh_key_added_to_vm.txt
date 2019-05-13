@@ -1,6 +1,6 @@
 {% load i18n %}
 
-{% blocktrans %}{% blocktrans %}SSH key(s) {{keys}} added to your VM {{vm_name}}{% endblocktrans %}
+{% blocktrans %}SSH key(s) {{keys}} added to your VM {{vm_name}}{% endblocktrans %}
 
 {% blocktrans %}You initiated adding the keys {{keys}} to your VM {{ vm_name }}!{% endblocktrans %}
 {% blocktrans %}This email is to notify you that it was accomplished successfully.{% endblocktrans %}
