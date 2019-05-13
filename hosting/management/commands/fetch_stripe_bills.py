@@ -45,7 +45,12 @@ class Command(BaseCommand):
                     num_invoice_created = 0
                     for invoice in all_invoices:
                         invoice['customer'] = user.stripecustomer
-                        num_invoice_created += 1 if MonthlyHostingBill.create(invoice) is not None else logger.error("Did not import invoice for %s" % str(invoice))
+                        try:
+                            existing_mhb = MonthlyHostingBill.objects.get(invoice_id=invoice['invoice_id'])
+                            logger.debug("Invoice %s exists already. Not importing." % invoice['invoice_id'])
+                        except MonthlyHostingBill.DoesNotExist as dne:
+                            logger.debug("Invoice id %s does not exist" % invoice['invoice_id'])
+                            num_invoice_created += 1 if MonthlyHostingBill.create(invoice) is not None else logger.error("Did not import invoice for %s" % str(invoice))
                     self.stdout.write(
                         self.style.SUCCESS("Number of invoices imported = %s" % num_invoice_created)
                     )
