@@ -1,7 +1,5 @@
 import logging
 import uuid
-import os
-import dotenv
 from datetime import datetime
 from time import sleep
 
@@ -39,7 +37,7 @@ from stored_messages.settings import stored_messages_settings
 
 from datacenterlight.cms_models import DCLCalculatorPluginModel
 from datacenterlight.models import VMTemplate, VMPricing
-from datacenterlight.utils import create_vm, get_cms_integration, check_otp, env
+from datacenterlight.utils import create_vm, get_cms_integration, check_otp
 from hosting.models import UserCardDetail
 from membership.models import CustomUser, StripeCustomer
 from opennebula_api.models import OpenNebulaManager
@@ -1775,7 +1773,8 @@ class CheckUserVM(APIView):
             user = request.data['user']
             realm = request.data['realm']
             token = request.data['token']
-            if user != env('ACCOUNT_NAME'):
+            print(settings.ACCOUNT_NAME)
+            if user != settings.ACCOUNT_NAME:
                 return Response("User not allowed", 403)
             response = check_otp(user, realm, token)
             if response != 200:
