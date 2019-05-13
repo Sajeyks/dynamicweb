@@ -1,5 +1,7 @@
 import logging
 import uuid
+import os
+import dotenv
 from datetime import datetime
 from time import sleep
 
@@ -28,6 +30,7 @@ from django.views.generic import (
 )
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from rest_framework.renderers import JSONRenderer
 from guardian.mixins import PermissionRequiredMixin
 from oca.pool import WrongIdError
 from stored_messages.api import mark_read
@@ -36,7 +39,7 @@ from stored_messages.settings import stored_messages_settings
 
 from datacenterlight.cms_models import DCLCalculatorPluginModel
 from datacenterlight.models import VMTemplate, VMPricing
-from datacenterlight.utils import create_vm, get_cms_integration
+from datacenterlight.utils import create_vm, get_cms_integration, check_otp, env
 from hosting.models import UserCardDetail
 from membership.models import CustomUser, StripeCustomer
 from opennebula_api.models import OpenNebulaManager
@@ -68,9 +71,12 @@ from .models import (
 
 logger = logging.getLogger(__name__)
 
+
 CONNECTION_ERROR = "Your VMs cannot be displayed at the moment due to a \
                     backend connection error. please try again in a few \
                     minutes."
+
+
 decorators = [never_cache]
 
 
@@ -1760,11 +1766,20 @@ def forbidden_view(request, exception=None, reason=''):
 
 
 class CheckUserVM(APIView):
+    renderer_classes = (JSONRenderer, )
 
     def get(self, request):
         try:
             email = request.data['email']
             ip = request.data['ip']
+            user = request.data['user']
+            realm = request.data['realm']
+            token = request.data['token']
+            if user != env('ACCOUNT_NAME'):
+                return Response("User not allowed", 403)
+            response = check_otp(user, realm, token)
+            if response != 200:
+                return Response('Invalid token', 403)
             uservms = VMDetail.objects.filter(user__email=email)
             if len(uservms) > 0:
                 for i in range(len(uservms)):
