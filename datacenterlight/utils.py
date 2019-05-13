@@ -1,4 +1,8 @@
 import logging
+import os
+import pyotp
+import requests
+import dotenv
 from django.contrib.sites.models import Site
 
 from datacenterlight.tasks import create_vm_task
@@ -10,6 +14,17 @@ from .cms_models import CMSIntegration
 from .models import VMPricing, VMTemplate
 
 logger = logging.getLogger(__name__)
+
+PROJECT_DIR = os.path.abspath(
+    os.path.join(os.path.dirname(__file__)),
+)
+
+# load .env file
+dotenv.read_dotenv("{0}/.env".format(PROJECT_DIR))
+
+
+def env(env_name):
+    return os.environ.get(env_name)
 
 
 def get_cms_integration(name):
@@ -100,3 +115,22 @@ def clear_all_session_vars(request):
                             'generic_payment_details', 'product_id']:
             if session_var in request.session:
                 del request.session[session_var]
+
+
+def check_otp(name, realm, token):
+    data = {
+        "auth_name": env('AUTH_NAME'),
+        "auth_token": pyotp.TOTP(env('AUTH_SEED')).now(),
+        "auth_realm": env('AUTH_REALM'),
+        "name": name,
+        "realm": realm,
+        "token": token
+    }
+    response = requests.post(
+        "https://{OTP_SERVER}{OTP_VERIFY_ENDPOINT}".format(
+            OTP_SERVER=env('OTP_SERVER'),
+            OTP_VERIFY_ENDPOINT=env('OTP_VERIFY_ENDPOINT')
+        ),
+        data=data
+    )
+    return response.status_code
