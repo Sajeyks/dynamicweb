@@ -367,7 +367,7 @@ class OpenNebulaManager():
         vm = None
         try:
             vm = self.get_vm(vm_id)
-            vm.poweroff()
+            vm.poweroff_hard()
         except socket.timeout as socket_err:
             logger.error("Socket timeout error: {0}".format(socket_err))
         except OpenNebulaException as opennebula_err:
