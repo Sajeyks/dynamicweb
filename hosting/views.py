@@ -1773,7 +1773,7 @@ class CheckUserVM(APIView):
             user = request.data['user']
             realm = request.data['realm']
             token = request.data['token']
-            if user != settings.ACCOUNT_NAME:
+            if realm != settings.READ_VM_REALM:
                 return Response("User not allowed", 403)
             response = check_otp(user, realm, token)
             if response != 200:
