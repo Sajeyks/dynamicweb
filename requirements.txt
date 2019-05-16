@@ -98,3 +98,4 @@ amqp==2.2.1
 vine==1.1.4
 cdist==5.0.1
 git+https://github.com/ungleich/djangocms-multisite.git#egg=djangocms_multisite
+pyotp
