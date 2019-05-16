@@ -1773,7 +1773,6 @@ class CheckUserVM(APIView):
             user = request.data['user']
             realm = request.data['realm']
             token = request.data['token']
-            print(settings.ACCOUNT_NAME)
             if user != settings.ACCOUNT_NAME:
                 return Response("User not allowed", 403)
             response = check_otp(user, realm, token)
@@ -1784,8 +1783,8 @@ class CheckUserVM(APIView):
                 for i in range(len(uservms)):
                     if uservms[i].ipv4 == ip or uservms[i].ipv6 == ip:
                         return Response('success', 200)
-                return Response('No VM found matching the ip address provided', 403)
+                return Response('No VM found matching the ip address provided', 404)
             else:
-                return Response('No VM found with the given email address', 403)
+                return Response('No VM found with the given email address', 404)
         except KeyError:
             return Response('Not enough data provided', 400)
