@@ -1,4 +1,5 @@
-Next:
+2.5.10: 2019-05-16
+   *  #6672: [api] REST endpoint for ungleich-cli to verify if a VM belongs to a user (MR!705)
    *  #6670: [hosting/save_ssh_key] Upgrade cdist version to 5.0.1 to manage keys on Alpine linux
 2.5.9: 2019-05-09
    *  #6669: [hosting] Fix opennebula vm query takes long (MR!703)
