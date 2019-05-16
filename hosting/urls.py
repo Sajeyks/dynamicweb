@@ -16,7 +16,7 @@ from .views import (
 urlpatterns = [
     url(r'index/?$', IndexView.as_view(), name='index'),
     url(r'django/?$', DjangoHostingView.as_view(), name='djangohosting'),
-    url(r'checkvm/?$', CheckUserVM.as_view(), name='chech_vm'),
+    url(r'checkvm/?$', CheckUserVM.as_view(), name='check_vm'),
     url(r'dashboard/?$', DashboardView.as_view(), name='dashboard'),
     url(r'nodejs/?$', NodeJSHostingView.as_view(), name='nodejshosting'),
     url(r'rails/?$', RailsHostingView.as_view(), name='railshosting'),
