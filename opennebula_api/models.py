@@ -212,7 +212,13 @@ class OpenNebulaManager():
                 'Could not connect via client, using oneadmin instead')
             try:
                 vm_pool = oca.VirtualMachinePool(self.oneadmin_client)
-                vm_pool.info(filter=-2)
+                if infoextended:
+                    vm_pool.infoextended(
+                        filter=-1,  # User's resources and any of his groups
+                        vm_state=-1  # Look for VMs in any state, except DONE
+                    )
+                else:
+                    vm_pool.info(filter=-2)
                 return vm_pool
             except:
                 raise ConnectionRefusedError
