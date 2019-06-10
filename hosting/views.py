@@ -1782,8 +1782,7 @@ class CheckUserVM(APIView):
             # not the best way to lookup vms by ip
             # TODO: make this optimal
             vms = manager.get_vms()
-            users_vms = [VirtualMachineSerializer(vm).data for vm in vms
-                         if vm.uname == email]
+            users_vms = [vm for vm in vms if vm.uname == email]
             if len(users_vms) == 0:
                 return Response('No VM found with the given email address',
                                 404)
