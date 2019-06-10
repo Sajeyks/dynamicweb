@@ -432,7 +432,7 @@ class OpenNebulaManager():
 
         :return:
         """
-        return_value = self.client.call(
+        return_value = self.oneadmin_client.call(
             'user.update',
             self.opennebula_user.id,
             '<CONTEXT><SSH_PUBLIC_KEY>%s</SSH_PUBLIC_KEY></CONTEXT>' % ssh_key,
