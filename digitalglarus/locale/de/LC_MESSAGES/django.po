@@ -342,7 +342,7 @@ msgstr ""
 "dieser Website erklärst Du Dich damit einverstanden, diese zu nutzen."
 
 msgid "Learn more"
-msgstr "Learn mehr"
+msgstr "Lerne mehr"
 
 msgid "OK"
 msgstr ""
