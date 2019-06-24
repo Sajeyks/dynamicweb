@@ -81,6 +81,8 @@ def create_vm_task(self, vm_template_id, user, specs, template, order_id):
 
         custom_user = CustomUser.objects.get(email=user.get('email'))
         pub_keys = get_all_public_keys(custom_user)
+        if manager.email != settings.OPENNEBULA_USERNAME:
+            manager.save_key_in_opennebula_user('\n'.join(pub_keys))
         vm_id = manager.create_vm(
             template_id=vm_template_id,
             specs=specs,
