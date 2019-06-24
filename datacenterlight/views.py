@@ -25,7 +25,7 @@ from utils.forms import (
     BillingAddressForm, BillingAddressFormSignup, UserBillingAddressForm,
     BillingAddress
 )
-from utils.hosting_utils import get_vm_price_with_vat
+from utils.hosting_utils import get_vm_price_with_vat, get_all_public_keys
 from utils.stripe_utils import StripeUtils
 from utils.tasks import send_plain_email_task
 from .cms_models import DCLCalculatorPluginModel
@@ -575,6 +575,7 @@ class OrderConfirmationView(DetailView, FormView):
             context.update({
                 'vm': request.session.get('specs'),
                 'form': UserHostingKeyForm(request=self.request),
+                'keys': get_all_public_keys(self.request.user)
             })
         context.update({
             'site_url': reverse('datacenterlight:index'),
@@ -607,7 +608,6 @@ class OrderConfirmationView(DetailView, FormView):
         # We have a valid SSH key from the user, save it in opennebula and db
         # and proceed further
         form.save()
-        user_public_key = form.data["public_key"]
 
         if 'token' in request.session:
             card_details = stripe_utils.get_cards_details_from_token(
