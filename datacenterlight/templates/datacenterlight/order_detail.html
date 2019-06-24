@@ -156,7 +156,9 @@
                 <div class="previous-keys-title">Previous keys</div>
                 {% endif %}
                 {% for key in keys %}
-                <textarea cols="79" readonly  oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'></textarea>
+                <textarea class="form-control input-no-border" style="width: 100%" readonly  oninput='this.style.height = "";this.style.height = this.scrollHeight + "px"'>
+                    {{key}}
+                </textarea>
                     <br/>
                 {% endfor %}
             </>
