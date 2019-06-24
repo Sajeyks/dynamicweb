@@ -13,7 +13,8 @@ from django.views.decorators.cache import cache_control
 from django.views.generic import FormView, CreateView, DetailView
 
 from hosting.forms import (
-    HostingUserLoginForm, GenericPaymentForm, ProductPaymentForm
+    HostingUserLoginForm, GenericPaymentForm, ProductPaymentForm,
+    UserHostingKeyForm
 )
 from hosting.models import (
     HostingBill, HostingOrder, UserCardDetail, GenericProduct
@@ -529,11 +530,17 @@ class PaymentOrderView(FormView):
             return self.render_to_response(context)
 
 
-class OrderConfirmationView(DetailView):
+class OrderConfirmationView(DetailView, FormView):
+    form_class = UserHostingKeyForm
     template_name = "datacenterlight/order_detail.html"
     payment_template_name = 'datacenterlight/landing_payment.html'
     context_object_name = "order"
     model = HostingOrder
+
+    def get_form_kwargs(self):
+        kwargs = super(OrderConfirmationView, self).get_form_kwargs()
+        kwargs.update({'request': self.request})
+        return kwargs
 
     @cache_control(no_cache=True, must_revalidate=True, no_store=True)
     def get(self, request, *args, **kwargs):
@@ -567,6 +574,7 @@ class OrderConfirmationView(DetailView):
         else:
             context.update({
                 'vm': request.session.get('specs'),
+                'form': UserHostingKeyForm(request=self.request),
             })
         context.update({
             'site_url': reverse('datacenterlight:index'),
@@ -582,6 +590,24 @@ class OrderConfirmationView(DetailView):
         user = request.session.get('user')
         stripe_api_cus_id = request.session.get('customer')
         stripe_utils = StripeUtils()
+
+        # Check ssh public key and then proceed
+        form = self.get_form()
+        required = 'add_ssh' in self.request.POST
+        form.fields['name'].required = required
+        form.fields['public_key'].required = required
+        if not form.is_valid():
+            response = {
+                'status': False,
+                'msg_title': str(_('SSH key related error occurred')),
+                'msg_body': "<br/>".join([str(v) for k,v in form.errors.items()]),
+            }
+            return JsonResponse(response)
+
+        # We have a valid SSH key from the user, save it in opennebula and db
+        # and proceed further
+        form.save()
+        user_public_key = form.data["public_key"]
 
         if 'token' in request.session:
             card_details = stripe_utils.get_cards_details_from_token(
