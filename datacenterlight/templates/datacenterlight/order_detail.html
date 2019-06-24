@@ -151,9 +151,9 @@
                 <div class="dashboard-container-head">
                     <h2 class="dashboard-title-thin"><i class="fa fa-key" aria-hidden="true"></i>&nbsp;{% trans "Add your public SSH key" %}</h2>
                 </div>
-            <div class="previous-keys">
+            <div class="existing-keys">
                 {% if keys|length > 0 %}
-                <div class="previous-keys-title">Previous keys</div>
+                <div class="existing-keys-title">Existing keys</div>
                 {% endif %}
                 {% for key in keys %}
                 <textarea class="form-control input-no-border" style="width: 100%" readonly  rows="6">
