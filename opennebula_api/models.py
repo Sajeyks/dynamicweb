@@ -363,64 +363,6 @@ class OpenNebulaManager():
 
         return vm_terminated
 
-    def power_off_vm(self, vm_id):
-        vm = None
-        try:
-            vm = self.get_vm(vm_id)
-            vm.poweroff_hard()
-        except socket.timeout as socket_err:
-            logger.error("Socket timeout error: {0}".format(socket_err))
-        except OpenNebulaException as opennebula_err:
-            logger.error(
-                "OpenNebulaException error: {0}".format(opennebula_err))
-        except OSError as os_err:
-            logger.error("OSError : {0}".format(os_err))
-        except ValueError as value_err:
-            logger.error("ValueError : {0}".format(value_err))
-
-        return vm
-
-    def resume(self, vm_id):
-        vm = None
-        try:
-            vm = self.get_vm(vm_id)
-            vm.resume()
-        except socket.timeout as socket_err:
-            logger.error("Socket timeout error: {0}".format(socket_err))
-        except OpenNebulaException as opennebula_err:
-            logger.error(
-                "OpenNebulaException error: {0}".format(opennebula_err))
-        except OSError as os_err:
-            logger.error("OSError : {0}".format(os_err))
-        except ValueError as value_err:
-            logger.error("ValueError : {0}".format(value_err))
-
-        return vm
-
-    def save_key_in_vm_template(self, vm_id, ssh_key):
-        """
-        Update the template of a given VM and set the ssh key of the user
-        :param vm_id: the identifier of the VM object
-        :param ssh_key: a newline(\n) separated ssh key string that needs to be
-        set in the VM template
-        :return:
-        """
-        UPDATE_TYPE = 1
-        return_value = self.client.call(
-            'vm.updateconf',
-            vm_id,
-            '<CONTEXT><SSH_PUBLIC_KEY>%s</SSH_PUBLIC_KEY></CONTEXT>' % ssh_key,
-            UPDATE_TYPE
-        )
-        if type(return_value) == int:
-            logger.debug(
-                "Saved the key in VM Template success : %s" % return_value)
-        else:
-            logger.error(
-                "Could not save the key in VM Template. %s" % return_value)
-
-        return return_value
-
     def save_key_in_opennebula_user(self, ssh_key, update_type=1):
         """
         Save the given ssh key in OpenNebula user

@@ -80,21 +80,6 @@
 				</div>
 			</div>
 		</div>
-			{% if keys|length > 0 %}
-			    {% if not virtual_machine.status == 'canceled' %}
-				<div class="text-center vm-add-ssh-key">
-			        <button data-toggle="modal" data-target="#modal-add-ssh-key" class="btn btn-vm-invoice">{% trans "Add SSH Key" %}</button>
-			        <div class="alert alert-danger hide">
-						{% trans "Sorry, there was an unexpected error. Kindly retry." %}
-					</div>
-				</div>
-			    {% endif %}
-			{% else %}
-		        <div class="text-center">
-			        <a class="btn btn-vm-invoice" href="{% url 'hosting:ssh_keys' %}" class="hosting-dashboard-item">Add SSH Key</a>
-				</div>
-			{% endif %}
-
 		<div class="vm-contact-us">
 			<div>
 				<h2 class="vm-detail-title">{% trans "Support / Contact" %} <img class="un-icon visible-xs" src="{% static 'hosting/img/24-hours-support.svg' %}"></h2>
