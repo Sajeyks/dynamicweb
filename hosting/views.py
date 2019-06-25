@@ -838,12 +838,18 @@ class PaymentVMView(LoginRequiredMixin, FormView):
             return self.form_invalid(form)
 
 
-class OrdersHostingDetailView(LoginRequiredMixin, DetailView):
+class OrdersHostingDetailView(LoginRequiredMixin, DetailView, FormView):
+    form_class = UserHostingKeyForm
     template_name = "hosting/order_detail.html"
     context_object_name = "order"
     login_url = reverse_lazy('hosting:login')
     permission_required = ['view_hostingorder']
     model = HostingOrder
+
+    def get_form_kwargs(self):
+        kwargs = super(OrdersHostingDetailView, self).get_form_kwargs()
+        kwargs.update({'request': self.request})
+        return kwargs
 
     def get_object(self, queryset=None):
         order_id = self.kwargs.get('pk')
@@ -869,6 +875,8 @@ class OrdersHostingDetailView(LoginRequiredMixin, DetailView):
 
         if self.request.GET.get('page') == 'payment':
             context['page_header_text'] = _('Confirm Order')
+            context['form'] = UserHostingKeyForm(request=self.request)
+            context['keys'] = get_all_public_keys(self.request.user)
         else:
             context['page_header_text'] = _('Invoice')
             if not self.request.user.has_perm(
@@ -994,6 +1002,27 @@ class OrdersHostingDetailView(LoginRequiredMixin, DetailView):
 
     @method_decorator(decorators)
     def post(self, request):
+        # Check ssh public key and then proceed
+        form = self.get_form()
+        required = 'add_ssh' in self.request.POST
+
+        # SSH key is required only if the user doesn't have an existing
+        # key
+        if len(get_all_public_keys(self.request.user)) == 0:
+            form.fields['name'].required = required
+            form.fields['public_key'].required = required
+        if not form.is_valid():
+            response = {
+                'status': False,
+                'msg_title': str(_('SSH key related error occurred')),
+                'msg_body': "<br/>".join([str(v) for k,v in form.errors.items()]),
+            }
+            return JsonResponse(response)
+
+        # We have a valid SSH key from the user, save it in opennebula and db
+        # and proceed further
+        form.save()
+
         template = request.session.get('template')
         specs = request.session.get('specs')
         stripe_utils = StripeUtils()
@@ -1641,7 +1670,7 @@ class VirtualMachineView(LoginRequiredMixin, View):
                 "manager.delete_vm returned False. Hence, error making "
                 "xml-rpc call to delete vm failed."
             )
-            response['text'] = str(_('Error terminating VM ')) + str(vm.id)
+            response['text'] = str(_('Error terminating VM')) + str(vm.id)
         else:
             for t in range(15):
                 try:
