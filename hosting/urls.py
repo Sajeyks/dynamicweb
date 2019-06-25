@@ -1,5 +1,6 @@
 from django.conf.urls import url
 from django.contrib.auth import views as auth_views
+
 from .views import (
     DjangoHostingView, RailsHostingView, PaymentVMView, NodeJSHostingView,
     LoginView, SignupView, SignupValidateView, SignupValidatedView, IndexView,
@@ -11,7 +12,6 @@ from .views import (
     SSHKeyChoiceView, DashboardView, SettingsView, ResendActivationEmailView,
     InvoiceListView, InvoiceDetailView, CheckUserVM
 )
-
 
 urlpatterns = [
     url(r'index/?$', IndexView.as_view(), name='index'),

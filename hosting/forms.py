@@ -1,8 +1,8 @@
 import datetime
 import logging
 import subprocess
-
 import tempfile
+
 from django import forms
 from django.conf import settings
 from django.contrib.auth import authenticate
@@ -187,7 +187,8 @@ class UserHostingKeyForm(forms.ModelForm):
         alerts the user of it.
         :return:
         """
-        if 'generate' in self.request.POST:
+        if ('generate' in self.request.POST
+                or not self.fields['public_key'].required):
             return self.data.get('public_key')
         KEY_ERROR_MESSAGE = _("Please input a proper SSH key")
         openssh_pubkey_str = self.data.get('public_key').strip()
@@ -214,6 +215,10 @@ class UserHostingKeyForm(forms.ModelForm):
         return openssh_pubkey_str
 
     def clean_name(self):
+        INVALID_NAME_MESSAGE = _("Comma not accepted in the name of the key")
+        if "," in self.data.get('name'):
+            logger.debug(INVALID_NAME_MESSAGE)
+            raise forms.ValidationError(INVALID_NAME_MESSAGE)
         return self.data.get('name')
 
     def clean_user(self):

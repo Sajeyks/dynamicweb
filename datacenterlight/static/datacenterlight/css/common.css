@@ -186,3 +186,8 @@ footer .dcl-link-separator::before {
   background: transparent !important;
   resize: none;
 }
+
+.existing-keys-title {
+  font-weight: bold;
+  font-size: 14px;
+}

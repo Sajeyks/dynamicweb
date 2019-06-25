@@ -207,22 +207,8 @@ class OpenNebulaManager():
             else:
                 vm_pool.info()
             return vm_pool
-        except AttributeError:
-            logger.error(
-                'Could not connect via client, using oneadmin instead')
-            try:
-                vm_pool = oca.VirtualMachinePool(self.oneadmin_client)
-                if infoextended:
-                    vm_pool.infoextended(
-                        filter=-1,  # User's resources and any of his groups
-                        vm_state=-1  # Look for VMs in any state, except DONE
-                    )
-                else:
-                    vm_pool.info(filter=-2)
-                return vm_pool
-            except:
-                raise ConnectionRefusedError
-
+        except AttributeError as ae:
+            logger.error("AttributeError : %s" % str(ae))
         except ConnectionRefusedError:
             logger.error(
                 'Could not connect to host: {host} via protocol {protocol}'.format(
@@ -376,6 +362,31 @@ class OpenNebulaManager():
             logger.error("ValueError : {0}".format(value_err))
 
         return vm_terminated
+
+    def save_key_in_opennebula_user(self, ssh_key, update_type=1):
+        """
+        Save the given ssh key in OpenNebula user
+
+        # Update type: 0: Replace the whole template.
+                       1: Merge new template with the existing one.
+        :param ssh_key: The ssh key to be saved
+        :param update_type: The update type as explained above
+
+        :return:
+        """
+        return_value = self.oneadmin_client.call(
+            'user.update',
+            self.opennebula_user.id,
+            '<CONTEXT><SSH_PUBLIC_KEY>%s</SSH_PUBLIC_KEY></CONTEXT>' % ssh_key,
+            update_type
+        )
+        if type(return_value) == int:
+            logger.debug(
+                "Saved the key in opennebula successfully : %s" % return_value)
+        else:
+            logger.error(
+                "Could not save the key in opennebula. %s" % return_value)
+        return
 
     def _get_template_pool(self):
         try:

@@ -8,7 +8,6 @@ from django.core.mail import EmailMessage
 from django.core.urlresolvers import reverse
 from django.utils import translation
 from django.utils.translation import ugettext_lazy as _
-from time import sleep
 
 from dynamicweb.celery import app
 from hosting.models import HostingOrder
@@ -16,7 +15,7 @@ from membership.models import CustomUser
 from opennebula_api.models import OpenNebulaManager
 from opennebula_api.serializers import VirtualMachineSerializer
 from utils.hosting_utils import (
-    get_all_public_keys, get_or_create_vm_detail, ping_ok
+    get_all_public_keys, get_or_create_vm_detail
 )
 from utils.mailer import BaseEmail
 from utils.stripe_utils import StripeUtils
@@ -79,10 +78,14 @@ def create_vm_task(self, vm_template_id, user, specs, template, order_id):
         # Create OpenNebulaManager
         manager = OpenNebulaManager(email=on_user, password=on_pass)
 
+        custom_user = CustomUser.objects.get(email=user.get('email'))
+        pub_keys = get_all_public_keys(custom_user)
+        if manager.email != settings.OPENNEBULA_USERNAME:
+            manager.save_key_in_opennebula_user('\n'.join(pub_keys))
         vm_id = manager.create_vm(
             template_id=vm_template_id,
             specs=specs,
-            ssh_key=settings.ONEADMIN_USER_SSH_PUBLIC_KEY,
+            ssh_key='\n'.join(pub_keys),
             vm_name=vm_name
         )
 
@@ -188,65 +191,9 @@ def create_vm_task(self, vm_template_id, user, specs, template, order_id):
             email = BaseEmail(**email_data)
             email.send()
 
-            # try to see if we have the IPv6 of the new vm and that if the ssh
-            # keys can be configured
-            vm_ipv6 = manager.get_ipv6(vm_id)
             logger.debug("New VM ID is {vm_id}".format(vm_id=vm_id))
-            if vm_ipv6 is not None:
-                custom_user = CustomUser.objects.get(email=user.get('email'))
+            if vm_id > 0:
                 get_or_create_vm_detail(custom_user, manager, vm_id)
-                if custom_user is not None:
-                    public_keys = get_all_public_keys(custom_user)
-                    keys = [{'value': key, 'state': True} for key in
-                            public_keys]
-                    if len(keys) > 0:
-                        logger.debug(
-                            "Calling configure on {host} for "
-                            "{num_keys} keys".format(
-                                host=vm_ipv6, num_keys=len(keys)
-                            )
-                        )
-                        # Let's wait until the IP responds to ping before we
-                        # run the cdist configure on the host
-                        did_manage_public_key = False
-                        for i in range(0, 15):
-                            if ping_ok(vm_ipv6):
-                                logger.debug(
-                                    "{} is pingable. Doing a "
-                                    "manage_public_key".format(vm_ipv6)
-                                )
-                                sleep(10)
-                                manager.manage_public_key(
-                                    keys, hosts=[vm_ipv6]
-                                )
-                                did_manage_public_key = True
-                                break
-                            else:
-                                logger.debug(
-                                    "Can't ping {}. Wait 5 secs".format(
-                                        vm_ipv6
-                                    )
-                                )
-                                sleep(5)
-                        if not did_manage_public_key:
-                            emsg = ("Waited for over 75 seconds for {} to be "
-                                    "pingable. But the VM was not reachable. "
-                                    "So, gave up manage_public_key. Please do "
-                                    "this manually".format(vm_ipv6))
-                            logger.error(emsg)
-                            email_data = {
-                                'subject': '{} CELERY TASK INCOMPLETE: {} not '
-                                           'pingable for 75 seconds'.format(
-                                                settings.DCL_TEXT, vm_ipv6
-                                            ),
-                                'from_email': current_task.request.hostname,
-                                'to': settings.DCL_ERROR_EMAILS_TO_LIST,
-                                'body': emsg
-                            }
-                            email = EmailMessage(**email_data)
-                            email.send()
-            else:
-                logger.debug("VM's ipv6 is None. Hence not created VMDetail")
     except Exception as e:
         logger.error(str(e))
         try:

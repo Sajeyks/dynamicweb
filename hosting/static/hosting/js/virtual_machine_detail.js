@@ -109,8 +109,11 @@ $(document).ready(function() {
                 modal_btn = $('#createvm-modal-done-btn');
                 $('#createvm-modal-title').text(data.msg_title);
                 $('#createvm-modal-body').html(data.msg_body);
-                modal_btn.attr('href', data.redirect)
-                    .removeClass('hide');
+                if (data.redirect) {
+                    modal_btn.attr('href', data.redirect).removeClass('hide');
+                } else {
+                    modal_btn.attr('href', "");
+                }
                 if (data.status === true) {
                     fa_icon.attr('class', 'checkmark');
                 } else {
