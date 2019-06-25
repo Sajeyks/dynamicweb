@@ -1,5 +1,8 @@
 import logging
+import pyotp
+import requests
 from django.contrib.sites.models import Site
+from django.conf import settings
 
 from datacenterlight.tasks import create_vm_task
 from hosting.models import HostingOrder, HostingBill, OrderDetail
@@ -10,7 +13,6 @@ from .cms_models import CMSIntegration
 from .models import VMPricing, VMTemplate
 
 logger = logging.getLogger(__name__)
-
 
 def get_cms_integration(name):
     current_site = Site.objects.get_current()
@@ -100,3 +102,22 @@ def clear_all_session_vars(request):
                             'generic_payment_details', 'product_id']:
             if session_var in request.session:
                 del request.session[session_var]
+
+
+def check_otp(name, realm, token):
+    data = {
+        "auth_name": settings.AUTH_NAME,
+        "auth_token": pyotp.TOTP(settings.AUTH_SEED).now(),
+        "auth_realm": settings.AUTH_REALM,
+        "name": name,
+        "realm": realm,
+        "token": token
+    }
+    response = requests.post(
+        "https://{OTP_SERVER}{OTP_VERIFY_ENDPOINT}".format(
+            OTP_SERVER=settings.OTP_SERVER,
+            OTP_VERIFY_ENDPOINT=settings.OTP_VERIFY_ENDPOINT
+        ),
+        data=data
+    )
+    return response.status_code

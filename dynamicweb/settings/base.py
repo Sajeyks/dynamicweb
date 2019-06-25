@@ -721,6 +721,14 @@ X_FRAME_OPTIONS = ('SAMEORIGIN' if X_FRAME_OPTIONS_ALLOW_FROM_URI is None else
 
 DEBUG = bool_env('DEBUG')
 
+READ_VM_REALM = env('READ_VM_REALM')
+AUTH_NAME = env('AUTH_NAME')
+AUTH_SEED = env('AUTH_SEED')
+AUTH_REALM = env('AUTH_REALM')
+OTP_SERVER = env('OTP_SERVER')
+OTP_VERIFY_ENDPOINT = env('OTP_VERIFY_ENDPOINT')
+
+
 if DEBUG:
     from .local import *  # flake8: noqa
 else:

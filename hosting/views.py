@@ -28,13 +28,16 @@ from django.views.generic import (
 )
 from guardian.mixins import PermissionRequiredMixin
 from oca.pool import WrongIdError
+from rest_framework.renderers import JSONRenderer
+from rest_framework.response import Response
+from rest_framework.views import APIView
 from stored_messages.api import mark_read
 from stored_messages.models import Message
 from stored_messages.settings import stored_messages_settings
 
 from datacenterlight.cms_models import DCLCalculatorPluginModel
 from datacenterlight.models import VMTemplate, VMPricing
-from datacenterlight.utils import create_vm, get_cms_integration
+from datacenterlight.utils import create_vm, get_cms_integration, check_otp
 from hosting.models import UserCardDetail
 from membership.models import CustomUser, StripeCustomer
 from opennebula_api.models import OpenNebulaManager
@@ -67,9 +70,12 @@ from .models import (
 
 logger = logging.getLogger(__name__)
 
+
 CONNECTION_ERROR = "Your VMs cannot be displayed at the moment due to a \
                     backend connection error. please try again in a few \
                     minutes."
+
+
 decorators = [never_cache]
 
 
@@ -1757,3 +1763,39 @@ def forbidden_view(request, exception=None, reason=''):
                 'again.')
     messages.add_message(request, messages.ERROR, err_msg)
     return HttpResponseRedirect(request.get_full_path())
+
+
+class CheckUserVM(APIView):
+    renderer_classes = (JSONRenderer, )
+
+    def get(self, request):
+        try:
+            email = request.data['email']
+            ip = request.data['ip']
+            user = request.data['user']
+            realm = request.data['realm']
+            token = request.data['token']
+            if realm != settings.READ_VM_REALM:
+                return Response("User not allowed", 403)
+            response = check_otp(user, realm, token)
+            if response != 200:
+                return Response('Invalid token', 403)
+            manager = OpenNebulaManager()
+            # not the best way to lookup vms by ip
+            # TODO: make this optimal
+            vms = manager.get_vms()
+            users_vms = [vm for vm in vms if vm.uname == email]
+            if len(users_vms) == 0:
+                return Response('No VM found with the given email address',
+                                404)
+            for vm in users_vms:
+                for nic in vm.template.nics:
+                    if hasattr(nic, 'ip6_global'):
+                        if nic.ip6_global == ip:
+                            return Response('success', 200)
+                    elif hasattr(nic, 'ip'):
+                        if nic.ip == ip:
+                            return Response('success', 200)
+            return Response('No VM found matching the ip address provided', 404)
+        except KeyError:
+            return Response('Not enough data provided', 400)
