@@ -595,8 +595,12 @@ class OrderConfirmationView(DetailView, FormView):
         # Check ssh public key and then proceed
         form = self.get_form()
         required = 'add_ssh' in self.request.POST
-        form.fields['name'].required = required
-        form.fields['public_key'].required = required
+
+        # SSH key is required only if the user doesn't have an existing
+        # key
+        if len(get_all_public_keys(self.request.user)) == 0:
+            form.fields['name'].required = required
+            form.fields['public_key'].required = required
         if not form.is_valid():
             response = {
                 'status': False,
