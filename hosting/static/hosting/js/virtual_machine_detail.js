@@ -81,58 +81,6 @@ $(document).ready(function() {
             })
     });
 
-    $('#modal-add-ssh-key-button').click(function(e) {
-        var url = $('#add_ssh_key_to_vm_form').attr('action');
-        console.log("Url to POST " + url);
-
-        // Declare a checkbox array
-        var chkArray = [];
-        var encoded_data ="";
-
-        // Look for all checkboxes that have a specific class and was checked
-        $(".chk-ssh-key:checked").each(function() {
-            chkArray.push($(this).val());
-        });
-        encoded_data = encodeURIComponent(chkArray.join(","));
-        console.log("Encoded data = " + encoded_data);
-
-        fa_icon = $('#ssh-key-modal-icon');
-        modal_btn = $('#modal-add-ssh-key-button');
-        modal_btn.prop("disabled", true);
-        modal_btn.html('<i class="fa fa-cog fa-spin" aria-hidden="true"></i>');
-        $.post(url, {selected_key: encoded_data})
-            .done(function(data) {
-                console.log("Request Done");
-                modal_btn.prop("disabled", false);
-                modal_btn.html("OK");
-                if (data.status === true) {
-                    fa_icon.html('<i class="checkmark" aria-hidden="true"></i>');
-                } else {
-                    fa_icon.html('<i class="fa fa-close" aria-hidden="true"></i>');
-                    modal_btn.attr('class', '').addClass('btn btn-danger btn-ok btn-wide');
-                }
-                console.log("title = " + data.msg_title);
-                console.log("desc = " + data.msg_body);
-                $('#ssh-key-modal-title').text(data.msg_title);
-                $('#ssh-key-modal-description').html(data.msg_body);
-                console.log("Request Done end");
-            })
-            .fail(function(data) {
-                console.log("Request Failed");
-                console.log("title " + data.msg_title);
-                console.log("body " + data.msg_body);
-                modal_btn.attr('class', '').addClass('btn btn-danger btn-ok btn-wide');
-                $('#ssh-key-modal-title').text(data.msg_title);
-                $('#ssh-key-modal-description').html(data.msg_body);
-            })
-            .always(function () {
-                console.log("changing href to location: " + location);
-                $('#modal-add-ssh-key-button').unbind('click').click(function () {
-                    location.reload();
-                });
-            })
-    });
-
     var hash = window.location.hash;
     hash && $('ul.nav a[href="' + hash + '"]').tab('show');
 

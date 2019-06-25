@@ -10,7 +10,7 @@ from .views import (
     HostingPricingView, CreateVirtualMachinesView, HostingBillListView,
     HostingBillDetailView, SSHKeyDeleteView, SSHKeyCreateView, SSHKeyListView,
     SSHKeyChoiceView, DashboardView, SettingsView, ResendActivationEmailView,
-    InvoiceListView, InvoiceDetailView, AddSshKeyToVMView
+    InvoiceListView, InvoiceDetailView
 )
 
 urlpatterns = [
@@ -41,8 +41,6 @@ urlpatterns = [
         VirtualMachinesPlanListView.as_view(), name='virtual_machines'),
     url(r'my-virtual-machines/(?P<pk>\d+)/?$', VirtualMachineView.as_view(),
         name='virtual_machines'),
-    url(r'add-key-vm/(?P<pk>\d+)/?$', AddSshKeyToVMView.as_view(),
-        name='add_key_vm'),
     url(r'ssh_keys/?$', SSHKeyListView.as_view(),
         name='ssh_keys'),
     url(r'ssh_keys_choice/?$', SSHKeyChoiceView.as_view(),
