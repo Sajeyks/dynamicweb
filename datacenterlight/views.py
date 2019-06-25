@@ -588,19 +588,18 @@ class OrderConfirmationView(DetailView, FormView):
         return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
-        user = request.session.get('user')
-        stripe_api_cus_id = request.session.get('customer')
-        stripe_utils = StripeUtils()
-
         # Check ssh public key and then proceed
         form = self.get_form()
-        required = 'add_ssh' in self.request.POST
+        required = True
 
-        # SSH key is required only if the user doesn't have an existing
-        # key
-        if len(get_all_public_keys(self.request.user)) == 0:
-            form.fields['name'].required = required
-            form.fields['public_key'].required = required
+        # SSH key validation is required only if the user doesn't have an
+        # existing key and user has input some value in the add ssh key fields
+        if (len(get_all_public_keys(self.request.user)) > 0 and
+                (len(form.data.get('public_key')) == 0 and
+                         len(form.data.get('name')) == 0)):
+            required = False
+        form.fields['name'].required = required
+        form.fields['public_key'].required = required
         if not form.is_valid():
             response = {
                 'status': False,
@@ -609,9 +608,14 @@ class OrderConfirmationView(DetailView, FormView):
             }
             return JsonResponse(response)
 
-        # We have a valid SSH key from the user, save it in opennebula and db
-        # and proceed further
-        form.save()
+        if required:
+            # We have a valid SSH key from the user, save it in opennebula and
+            # db and proceed further
+            form.save()
+
+        user = request.session.get('user')
+        stripe_api_cus_id = request.session.get('customer')
+        stripe_utils = StripeUtils()
 
         if 'token' in request.session:
             card_details = stripe_utils.get_cards_details_from_token(

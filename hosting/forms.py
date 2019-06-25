@@ -187,7 +187,8 @@ class UserHostingKeyForm(forms.ModelForm):
         alerts the user of it.
         :return:
         """
-        if 'generate' in self.request.POST:
+        if ('generate' in self.request.POST
+                or not self.fields['public_key'].required):
             return self.data.get('public_key')
         KEY_ERROR_MESSAGE = _("Please input a proper SSH key")
         openssh_pubkey_str = self.data.get('public_key').strip()
