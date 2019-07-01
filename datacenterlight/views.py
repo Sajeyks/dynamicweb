@@ -523,11 +523,31 @@ class PaymentOrderView(FormView):
             else:
                 request.session['customer'] = customer
             return HttpResponseRedirect(
-                reverse('datacenterlight:order_confirmation'))
+                reverse('datacenterlight:add_ssh_key'))
         else:
             context = self.get_context_data()
             context['billing_address_form'] = address_form
             return self.render_to_response(context)
+
+
+class AskSSHKeyView(FormView):
+    form_class = UserHostingKeyForm
+    template_name = "datacenterlight/add_ssh_key.html"
+
+    def get_form_kwargs(self):
+        kwargs = super(AskSSHKeyView, self).get_form_kwargs()
+        kwargs.update({'request': self.request})
+        return kwargs
+
+    @cache_control(no_cache=True, must_revalidate=True, no_store=True)
+    def get(self, request, *args, **kwargs):
+        context = {
+            'site_url': reverse('datacenterlight:index'),
+            'cms_integration': get_cms_integration('default'),
+            'form': UserHostingKeyForm(request=self.request),
+            'keys': get_all_public_keys(self.request.user)
+        }
+        return render(request, self.template_name, context)
 
 
 class OrderConfirmationView(DetailView, FormView):
