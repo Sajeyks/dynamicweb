@@ -3,9 +3,8 @@ from django.views.generic import TemplateView, RedirectView
 
 from .views import (
     IndexView, PaymentOrderView, OrderConfirmationView,
-    WhyDataCenterLightView, ContactUsView
+    WhyDataCenterLightView, ContactUsView, AskSSHKeyView
 )
-
 
 urlpatterns = [
     url(r'^$', IndexView.as_view(), name='index'),
@@ -20,6 +19,8 @@ urlpatterns = [
     url(r'^payment/?$', PaymentOrderView.as_view(), name='payment'),
     url(r'^order-confirmation/?$', OrderConfirmationView.as_view(),
         name='order_confirmation'),
+    url(r'^add-ssh-key/?$', AskSSHKeyView.as_view(),
+        name='add_ssh_key'),
     url(r'^contact/?$', ContactUsView.as_view(), name='contact_us'),
     url(r'glasfaser/?$',
         TemplateView.as_view(template_name='ungleich_page/glasfaser.html'),
