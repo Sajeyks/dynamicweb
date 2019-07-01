@@ -1,8 +1,9 @@
 import logging
+
 import pyotp
 import requests
-from django.contrib.sites.models import Site
 from django.conf import settings
+from django.contrib.sites.models import Site
 
 from datacenterlight.tasks import create_vm_task
 from hosting.models import HostingOrder, HostingBill, OrderDetail
@@ -99,7 +100,8 @@ def clear_all_session_vars(request):
         for session_var in ['specs', 'template', 'billing_address',
                             'billing_address_data', 'card_id',
                             'token', 'customer', 'generic_payment_type',
-                            'generic_payment_details', 'product_id']:
+                            'generic_payment_details', 'product_id',
+                            'order_confirm_url']:
             if session_var in request.session:
                 del request.session[session_var]
 
