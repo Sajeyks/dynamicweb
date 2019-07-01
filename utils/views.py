@@ -225,13 +225,16 @@ class SSHKeyCreateView(FormView):
                 'form': UserHostingKeyForm(request=self.request),
             })
 
-        owner = self.request.user
-        manager = OpenNebulaManager(
-            email=owner.email,
-            password=owner.password
-        )
-        keys_to_save = get_all_public_keys(self.request.user)
-        manager.save_key_in_opennebula_user('\n'.join(keys_to_save))
+        if self.request.user.is_authenticated():
+            owner = self.request.user
+            manager = OpenNebulaManager(
+                email=owner.email,
+                password=owner.password
+            )
+            keys_to_save = get_all_public_keys(self.request.user)
+            manager.save_key_in_opennebula_user('\n'.join(keys_to_save))
+        else:
+            self.request.session["new_user_hosting_key_id"] = form.instance.id
         return HttpResponseRedirect(self.success_url)
 
     def post(self, request, *args, **kwargs):
