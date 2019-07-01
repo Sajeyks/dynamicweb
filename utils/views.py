@@ -1,16 +1,26 @@
+import uuid
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.tokens import default_token_generator
+from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse_lazy
 from django.http import HttpResponseRedirect
+from django.shortcuts import render
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.translation import ugettext_lazy as _
-from django.views.generic import FormView, CreateView
 from django.views.decorators.cache import cache_control
+from django.views.generic import FormView, CreateView
 
+from datacenterlight.utils import get_cms_integration
+from hosting.forms import UserHostingKeyForm
+from hosting.models import UserHostingKey
 from membership.models import CustomUser
+from opennebula_api.models import OpenNebulaManager
+from utils.hosting_utils import get_all_public_keys
 from .forms import SetPasswordForm
 from .mailer import BaseEmail
 
@@ -174,3 +184,107 @@ class PasswordResetConfirmViewMixin(FormView):
             form.add_error(None,
                            _('The reset password link is no longer valid.'))
             return self.form_invalid(form)
+
+
+class SSHKeyCreateView(LoginRequiredMixin, FormView):
+    form_class = UserHostingKeyForm
+    model = UserHostingKey
+    template_name = 'hosting/user_key.html'
+    login_url = reverse_lazy('hosting:login')
+    context_object_name = "virtual_machine"
+    success_url = reverse_lazy('hosting:ssh_keys')
+
+    def get_form_kwargs(self):
+        kwargs = super(SSHKeyCreateView, self).get_form_kwargs()
+        kwargs.update({'request': self.request})
+        return kwargs
+
+    def form_valid(self, form):
+        form.save()
+        if settings.DCL_SSH_KEY_NAME_PREFIX in form.instance.name:
+            content = ContentFile(form.cleaned_data.get('private_key'))
+            filename = form.cleaned_data.get(
+                'name') + '_' + str(uuid.uuid4())[:8] + '_private.pem'
+            form.instance.private_key.save(filename, content)
+        context = self.get_context_data()
+
+        next_url = self.request.session.get(
+            'next',
+            reverse_lazy('hosting:create_virtual_machine')
+        )
+
+        if 'next' in self.request.session:
+            context.update({
+                'next_url': next_url
+            })
+            del (self.request.session['next'])
+
+        if form.cleaned_data.get('private_key'):
+            context.update({
+                'private_key': form.cleaned_data.get('private_key'),
+                'key_name': form.cleaned_data.get('name'),
+                'form': UserHostingKeyForm(request=self.request),
+            })
+
+        owner = self.request.user
+        manager = OpenNebulaManager(
+            email=owner.email,
+            password=owner.password
+        )
+        keys_to_save = get_all_public_keys(self.request.user)
+        manager.save_key_in_opennebula_user('\n'.join(keys_to_save))
+        return HttpResponseRedirect(self.success_url)
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        required = 'add_ssh' in self.request.POST
+        form.fields['name'].required = required
+        form.fields['public_key'].required = required
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+
+
+class AskSSHKeyView(SSHKeyCreateView):
+    form_class = UserHostingKeyForm
+    template_name = "datacenterlight/add_ssh_key.html"
+    success_url = reverse_lazy('datacenterlight:order_confirmation')
+    context_object_name = "dcl_vm_buy_add_ssh_key"
+
+    @cache_control(no_cache=True, must_revalidate=True, no_store=True)
+    def get(self, request, *args, **kwargs):
+        context = {
+            'site_url': reverse_lazy('datacenterlight:index'),
+            'cms_integration': get_cms_integration('default'),
+            'form': UserHostingKeyForm(request=self.request),
+            'keys': get_all_public_keys(self.request.user)
+        }
+        return render(request, self.template_name, context)
+    #
+    # def post(self, request, *args, **kwargs):
+    #     # Check ssh public key and then proceed
+    #     form = self.get_form()
+    #     required = True
+    #
+    #     # SSH key validation is required only if the user doesn't have an
+    #     # existing key and user has input some value in the add ssh key fields
+    #     if (len(get_all_public_keys(self.request.user)) > 0 and
+    #             (len(form.data.get('public_key')) == 0 and
+    #                      len(form.data.get('name')) == 0)):
+    #         required = False
+    #     form.fields['name'].required = required
+    #     form.fields['public_key'].required = required
+    #     if not form.is_valid():
+    #         response = {
+    #             'status': False,
+    #             'msg_title': str(_('SSH key related error occurred')),
+    #             'msg_body': "<br/>".join([str(v) for k,v in form.errors.items()]),
+    #         }
+    #         return JsonResponse(response)
+    #
+    #     if required:
+    #         # We have a valid SSH key from the user, save it in opennebula and
+    #         # db and proceed further
+    #         form.save()
+
