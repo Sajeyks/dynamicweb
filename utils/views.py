@@ -262,3 +262,6 @@ class AskSSHKeyView(SSHKeyCreateView):
         }
         return render(request, self.template_name, context)
 
+    def post(self, request, *args, **kwargs):
+        self.success_url = self.request.get("order_confirm_url")
+        return super(AskSSHKeyView, self)
