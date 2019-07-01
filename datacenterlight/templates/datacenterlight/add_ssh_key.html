@@ -1,0 +1,8 @@
+
+{% load staticfiles bootstrap3 i18n custom_tags humanize %}
+
+{% block content %}
+    {% block userkey_form %}
+        {% include  'hosting/user_key.html' with title="Your VM is almost ready!" sub_title="You just need to specify your public SSH key." %}
+    {% endblock userkey_form %}
+{%endblock%}
