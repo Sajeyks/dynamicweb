@@ -769,10 +769,10 @@ class PaymentVMView(LoginRequiredMixin, FormView):
                         reverse('hosting:payment') + '#payment_error')
                 request.session['token'] = token
             request.session['billing_address_data'] = billing_address_data
-            return HttpResponseRedirect("{url}?{query_params}".format(
-                url=reverse('hosting:order-confirmation'),
-                query_params='page=payment')
-            )
+            self.request.session['order_confirm_url'] = "{url}?{query_params}".format(
+                    url=reverse('hosting:order-confirmation'),
+                    query_params='page=payment')
+            return HttpResponseRedirect(reverse('hosting:add_ssh_key'))
         else:
             return self.form_invalid(form)
 

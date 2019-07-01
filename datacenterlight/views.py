@@ -528,8 +528,10 @@ class PaymentOrderView(FormView):
                     self.request.session['generic_payment_type'] == 'generic'):
                 return HttpResponseRedirect(
                     reverse('datacenterlight:order_confirmation'))
-            return HttpResponseRedirect(
-                reverse('datacenterlight:add_ssh_key'))
+            else:
+                self.request.session['order_confirm_url'] = reverse('datacenterlight:order_confirmation')
+                return HttpResponseRedirect(
+                    reverse('datacenterlight:add_ssh_key'))
         else:
             context = self.get_context_data()
             context['billing_address_form'] = address_form
