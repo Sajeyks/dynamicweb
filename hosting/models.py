@@ -1,11 +1,11 @@
 import json
 import logging
 import os
-import pytz
+from datetime import datetime
 
+import pytz
 from Crypto.PublicKey import RSA
 from dateutil.relativedelta import relativedelta
-from datetime import datetime
 from django.db import models
 from django.utils import timezone
 from django.utils.functional import cached_property
@@ -187,7 +187,7 @@ class HostingOrder(AssignPermissionsMixin, models.Model):
 
 
 class UserHostingKey(models.Model):
-    user = models.ForeignKey(CustomUser)
+    user = models.ForeignKey(CustomUser, blank=True, null=True)
     public_key = models.TextField()
     private_key = models.FileField(upload_to='private_keys', blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
