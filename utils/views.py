@@ -3,7 +3,6 @@ import uuid
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.tokens import default_token_generator
 from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse_lazy
@@ -186,7 +185,7 @@ class PasswordResetConfirmViewMixin(FormView):
             return self.form_invalid(form)
 
 
-class SSHKeyCreateView(LoginRequiredMixin, FormView):
+class SSHKeyCreateView(FormView):
     form_class = UserHostingKeyForm
     model = UserHostingKey
     template_name = 'hosting/user_key.html'
