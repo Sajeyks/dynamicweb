@@ -524,67 +524,6 @@ class SSHKeyChoiceView(LoginRequiredMixin, View):
 
 
 @method_decorator(decorators, name='dispatch')
-class SSHKeyCreateView(LoginRequiredMixin, FormView):
-    form_class = UserHostingKeyForm
-    model = UserHostingKey
-    template_name = 'hosting/user_key.html'
-    login_url = reverse_lazy('hosting:login')
-    context_object_name = "virtual_machine"
-    success_url = reverse_lazy('hosting:ssh_keys')
-
-    def get_form_kwargs(self):
-        kwargs = super(SSHKeyCreateView, self).get_form_kwargs()
-        kwargs.update({'request': self.request})
-        return kwargs
-
-    def form_valid(self, form):
-        form.save()
-        if settings.DCL_SSH_KEY_NAME_PREFIX in form.instance.name:
-            content = ContentFile(form.cleaned_data.get('private_key'))
-            filename = form.cleaned_data.get(
-                'name') + '_' + str(uuid.uuid4())[:8] + '_private.pem'
-            form.instance.private_key.save(filename, content)
-        context = self.get_context_data()
-
-        next_url = self.request.session.get(
-            'next',
-            reverse('hosting:create_virtual_machine')
-        )
-
-        if 'next' in self.request.session:
-            context.update({
-                'next_url': next_url
-            })
-            del (self.request.session['next'])
-
-        if form.cleaned_data.get('private_key'):
-            context.update({
-                'private_key': form.cleaned_data.get('private_key'),
-                'key_name': form.cleaned_data.get('name'),
-                'form': UserHostingKeyForm(request=self.request),
-            })
-
-        owner = self.request.user
-        manager = OpenNebulaManager(
-            email=owner.email,
-            password=owner.password
-        )
-        keys_to_save = get_all_public_keys(self.request.user)
-        manager.save_key_in_opennebula_user('\n'.join(keys_to_save))
-        return HttpResponseRedirect(self.success_url)
-
-    def post(self, request, *args, **kwargs):
-        form = self.get_form()
-        required = 'add_ssh' in self.request.POST
-        form.fields['name'].required = required
-        form.fields['public_key'].required = required
-        if form.is_valid():
-            return self.form_valid(form)
-        else:
-            return self.form_invalid(form)
-
-
-@method_decorator(decorators, name='dispatch')
 class SettingsView(LoginRequiredMixin, FormView):
     template_name = "hosting/settings.html"
     login_url = reverse_lazy('hosting:login')

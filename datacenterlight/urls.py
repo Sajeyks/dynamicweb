@@ -1,9 +1,10 @@
 from django.conf.urls import url
 from django.views.generic import TemplateView, RedirectView
 
+from utils.views import AskSSHKeyView
 from .views import (
     IndexView, PaymentOrderView, OrderConfirmationView,
-    WhyDataCenterLightView, ContactUsView, AskSSHKeyView
+    WhyDataCenterLightView, ContactUsView
 )
 
 urlpatterns = [
