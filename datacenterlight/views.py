@@ -522,6 +522,12 @@ class PaymentOrderView(FormView):
                 request.session['customer'] = customer.stripe_id
             else:
                 request.session['customer'] = customer
+
+            # For generic payment we take the user directly to confirmation
+            if ('generic_payment_type' in request.session and
+                    self.request.session['generic_payment_type'] == 'generic'):
+                return HttpResponseRedirect(
+                    reverse('datacenterlight:order_confirmation'))
             return HttpResponseRedirect(
                 reverse('datacenterlight:add_ssh_key'))
         else:
