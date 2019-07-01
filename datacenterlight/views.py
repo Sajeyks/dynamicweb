@@ -17,9 +17,10 @@ from hosting.forms import (
     UserHostingKeyForm
 )
 from hosting.models import (
-    HostingBill, HostingOrder, UserCardDetail, GenericProduct
+    HostingBill, HostingOrder, UserCardDetail, GenericProduct, UserHostingKey
 )
 from membership.models import CustomUser, StripeCustomer
+from opennebula_api.models import OpenNebulaManager
 from opennebula_api.serializers import VMTemplateSerializer
 from utils.forms import (
     BillingAddressForm, BillingAddressFormSignup, UserBillingAddressForm,
@@ -847,6 +848,18 @@ class OrderConfirmationView(DetailView, FormView):
                 new_user = authenticate(username=custom_user.email,
                                         password=password)
                 login(request, new_user)
+            if 'new_user_hosting_key_id' in self.request.session:
+                user_hosting_key = UserHostingKey.objects.get(self.request.session['new_user_hosting_key_id'])
+                user_hosting_key.user = new_user
+                user_hosting_key.save()
+
+                owner = new_user
+                manager = OpenNebulaManager(
+                    email=owner.email,
+                    password=owner.password
+                )
+                keys_to_save = get_all_public_keys(new_user)
+                manager.save_key_in_opennebula_user('\n'.join(keys_to_save))
         else:
             # We assume that if the user is here, his/her StripeCustomer
             # object already exists
