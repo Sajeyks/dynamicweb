@@ -588,31 +588,6 @@ class OrderConfirmationView(DetailView, FormView):
         return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
-        # Check ssh public key and then proceed
-        form = self.get_form()
-        required = True
-
-        # SSH key validation is required only if the user doesn't have an
-        # existing key and user has input some value in the add ssh key fields
-        if (len(get_all_public_keys(self.request.user)) > 0 and
-                (len(form.data.get('public_key')) == 0 and
-                         len(form.data.get('name')) == 0)):
-            required = False
-        form.fields['name'].required = required
-        form.fields['public_key'].required = required
-        if not form.is_valid():
-            response = {
-                'status': False,
-                'msg_title': str(_('SSH key related error occurred')),
-                'msg_body': "<br/>".join([str(v) for k,v in form.errors.items()]),
-            }
-            return JsonResponse(response)
-
-        if required:
-            # We have a valid SSH key from the user, save it in opennebula and
-            # db and proceed further
-            form.save()
-
         user = request.session.get('user')
         stripe_api_cus_id = request.session.get('customer')
         stripe_utils = StripeUtils()
