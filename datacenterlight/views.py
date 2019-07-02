@@ -848,10 +848,10 @@ class OrderConfirmationView(DetailView, FormView):
                 new_user = authenticate(username=custom_user.email,
                                         password=password)
                 login(request, new_user)
-            if 'new_user_hosting_key_id' in self.request.session:
-                user_hosting_key = UserHostingKey.objects.get(self.request.session['new_user_hosting_key_id'])
-                user_hosting_key.user = new_user
-                user_hosting_key.save()
+                if 'new_user_hosting_key_id' in self.request.session:
+                    user_hosting_key = UserHostingKey.objects.get(id=self.request.session['new_user_hosting_key_id'])
+                    user_hosting_key.user = new_user
+                    user_hosting_key.save()
 
                 owner = new_user
                 manager = OpenNebulaManager(
