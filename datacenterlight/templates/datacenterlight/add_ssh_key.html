@@ -3,6 +3,8 @@
 
 {% block content %}
     {% block userkey_form %}
-        {% include  'hosting/user_key.html' with title="Your VM is almost ready!" sub_title="You need to specify your public SSH key to access your VM. You can either add your existing key, or generate a new key pair by clicking the generate button below. After choosing your public SSH key option you’ll be directed to the order confirmation page." %}
+        {% with form_title=_("Your VM is almost ready!") form_sub_title=_("You need to specify your public SSH key to access your VM. You can either add your existing key, or generate a new key pair by clicking the generate button below. After choosing your public SSH key option you’ll be directed to the order confirmation page.") %}
+            {% include  'hosting/user_key.html' with title=form_title sub_title=form_sub_title %}
+        {% endwith %}
     {% endblock userkey_form %}
 {%endblock%}
