@@ -27,7 +27,7 @@ msgid "Your New VM %(vm_name)s at Data Center Light"
 msgstr "Deine neue VM %(vm_name)s bei Data Center Light"
 
 msgid "Your VM is almost ready!"
-msgstr ""
+msgstr "Ihre VM ist fast fertig!"
 
 msgid ""
 "You need to specify your public SSH key to access your VM. You can either "
