@@ -376,7 +376,7 @@ class OpenNebulaManager():
         """
         return_value = self.oneadmin_client.call(
             'user.update',
-            self.opennebula_user.id,
+            self.opennebula_user if type(self.opennebula_user) == int else self.opennebula_user.id,
             '<CONTEXT><SSH_PUBLIC_KEY>%s</SSH_PUBLIC_KEY></CONTEXT>' % ssh_key,
             update_type
         )
