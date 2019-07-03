@@ -222,7 +222,7 @@ class UserHostingKeyForm(forms.ModelForm):
         return self.data.get('name')
 
     def clean_user(self):
-        return self.request.user
+        return self.request.user if self.request.user.is_authenticated() else None
 
     def clean(self):
         cleaned_data = self.cleaned_data

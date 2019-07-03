@@ -17,9 +17,10 @@ from hosting.forms import (
     UserHostingKeyForm
 )
 from hosting.models import (
-    HostingBill, HostingOrder, UserCardDetail, GenericProduct
+    HostingBill, HostingOrder, UserCardDetail, GenericProduct, UserHostingKey
 )
 from membership.models import CustomUser, StripeCustomer
+from opennebula_api.models import OpenNebulaManager
 from opennebula_api.serializers import VMTemplateSerializer
 from utils.forms import (
     BillingAddressForm, BillingAddressFormSignup, UserBillingAddressForm,
@@ -522,8 +523,16 @@ class PaymentOrderView(FormView):
                 request.session['customer'] = customer.stripe_id
             else:
                 request.session['customer'] = customer
-            return HttpResponseRedirect(
-                reverse('datacenterlight:order_confirmation'))
+
+            # For generic payment we take the user directly to confirmation
+            if ('generic_payment_type' in request.session and
+                    self.request.session['generic_payment_type'] == 'generic'):
+                return HttpResponseRedirect(
+                    reverse('datacenterlight:order_confirmation'))
+            else:
+                self.request.session['order_confirm_url'] = reverse('datacenterlight:order_confirmation')
+                return HttpResponseRedirect(
+                    reverse('datacenterlight:add_ssh_key'))
         else:
             context = self.get_context_data()
             context['billing_address_form'] = address_form
@@ -588,31 +597,6 @@ class OrderConfirmationView(DetailView, FormView):
         return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
-        # Check ssh public key and then proceed
-        form = self.get_form()
-        required = True
-
-        # SSH key validation is required only if the user doesn't have an
-        # existing key and user has input some value in the add ssh key fields
-        if (len(get_all_public_keys(self.request.user)) > 0 and
-                (len(form.data.get('public_key')) == 0 and
-                         len(form.data.get('name')) == 0)):
-            required = False
-        form.fields['name'].required = required
-        form.fields['public_key'].required = required
-        if not form.is_valid():
-            response = {
-                'status': False,
-                'msg_title': str(_('SSH key related error occurred')),
-                'msg_body': "<br/>".join([str(v) for k,v in form.errors.items()]),
-            }
-            return JsonResponse(response)
-
-        if required:
-            # We have a valid SSH key from the user, save it in opennebula and
-            # db and proceed further
-            form.save()
-
         user = request.session.get('user')
         stripe_api_cus_id = request.session.get('customer')
         stripe_utils = StripeUtils()
@@ -864,6 +848,18 @@ class OrderConfirmationView(DetailView, FormView):
                 new_user = authenticate(username=custom_user.email,
                                         password=password)
                 login(request, new_user)
+                if 'new_user_hosting_key_id' in self.request.session:
+                    user_hosting_key = UserHostingKey.objects.get(id=self.request.session['new_user_hosting_key_id'])
+                    user_hosting_key.user = new_user
+                    user_hosting_key.save()
+
+                owner = new_user
+                manager = OpenNebulaManager(
+                    email=owner.email,
+                    password=owner.password
+                )
+                keys_to_save = get_all_public_keys(new_user)
+                manager.save_key_in_opennebula_user('\n'.join(keys_to_save))
         else:
             # We assume that if the user is here, his/her StripeCustomer
             # object already exists

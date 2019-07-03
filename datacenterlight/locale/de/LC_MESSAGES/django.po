@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-09-26 20:44+0000\n"
+"POT-Creation-Date: 2019-07-03 11:18+0000\n"
 "PO-Revision-Date: 2018-03-30 23:22+0000\n"
 "Last-Translator: b'Anonymous User <coder.purple+25@gmail.com>'\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -25,6 +25,22 @@ msgstr ""
 #, python-format
 msgid "Your New VM %(vm_name)s at Data Center Light"
 msgstr "Deine neue VM %(vm_name)s bei Data Center Light"
+
+msgid "Your VM is almost ready!"
+msgstr "Deine VM ist fast fertig!"
+
+msgid ""
+"You need to specify your public SSH key to access your VM. You can either "
+"add your existing key, or generate a new key pair by clicking the generate "
+"button below. After choosing your public SSH key option you’ll be directed "
+"to the order confirmation page."
+msgstr ""
+"Du musst deinen öffentlichen SSH-Schlüssel angeben, um auf deine VM "
+"zugreifen zu können. Du kannst entweder deinen vorhandenen Schlüssel "
+"hinzufügen oder ein neues Schlüsselpaar generieren, indem du auf die "
+"Schaltfläche \"Generieren\" unten klickst. Nachdem du deine öffentliche SSH-"
+"Schlüsseloption ausgewählt hast, wirst du zur Bestellbestätigungsseite "
+"weitergeleitet. "
 
 msgid "All Rights Reserved"
 msgstr "Alle Rechte vorbehalten"
@@ -134,6 +150,10 @@ msgstr "Unser Angebot beginnt bei 15 CHF pro Monat. Probier's jetzt aus!"
 msgid "ORDER VM"
 msgstr "VM BESTELLEN"
 
+#, python-format
+msgid "Please enter a value in range %(min_ram)s - 200."
+msgstr "Bitte gib einen Wert von %(min_ram)s bis 200 ein."
+
 msgid "VM hosting"
 msgstr ""
 
@@ -151,9 +171,6 @@ msgstr "Standort: Schweiz"
 
 msgid "Please enter a value in range 1 - 48."
 msgstr "Bitte gib einen Wert von 1 bis 48 ein."
-
-msgid "Please enter a value in range 1 - 200."
-msgstr "Bitte gib einen Wert von 1 bis 200 ein."
 
 msgid "Please enter a value in range 10 - 2000."
 msgstr "Bitte gib einen Wert von 10 bis 2000 ein."
@@ -413,6 +430,10 @@ msgstr "Zwischensumme"
 msgid "VAT"
 msgstr "Mehrwertsteuer"
 
+#, fuzzy, python-format
+#| msgid ""
+#| "By clicking \"Place order\" this plan will charge your credit card "
+#| "account with %(total_price)s CHF/month"
 msgid ""
 "By clicking \"Place order\" this plan will charge your credit card account "
 "with %(total_price)s CHF/month"
@@ -420,6 +441,10 @@ msgstr ""
 "Wenn Du \"bestellen\" auswählst, wird Deine Kreditkarte mit "
 "%(vm_total_price)s CHF pro Monat belastet"
 
+#, fuzzy, python-format
+#| msgid ""
+#| "By clicking \"Place order\" this payment will charge your credit card "
+#| "account with a one time amount of %(total_price)s CHF"
 msgid ""
 "By clicking \"Place order\" this payment will charge your credit card "
 "account with a one time amount of %(total_price)s CHF"
@@ -534,6 +559,9 @@ msgstr "Tagen sagen mehr als Worte – Teste jetzt unsere VM!"
 
 msgid "Invalid number of cores"
 msgstr "Ungültige Anzahle CPU-Kerne"
+
+msgid "Invalid calculator properties"
+msgstr ""
 
 msgid "Invalid RAM size"
 msgstr "Ungültige RAM-Grösse"

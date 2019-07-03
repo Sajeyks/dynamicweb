@@ -1,16 +1,25 @@
+import uuid
+
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.tokens import default_token_generator
+from django.core.files.base import ContentFile
 from django.core.urlresolvers import reverse_lazy
 from django.http import HttpResponseRedirect
+from django.shortcuts import render
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.translation import ugettext_lazy as _
-from django.views.generic import FormView, CreateView
 from django.views.decorators.cache import cache_control
+from django.views.generic import FormView, CreateView
 
+from datacenterlight.utils import get_cms_integration
+from hosting.forms import UserHostingKeyForm
+from hosting.models import UserHostingKey
 from membership.models import CustomUser
+from opennebula_api.models import OpenNebulaManager
+from utils.hosting_utils import get_all_public_keys
 from .forms import SetPasswordForm
 from .mailer import BaseEmail
 
@@ -174,3 +183,87 @@ class PasswordResetConfirmViewMixin(FormView):
             form.add_error(None,
                            _('The reset password link is no longer valid.'))
             return self.form_invalid(form)
+
+
+class SSHKeyCreateView(FormView):
+    form_class = UserHostingKeyForm
+    model = UserHostingKey
+    template_name = 'hosting/user_key.html'
+    login_url = reverse_lazy('hosting:login')
+    context_object_name = "virtual_machine"
+    success_url = reverse_lazy('hosting:ssh_keys')
+
+    def get_form_kwargs(self):
+        kwargs = super(SSHKeyCreateView, self).get_form_kwargs()
+        kwargs.update({'request': self.request})
+        return kwargs
+
+    def form_valid(self, form):
+        form.save()
+        if settings.DCL_SSH_KEY_NAME_PREFIX in form.instance.name:
+            content = ContentFile(form.cleaned_data.get('private_key'))
+            filename = form.cleaned_data.get(
+                'name') + '_' + str(uuid.uuid4())[:8] + '_private.pem'
+            form.instance.private_key.save(filename, content)
+        context = self.get_context_data()
+
+        next_url = self.request.session.get(
+            'next',
+            reverse_lazy('hosting:create_virtual_machine')
+        )
+
+        if 'next' in self.request.session:
+            context.update({
+                'next_url': next_url
+            })
+            del (self.request.session['next'])
+
+        if form.cleaned_data.get('private_key'):
+            context.update({
+                'private_key': form.cleaned_data.get('private_key'),
+                'key_name': form.cleaned_data.get('name'),
+                'form': UserHostingKeyForm(request=self.request),
+            })
+
+        if self.request.user.is_authenticated():
+            owner = self.request.user
+            manager = OpenNebulaManager(
+                email=owner.email,
+                password=owner.password
+            )
+            keys_to_save = get_all_public_keys(self.request.user)
+            manager.save_key_in_opennebula_user('\n'.join(keys_to_save))
+        else:
+            self.request.session["new_user_hosting_key_id"] = form.instance.id
+        return HttpResponseRedirect(self.success_url)
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        required = 'add_ssh' in self.request.POST
+        form.fields['name'].required = required
+        form.fields['public_key'].required = required
+        if form.is_valid():
+            return self.form_valid(form)
+        else:
+            return self.form_invalid(form)
+
+
+class AskSSHKeyView(SSHKeyCreateView):
+    form_class = UserHostingKeyForm
+    template_name = "datacenterlight/add_ssh_key.html"
+    success_url = reverse_lazy('datacenterlight:order_confirmation')
+    context_object_name = "dcl_vm_buy_add_ssh_key"
+
+    @cache_control(no_cache=True, must_revalidate=True, no_store=True)
+    def get(self, request, *args, **kwargs):
+        context = {
+            'site_url': reverse_lazy('datacenterlight:index'),
+            'cms_integration': get_cms_integration('default'),
+            'form': UserHostingKeyForm(request=self.request),
+            'keys': get_all_public_keys(self.request.user)
+        }
+        return render(request, self.template_name, context)
+
+    def post(self, request, *args, **kwargs):
+        self.success_url = self.request.session.get("order_confirm_url")
+        return super(AskSSHKeyView, self).post(self, request, *args, **kwargs)

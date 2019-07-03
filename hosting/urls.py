@@ -1,6 +1,7 @@
 from django.conf.urls import url
 from django.contrib.auth import views as auth_views
 
+from utils.views import SSHKeyCreateView, AskSSHKeyView
 from .views import (
     DjangoHostingView, RailsHostingView, PaymentVMView, NodeJSHostingView,
     LoginView, SignupView, SignupValidateView, SignupValidatedView, IndexView,
@@ -8,7 +9,7 @@ from .views import (
     VirtualMachinesPlanListView, VirtualMachineView, OrdersHostingDeleteView,
     MarkAsReadNotificationView, PasswordResetView, PasswordResetConfirmView,
     HostingPricingView, CreateVirtualMachinesView, HostingBillListView,
-    HostingBillDetailView, SSHKeyDeleteView, SSHKeyCreateView, SSHKeyListView,
+    HostingBillDetailView, SSHKeyDeleteView, SSHKeyListView,
     SSHKeyChoiceView, DashboardView, SettingsView, ResendActivationEmailView,
     InvoiceListView, InvoiceDetailView, CheckUserVM
 )
@@ -27,6 +28,8 @@ urlpatterns = [
     url(r'invoices/?$', InvoiceListView.as_view(), name='invoices'),
     url(r'order-confirmation/?$', OrdersHostingDetailView.as_view(),
         name='order-confirmation'),
+    url(r'^add-ssh-key/?$', AskSSHKeyView.as_view(),
+        name='add_ssh_key'),
     url(r'orders/(?P<pk>\d+)/?$', OrdersHostingDetailView.as_view(),
         name='orders'),
     url(r'invoice/(?P<invoice_id>[-\w]+)/?$', InvoiceDetailView.as_view(),

@@ -8,7 +8,8 @@
                 <form method="POST" action="" novalidate class="form-ssh">
                     {% csrf_token %}
                     <div class="page-header">
-                        <h1 class="h1-thin"><i class="fa fa-key" aria-hidden="true"></i>&nbsp;{% trans "Add your public SSH key" %}</h1>
+                        <h1 class="h1-thin"><i class="fa fa-key" aria-hidden="true"></i>&nbsp;{% if title %}{% trans title %}{% else %} {% endif %}</h1>
+                        {% if sub_title %}<span>{% trans sub_title %}</span>{% else %}{% endif %}
                     </div>
                     {% if messages %}
                         <div class="alert alert-warning">

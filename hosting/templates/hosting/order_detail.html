@@ -198,35 +198,6 @@
             {% block submit_btn %}
                 <form method="post" id="virtual_machine_create_form">
                     {% csrf_token %}
-                    {% comment %}
-                    We are in VM buy flow and we want user to click the "Place order" button.
-                    At this point, we also want the user to input the SSH key for the VM.
-                    {% endcomment %}
-
-                    {% if messages %}
-                        <div class="alert alert-warning">
-                            {% for message in messages %}
-                            <span>{{ message }}</span>
-                            {% endfor %}
-                        </div>
-                    {% endif %}
-                    <div class="dashboard-container-head">
-                        <h2 class="dashboard-title-thin"><i class="fa fa-key" aria-hidden="true"></i>&nbsp;{% trans "Add your public SSH key" %}</h2>
-                    </div>
-                <div class="existing-keys">
-                    {% if keys|length > 0 %}
-                    <div class="existing-keys-title">Existing keys</div>
-                    {% endif %}
-                    {% for key in keys %}
-                    <textarea class="form-control input-no-border" style="width: 100%" readonly  rows="6">
-                        {{key}}
-                    </textarea>
-                        <br/>
-                    {% endfor %}
-                </div>
-                    {% for field in form %}
-                        {% bootstrap_field field %}
-                    {% endfor %}
                     <div class="row">
                         <div class="col-sm-8">
                             <div class="dcl-place-order-text">{% blocktrans with vm_price=vm.total_price|floatformat:2|intcomma %}By clicking "Place order" this plan will charge your credit card account with {{ vm_price }} CHF/month{% endblocktrans %}.</div>
