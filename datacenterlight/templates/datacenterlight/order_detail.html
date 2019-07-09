@@ -41,6 +41,7 @@
                 <h4>{% trans "Payment method" %}:</h4>
                 <p>
                     {{cc_brand|default:_('Credit Card')}} {% trans "ending in" %} ****{{cc_last4}}<br>
+                    {% trans "Expiry" %} {{cc_exp_year}}/{{cc_exp_month}}<br/>
                     {{request.user.email}}
                 </p>
             </div>
