@@ -1,3 +1,5 @@
+2.6.1: 2019-07-09
+   * #6941: [hosting dashboard] Show the card's expiry year & month too in the list of added cards (MR!710)
 2.6: 2019-07-03
    * #5509: Getting rid of our key by still supporting multiple user keys (MR!709)
 2.5.11: 2019-06-11
