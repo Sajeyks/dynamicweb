@@ -914,7 +914,7 @@ class OrdersHostingDetailView(LoginRequiredMixin, DetailView, FormView):
                 context['cc_last4'] = card_detail.last4
                 context['cc_brand'] = card_detail.brand
                 context['cc_exp_year'] = card_detail.exp_year
-                context['cc_exp_month'] = card_detail.exp_month
+                context['cc_exp_month'] = '{:02d}'.format(card_detail.exp_month)
             context['site_url'] = reverse('hosting:create_virtual_machine')
             context['vm'] = self.request.session.get('specs')
         return context
