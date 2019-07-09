@@ -597,6 +597,8 @@ class UserCardDetail(AssignPermissionsMixin, models.Model):
         for card in user_card_details:
             cards_list.append({
                 'last4': card.last4, 'brand': card.brand, 'id': card.id,
+                'exp_year': card.exp_year,
+                'exp_month': '{:02d}'.format(card.exp_month),
                 'preferred': card.preferred
             })
         return cards_list

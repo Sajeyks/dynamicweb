@@ -568,11 +568,15 @@ class OrderConfirmationView(DetailView, FormView):
             card_details_response = card_details['response_object']
             context['cc_last4'] = card_details_response['last4']
             context['cc_brand'] = card_details_response['brand']
+            context['cc_exp_year'] = card_details_response['exp_year']
+            context['cc_exp_month'] = '{:02d}'.format(card_details_response['exp_month'])
         else:
             card_id = self.request.session.get('card_id')
             card_detail = UserCardDetail.objects.get(id=card_id)
             context['cc_last4'] = card_detail.last4
             context['cc_brand'] = card_detail.brand
+            context['cc_exp_year'] = card_detail.exp_year
+            context['cc_exp_month'] ='{:02d}'.format(card_detail.exp_month)
 
         if ('generic_payment_type' in request.session and
                 self.request.session['generic_payment_type'] == 'generic'):

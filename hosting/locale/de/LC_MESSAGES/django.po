@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-09-08 08:45+0000\n"
+"POT-Creation-Date: 2019-07-09 15:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,6 +26,30 @@ msgstr "Dein Account wurde noch nicht aktiviert."
 
 msgid "User does not exist"
 msgstr "Der Benutzer existiert nicht"
+
+msgid "Choose a product"
+msgstr ""
+
+msgid "Amount in CHF"
+msgstr "Betrag"
+
+msgid "Recurring monthly"
+msgstr ""
+
+msgid "Amount field does not match"
+msgstr ""
+
+msgid "Recurring field does not match"
+msgstr ""
+
+msgid "Product name"
+msgstr "Produkt"
+
+msgid "Monthly subscription"
+msgstr ""
+
+msgid "One time payment"
+msgstr ""
 
 msgid "Confirm Password"
 msgstr "Passwort Bestätigung"
@@ -51,6 +75,9 @@ msgstr "Bitte verwende einen gültigen SSH-Key"
 #, python-format
 msgid "This key exists already with the name \"%(name)s\""
 msgstr "Der SSH-Key mit dem Name \"%(name)s\" existiert bereits"
+
+msgid "Comma not accepted in the name of the key"
+msgstr ""
 
 msgid "All Rights Reserved"
 msgstr "Alle Rechte vorbehalten"
@@ -209,7 +236,8 @@ msgstr "Du hast eine neue virtuelle Maschine bestellt!"
 
 #, python-format
 msgid "Your order of <strong>%(vm_name)s</strong> has been charged."
-msgstr "Deine Bestellung von <strong>%(vm_name)s</strong> wurde entgegengenommen."
+msgstr ""
+"Deine Bestellung von <strong>%(vm_name)s</strong> wurde entgegengenommen."
 
 msgid "You can view your VM detail by clicking the button below."
 msgstr "Um die Rechnung zu sehen, klicke auf den Button unten."
@@ -305,6 +333,100 @@ msgstr "Dashboard"
 msgid "Logout"
 msgstr "Abmelden"
 
+#, python-format
+msgid "%(page_header_text)s"
+msgstr ""
+
+msgid "Invoice #"
+msgstr "Rechnung"
+
+msgid "Date"
+msgstr "Datum"
+
+msgid "Status"
+msgstr ""
+
+msgid "Terminated"
+msgstr "Beendet"
+
+msgid "Approved"
+msgstr "Akzeptiert"
+
+msgid "Declined"
+msgstr "Abgelehnt"
+
+msgid "Billed to"
+msgstr "Rechnungsadresse"
+
+msgid "Payment method"
+msgstr "Bezahlmethode"
+
+msgid "ending in"
+msgstr "endend in"
+
+msgid "Invoice summary"
+msgstr ""
+
+msgid "Product"
+msgstr "Produkt"
+
+msgid "Period"
+msgstr "Periode"
+
+msgid "Cores"
+msgstr "Prozessorkerne"
+
+msgid "Memory"
+msgstr "Arbeitsspeicher"
+
+msgid "Disk space"
+msgstr "Festplattenkapazität"
+
+msgid "Subtotal"
+msgstr "Zwischensumme"
+
+msgid "VAT"
+msgstr "Mehrwertsteuer"
+
+msgid "Discount"
+msgstr "Rabatt"
+
+msgid "Total"
+msgstr "Gesamt"
+
+msgid "Amount"
+msgstr "Betrag"
+
+msgid "Description"
+msgstr ""
+
+msgid "Recurring"
+msgstr ""
+
+msgid "of every month"
+msgstr ""
+
+msgid "BACK TO LIST"
+msgstr "ZURÜCK ZUR LISTE"
+
+msgid "Some problem encountered. Please try again later."
+msgstr "Ein Problem ist aufgetreten. Bitte versuche es später noch einmal."
+
+msgid "VM ID"
+msgstr ""
+
+msgid "IP Address"
+msgstr ""
+
+msgid "See Invoice"
+msgstr "Siehe Rechnung"
+
+msgid "Page"
+msgstr ""
+
+msgid "of"
+msgstr ""
+
 msgid "Log in"
 msgstr "Anmelden"
 
@@ -338,66 +460,14 @@ msgstr "Als gelesen markieren"
 msgid "All notifications"
 msgstr "Alle Benachrichtigungen"
 
-#, python-format
-msgid "%(page_header_text)s"
-msgstr ""
-
-msgid "Date"
-msgstr "Datum"
-
-msgid "Status"
-msgstr ""
-
-msgid "Terminated"
-msgstr "Beendet"
-
-msgid "Approved"
-msgstr "Akzeptiert"
-
-msgid "Declined"
-msgstr "Abgelehnt"
-
-msgid "Billed to"
-msgstr "Rechnungsadresse"
-
-msgid "Payment method"
-msgstr "Bezahlmethode"
-
-msgid "ending in"
-msgstr "endend in"
-
 msgid "Credit Card"
 msgstr "Kreditkarte"
 
+msgid "Expiry"
+msgstr "Gültig bis"
+
 msgid "Order summary"
 msgstr "Bestellungsübersicht"
-
-msgid "Product"
-msgstr "Produkt"
-
-msgid "Period"
-msgstr "Periode"
-
-msgid "Cores"
-msgstr "Prozessorkerne"
-
-msgid "Memory"
-msgstr "Arbeitsspeicher"
-
-msgid "Disk space"
-msgstr "Festplattenkapazität"
-
-msgid "Subtotal"
-msgstr "Zwischensumme"
-
-msgid "VAT"
-msgstr "Mehrwertsteuer"
-
-msgid "Discount"
-msgstr "Rabatt"
-
-msgid "Total"
-msgstr "Gesamt"
 
 #, python-format
 msgid ""
@@ -409,9 +479,6 @@ msgstr ""
 
 msgid "Place order"
 msgstr "Bestellen"
-
-msgid "BACK TO LIST"
-msgstr "ZURÜCK ZUR LISTE"
 
 msgid "Processing..."
 msgstr "Abarbeitung..."
@@ -425,23 +492,8 @@ msgstr ""
 msgid "Close"
 msgstr "Schliessen"
 
-msgid "Some problem encountered. Please try again later."
-msgstr "Ein Problem ist aufgetreten. Bitte versuche es später noch einmal."
-
 msgid "Order Nr."
 msgstr "Bestellung Nr."
-
-msgid "Amount"
-msgstr "Betrag"
-
-msgid "See Invoice"
-msgstr "Siehe Rechnung"
-
-msgid "Page"
-msgstr ""
-
-msgid "of"
-msgstr ""
 
 msgid "Your Order"
 msgstr "Deine Bestellung"
@@ -538,9 +590,6 @@ msgid ""
 msgstr ""
 "Wir nutzen <a href=\"https://stripe.com\" target=\"_blank\">Stripe</a> für "
 "die Bezahlung und speichern keine Informationen in unserer Datenbank."
-
-msgid "Add your public SSH key"
-msgstr "Füge deinen öffentlichen SSH-Key hinzu"
 
 msgid "Use your created key to access to the VM"
 msgstr "Benutze deinen erstellten SSH-Key um auf deine VM zugreifen zu können"
@@ -783,6 +832,9 @@ msgstr ""
 msgid "Invalid number of cores"
 msgstr "Ungültige Anzahle CPU-Kerne"
 
+msgid "Invalid calculator properties"
+msgstr ""
+
 msgid "Invalid RAM size"
 msgstr "Ungültige RAM-Grösse"
 
@@ -821,6 +873,9 @@ msgstr ""
 "Es gab einen Fehler bei der Bearbeitung Deine Anfrage. Bitte versuche es "
 "noch einmal."
 
+#~ msgid "Add your public SSH key"
+#~ msgstr "Füge deinen öffentlichen SSH-Key hinzu"
+
 #~ msgid "Do you want to cancel your Virtual Machine"
 #~ msgstr "Bist Du sicher, dass Du Deine virtuelle Maschine beenden willst"
 
@@ -829,9 +884,6 @@ msgstr ""
 
 #~ msgid "My VM page"
 #~ msgstr "Meine VM page"
-
-#~ msgid "Invoice Date"
-#~ msgstr "Rechnung Datum"
 
 #~ msgid "VM %(VM_ID)s terminated successfully"
 #~ msgstr "VM %(VM_ID)s erfolgreich beendet"
