@@ -57,7 +57,7 @@
                   <label for="configuration">Configuration: </label>
                         <select class="form-control" name="vm_template_id" id="{{vm.hosting_company}}-configuration" data-vm-type="{{vm.hosting_company}}">
                         {% for template in templates   %}
-                            <option  value="{{template.id}}">{{ template.name }}</option>
+                            <option  value="{{template.id}}">{{ template.name|cut:'public-' }}</option>
                         {% endfor %}
                         </select>
                   </li>
