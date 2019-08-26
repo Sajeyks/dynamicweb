@@ -9,7 +9,6 @@ from django.contrib.auth import authenticate
 from django.utils.translation import ugettext_lazy as _
 
 from membership.models import CustomUser
-from utils.hosting_utils import get_all_public_keys
 from .models import UserHostingKey, GenericProduct
 
 logger = logging.getLogger(__name__)
@@ -193,14 +192,14 @@ class UserHostingKeyForm(forms.ModelForm):
         KEY_ERROR_MESSAGE = _("Please input a proper SSH key")
         openssh_pubkey_str = self.data.get('public_key').strip()
 
-        if openssh_pubkey_str in get_all_public_keys(self.request.user):
-            key_name = UserHostingKey.objects.filter(
-                user_id=self.request.user.id,
-                public_key=openssh_pubkey_str).first().name
-            KEY_EXISTS_MESSAGE = _(
-                "This key exists already with the name \"%(name)s\"") % {
-                                     'name': key_name}
-            raise forms.ValidationError(KEY_EXISTS_MESSAGE)
+        # if openssh_pubkey_str in get_all_public_keys(self.request.user):
+        #     key_name = UserHostingKey.objects.filter(
+        #         user_id=self.request.user.id,
+        #         public_key=openssh_pubkey_str).first().name
+        #     KEY_EXISTS_MESSAGE = _(
+        #         "This key exists already with the name \"%(name)s\"") % {
+        #                              'name': key_name}
+        #     raise forms.ValidationError(KEY_EXISTS_MESSAGE)
 
         with tempfile.NamedTemporaryFile(delete=True) as tmp_public_key_file:
             tmp_public_key_file.write(openssh_pubkey_str.encode('utf-8'))
