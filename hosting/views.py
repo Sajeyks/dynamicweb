@@ -1731,7 +1731,8 @@ class CheckUserVM(APIView):
             response = check_otp(user, realm, token)
             if response != 200:
                 return Response('Invalid token', 403)
-            manager = OpenNebulaManager()
+            manager = OpenNebulaManager(settings.OPENNEBULA_USERNAME,
+                                        settings.OPENNEBULA_PASSWORD)
             # not the best way to lookup vms by ip
             # TODO: make this optimal
             vms = manager.get_vms()
