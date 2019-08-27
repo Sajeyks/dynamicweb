@@ -1,3 +1,5 @@
+Next:
+   * #7070: [check_vm/api] Bugfix: Provide oneadmin credentials to check whether a user is the owner of a VM (MR!713)
 2.6.2: 2019-08-22
    * #7068: [django/node/rails] Remove public- prefix from OS template names (MR!711)
 2.6.1: 2019-07-09
