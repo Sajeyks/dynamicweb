@@ -18,7 +18,7 @@ def get_all_public_keys(customer):
     :return: A list of public keys
     """
     return UserHostingKey.objects.filter(user_id=customer.id).values_list(
-        "public_key", flat=True)
+        "public_key", flat=True).distinct()
 
 
 def get_or_create_vm_detail(user, manager, vm_id):
