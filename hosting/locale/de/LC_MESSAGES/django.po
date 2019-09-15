@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-07-09 15:21+0000\n"
+"POT-Creation-Date: 2019-09-15 03:39+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -71,10 +71,6 @@ msgstr "Key-Name"
 
 msgid "Please input a proper SSH key"
 msgstr "Bitte verwende einen gültigen SSH-Key"
-
-#, python-format
-msgid "This key exists already with the name \"%(name)s\""
-msgstr "Der SSH-Key mit dem Name \"%(name)s\" existiert bereits"
 
 msgid "Comma not accepted in the name of the key"
 msgstr ""
@@ -242,6 +238,9 @@ msgstr ""
 msgid "You can view your VM detail by clicking the button below."
 msgstr "Um die Rechnung zu sehen, klicke auf den Button unten."
 
+msgid "You can log in to your VM by the username <strong>puffy</strong>."
+msgstr "Du kannst Dich auf Deiner VM mit dem user <strong>puffy</strong> einloggen."
+
 msgid "View Detail"
 msgstr "Details anzeigen"
 
@@ -254,6 +253,9 @@ msgstr "Deine Bestellung von %(vm_name)s wurde entgegengenommen."
 
 msgid "You can view your VM detail by following the link below."
 msgstr "Um die Rechnung zu sehen, klicke auf den Link unten."
+
+msgid "You can log in to your VM by the username puffy."
+msgstr "Du kannst Dich auf Deiner VM mit dem user puffy einloggen."
 
 msgid "Password Reset"
 msgstr "Passwort zurücksetzen"
@@ -872,6 +874,10 @@ msgid "There was an error processing your request. Please try again."
 msgstr ""
 "Es gab einen Fehler bei der Bearbeitung Deine Anfrage. Bitte versuche es "
 "noch einmal."
+
+#, python-format
+#~ msgid "This key exists already with the name \"%(name)s\""
+#~ msgstr "Der SSH-Key mit dem Name \"%(name)s\" existiert bereits"
 
 #~ msgid "Add your public SSH key"
 #~ msgstr "Füge deinen öffentlichen SSH-Key hinzu"

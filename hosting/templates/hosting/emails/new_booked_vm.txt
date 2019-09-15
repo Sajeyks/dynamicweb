@@ -5,6 +5,9 @@
 {% blocktrans %}You have ordered a new virtual machine!{% endblocktrans %}
 {% blocktrans %}Your order of {{vm_name}} has been charged.{% endblocktrans %}
 {% blocktrans %}You can view your VM detail by following the link below.{% endblocktrans %}
+{% if 'OpenBSD' in vm_name %}
+    {% blocktrans %}You can log in to your VM by the username puffy.{% endblocktrans %}
+{% endif %}
 
 {{ base_url }}{{ order_url }}
 
