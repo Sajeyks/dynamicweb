@@ -1619,9 +1619,10 @@ class VirtualMachineView(LoginRequiredMixin, View):
                 else:
                     sleep(2)
             if not response['status']:
-                response['text'] = _("VM terminate action timed out. Please "
-                                     "contact support@datacenterlight.ch for "
-                                     "further information.")
+                response['text'] = str(_("VM terminate action timed out. "
+                                         "Please contact "
+                                         "support@datacenterlight.ch for "
+                                         "further information."))
             context = {
                 'vm_name': vm_name,
                 'base_url': "{0}://{1}".format(
