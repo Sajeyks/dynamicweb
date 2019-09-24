@@ -1558,6 +1558,7 @@ class VirtualMachineView(LoginRequiredMixin, View):
 
         # Cancel Stripe subscription
         stripe_utils = StripeUtils()
+        hosting_order = None
         try:
             hosting_order = HostingOrder.objects.get(
                 vm_id=vm.id
@@ -1643,6 +1644,11 @@ class VirtualMachineView(LoginRequiredMixin, View):
             email = BaseEmail(**email_data)
             email.send()
         admin_email_body.update(response)
+        admin_email_body["customer_email"] = owner.email
+        admin_email_body["VM_ID"] = vm.id
+        admin_email_body["VM_created_at"] = (str(hosting_order.created_at) if
+                                             hosting_order is not None
+                                             else "unknown")
         admin_msg_sub = "VM and Subscription for VM {} and user: {}".format(
             vm.id,
             owner.email
