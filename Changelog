@@ -1,5 +1,8 @@
+2.6.5: 2019-09-24
+   * #7169: [hosting] Fix server error while vm terminate takes longer than 30 seconds
+   * #7170: [hosting] Improve admin email body contents for hosting vm terminate error case
 2.6.4: 2019-09-15
-   * #7147: [OpenBSD vm] Add a explanatory text for username puffy on OpenBSD (MR!714)
+   * #7147: [OpenBSD vm] Add an explanatory text for username puffy on OpenBSD (MR!714)
 2.6.3: 2019-08-28
    * #7032: [hosting] Bugfix: Reentering the same SSH key used before does allow user to proceed further; complains key exists (MR!712)
    * #7070: [check_vm/api] Bugfix: Provide oneadmin credentials to check whether a user is the owner of a VM (MR!713)
