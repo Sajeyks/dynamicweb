@@ -466,7 +466,7 @@ class HostingBillLineItem(AssignPermissionsMixin, models.Model):
                                              on_delete=models.CASCADE)
     stripe_plan = models.ForeignKey(StripePlan, null=True,
                                     on_delete=models.CASCADE)
-    amount = models.PositiveSmallIntegerField()
+    amount = models.IntegerField()
     description = models.CharField(max_length=255)
     discountable = models.BooleanField()
     metadata = models.CharField(max_length=128)
