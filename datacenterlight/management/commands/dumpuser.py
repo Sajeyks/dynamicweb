@@ -1,7 +1,6 @@
 import json
 import logging
 import sys
-from pprint import pprint
 
 from django.core.management.base import BaseCommand
 from membership.models import CustomUser
@@ -130,6 +129,6 @@ class Command(BaseCommand):
                     "Payment cards": cards,
                     "SSH Keys": keys
                 }
-                pprint(json.dumps(output_dict))
+                print(json.dumps(output_dict, indent=4))
         except Exception as e:
             print(" *** Error occurred. Details {}".format(str(e)))
