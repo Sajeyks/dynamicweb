@@ -1,3 +1,5 @@
+2.6.6: 2019-11-04
+   * feature: [admin] Add dumpuser management command that dumps a user's data in json (MR!716)
 2.6.5: 2019-09-24
    * #7169: [hosting] Fix server error while vm terminate takes longer than 30 seconds
    * #7170: [hosting] Improve admin email body contents for hosting vm terminate error case
