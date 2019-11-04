@@ -1,14 +1,17 @@
 import logging
-import oca
 import sys
-import stripe
+import uuid
 
+import oca
+import stripe
 from django.core.management.base import BaseCommand
-from membership.models import CustomUser, DeletedUser
+
 from hosting.models import (
-    HostingOrder, HostingBill, VMDetail, UserCardDetail, UserHostingKey
+    UserCardDetail, UserHostingKey
 )
+from membership.models import CustomUser, DeletedUser
 from opennebula_api.models import OpenNebulaManager
+
 logger = logging.getLogger(__name__)
 
 
@@ -79,75 +82,6 @@ class Command(BaseCommand):
                     else:
                         logger.error("Error while deleting the StripeCustomer")
 
-                    hosting_orders = HostingOrder.objects.filter(
-                        customer=stripe_customer.id
-                    )
-
-                    vm_ids = []
-                    for order in hosting_orders:
-                        vm_ids.append(order.vm_id)
-
-                        # Delete Billing Address
-                        if order.billing_address is not None:
-                            logger.debug(
-                                "Billing Address {} associated with {} deleted"
-                                "".format(order.billing_address.id, email)
-                            )
-                            order.billing_address.delete()
-                        else:
-                            logger.error(
-                                "Error while deleting the billing_address")
-
-                        # Delete order
-                        if order is not None:
-                            logger.debug(
-                                "Order {} associated with {} deleted"
-                                "".format(order.id, email)
-                            )
-                            order.delete()
-                        else:
-                            logger.error(
-                                "Error while deleting the Order")
-
-                    hosting_bills = HostingBill.objects.filter(
-                        customer=stripe_customer.id
-                    )
-
-                    # delete hosting bills
-                    for bill in hosting_bills:
-                        if bill.billing_address is not None:
-                            logger.debug(
-                                "HostingBills billing address {} associated with {} deleted"
-                                "".format(bill.billing_address.id, email)
-                            )
-                            bill.billing_address.delete()
-                        else:
-                            logger.error(
-                                "Error while deleting the HostingBill's Billing address")
-
-                        if bill is not None:
-                            logger.debug(
-                                "HostingBill {} associated with {} deleted"
-                                "".format(bill.id, email)
-                            )
-                            bill.delete()
-                        else:
-                            logger.error(
-                                "Error while deleting the HostingBill")
-
-                    # delete VMDetail
-                    for vm_id in vm_ids:
-                        vm_detail = VMDetail.objects.get(vm_id=vm_id)
-                        if vm_detail is not None:
-                            logger.debug(
-                                "vm_detail {} associated with {} deleted"
-                                "".format(vm_detail.id, email)
-                            )
-                            vm_detail.delete()
-                        else:
-                            logger.error(
-                                "Error while deleting the vm_detail")
-
                     # delete UserCardDetail
                     ucds = UserCardDetail.objects.filter(
                         stripe_customer=stripe_customer
@@ -179,8 +113,10 @@ class Command(BaseCommand):
                         user_id = cus_user.id
                     )
 
-                    # delete CustomUser
-                    cus_user.delete()
+                    # reset CustomUser
+                    cus_user.email = str(uuid.uuid4())
+                    cus_user.validated = 0
+                    cus_user.save()
 
                     # remove user from OpenNebula
                     manager = OpenNebulaManager()
