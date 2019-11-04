@@ -1,3 +1,4 @@
+import json
 import logging
 import sys
 from pprint import pprint
@@ -115,7 +116,7 @@ class Command(BaseCommand):
                         "Name": uhk.name,
                         "Created on": str(uhk.created_at)
                     }
-                    if uhk.private_key is not None:
+                    if uhk.private_key:
                         key["Private key"] = uhk.private_key
                     keys[uhk.name] = key
                 output_dict = {
@@ -129,6 +130,6 @@ class Command(BaseCommand):
                     "Payment cards": cards,
                     "SSH Keys": keys
                 }
-                pprint(output_dict)
+                pprint(json.dumps(output_dict))
         except Exception as e:
             print(" *** Error occurred. Details {}".format(str(e)))
