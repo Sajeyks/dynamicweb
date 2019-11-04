@@ -1,3 +1,11 @@
+2.6.7: 2019-11-04
+   * bugfix: [admin] Improve dumpuser: show proper dates + bugfix
+   * bugfix: [admin] Improve fetch_stripe_bills:
+                     - fix wrong assigment of string to num_invoice_created
+                     variable,
+                     - return None (do not handle the case) if we don't have an
+                     order
+   * bugfix: [admin] Improve deleteuser: do not delete order, bill and vm_detail
 2.6.6: 2019-11-04
    * feature: [admin] Add dumpuser management command that dumps a user's data in json (MR!716)
 2.6.5: 2019-09-24
