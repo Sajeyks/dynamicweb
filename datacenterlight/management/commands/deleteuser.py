@@ -98,17 +98,6 @@ class Command(BaseCommand):
                             logger.error(
                                 "Error while deleting the billing_address")
 
-                        # Delete Order Detail
-                        if order.order_detail is not None:
-                            logger.debug(
-                                "Order Detail {} associated with {} deleted"
-                                "".format(order.order_detail.id, email)
-                            )
-                            order.order_detail.delete()
-                        else:
-                            logger.error(
-                                "Error while deleting the order_detail. None")
-
                         # Delete order
                         if order is not None:
                             logger.debug(
