@@ -50,7 +50,12 @@ class Command(BaseCommand):
                             logger.debug("Invoice %s exists already. Not importing." % invoice['invoice_id'])
                         except MonthlyHostingBill.DoesNotExist as dne:
                             logger.debug("Invoice id %s does not exist" % invoice['invoice_id'])
-                            num_invoice_created += 1 if MonthlyHostingBill.create(invoice) is not None else logger.error("Did not import invoice for %s" % str(invoice))
+
+                            if MonthlyHostingBill.create(invoice) is not None:
+                                num_invoice_created += 1
+                            else:
+                                logger.error("Did not import invoice for %s"
+                                             "" % str(invoice))
                     self.stdout.write(
                         self.style.SUCCESS("Number of invoices imported = %s" % num_invoice_created)
                     )

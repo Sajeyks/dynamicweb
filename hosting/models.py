@@ -319,7 +319,10 @@ class MonthlyHostingBill(AssignPermissionsMixin, models.Model):
             logger.debug("Neither subscription id nor vm_id available")
             logger.debug("Can't import invoice")
             return None
-
+        if args['order'] is None:
+            logger.error(
+                "Order is None for {}".format(args['invoice_id']))
+            return None
         instance = cls.objects.create(
             created=datetime.utcfromtimestamp(
                 args['created']).replace(tzinfo=pytz.utc),
