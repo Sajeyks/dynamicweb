@@ -19,7 +19,6 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         try:
             for email in options['customer_email']:
-                logger.debug("Creating dump for the user {}".format(email))
                 try:
                     cus_user = CustomUser.objects.get(email=email)
                 except CustomUser.DoesNotExist as dne:
@@ -119,7 +118,6 @@ class Command(BaseCommand):
                     if uhk.private_key is not None:
                         key["Private key"] = uhk.private_key
                     keys[uhk.name] = key
-                print("User {} dump is follows:")
                 output_dict = {
                     "User details": {
                         "Name": cus_user.name,
@@ -132,6 +130,5 @@ class Command(BaseCommand):
                     "SSH Keys": keys
                 }
                 pprint(output_dict)
-                logger.debug("Dumped user {} SUCCESSFULLY.".format(email))
         except Exception as e:
             print(" *** Error occurred. Details {}".format(str(e)))
