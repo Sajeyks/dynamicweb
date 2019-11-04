@@ -38,7 +38,7 @@ class Command(BaseCommand):
                     vm_ids.append(order.vm_id)
                     order_dict["VM_ID"] = order.vm_id
                     order_dict["Order Nr."] = order.id
-                    order_dict["Created On"] = str(order.created_on)
+                    order_dict["Created On"] = str(order.created_at)
                     order_dict["Price"] = order.price
                     order_dict["Payment card details"] = {
                         "last4": order.last4,
@@ -82,7 +82,7 @@ class Command(BaseCommand):
                             "IPv6": vm_detail.ipv6,
                             "OS": vm_detail.configuration,
                         }
-                        order_dict["Terminated on"] = vm_detail.terminated_at
+                        order_dict["Terminated on"] = str(vm_detail.terminated_at)
 
                     orders_dict[order.vm_id] = order_dict
 
