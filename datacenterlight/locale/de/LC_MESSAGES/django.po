@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-11-15 14:29+0000\n"
+"POT-Creation-Date: 2019-11-15 17:33+0000\n"
 "PO-Revision-Date: 2018-03-30 23:22+0000\n"
 "Last-Translator: b'Anonymous User <coder.purple+25@gmail.com>'\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -450,15 +450,16 @@ msgid ""
 "By clicking \"Place order\" this plan will charge your credit card account "
 "with %(total_price)s CHF/year"
 msgstr ""
-"Wenn Du \"bestellen\" auswählst, wird Deine Kreditkarte mit "
-"%(total_price)s CHF pro Jahr belastet"
+"Wenn Du \"bestellen\" auswählst, wird Deine Kreditkarte mit %(total_price)s "
+"CHF pro Jahr belastet"
+
 
 msgid ""
 "By clicking \"Place order\" this plan will charge your credit card account "
 "with %(total_price)s CHF/month"
 msgstr ""
-"Wenn Du \"bestellen\" auswählst, wird Deine Kreditkarte mit "
-"%(total_price)s CHF pro Monat belastet"
+"Wenn Du \"bestellen\" auswählst, wird Deine Kreditkarte mit %(total_price)s "
+"CHF pro Monat belastet"
 
 #, fuzzy, python-format
 #| msgid ""
@@ -617,10 +618,13 @@ msgid "An error occurred while associating the card. Details: {details}"
 msgstr ""
 "Beim Verbinden der Karte ist ein Fehler aufgetreten. Details: {details}"
 
-msgid "Confirmation of your payment"
+msgid " This is a monthly recurring plan."
 msgstr ""
 
-msgid " This is a monthly recurring plan."
+msgid " This is an yearly recurring plan."
+msgstr ""
+
+msgid "Confirmation of your payment"
 msgstr ""
 
 #, python-brace-format
