@@ -1268,6 +1268,10 @@ class InvoiceDetailView(LoginRequiredMixin, DetailView):
                     context['vm']['total_price'] = (
                             price + vat - discount['amount']
                     )
+                except TypeError:
+                    logger.error("Type error. Probably we "
+                                 "came from a generic product. "
+                                 "Invoice ID %s" % obj.invoice_id)
                 except WrongIdError:
                     logger.error("WrongIdError while accessing "
                                  "invoice {}".format(obj.invoice_id))
