@@ -375,6 +375,9 @@ msgstr "Letzten"
 msgid "Type"
 msgstr "Typ"
 
+msgid "Expiry"
+msgstr "Ablaufdatum"
+
 msgid "SELECT"
 msgstr "AUSWÄHLEN"
 
@@ -415,6 +418,15 @@ msgstr "Bestellungsübersicht"
 msgid "Product"
 msgstr "Produkt"
 
+msgid "Price"
+msgstr "Preise"
+
+msgid "VAT for"
+msgstr ""
+
+msgid "Total Amount"
+msgstr "Gesamtsumme"
+
 msgid "Amount"
 msgstr ""
 
@@ -439,8 +451,7 @@ msgid ""
 "with %(total_price)s CHF/year"
 msgstr ""
 "Wenn Du \"bestellen\" auswählst, wird Deine Kreditkarte mit "
-"%(total_price)s CHF pro Jahr berechnet"
-
+"%(total_price)s CHF pro Jahr belastet"
 
 msgid ""
 "By clicking \"Place order\" this plan will charge your credit card account "
@@ -652,9 +663,6 @@ msgstr ""
 #~ msgid "Card Number"
 #~ msgstr "Kreditkartennummer"
 
-#~ msgid "Expiry Date"
-#~ msgstr "Ablaufdatum"
-
 #~ msgid ""
 #~ "You are not making any payment yet. After placing your order, you will be "
 #~ "taken to the Submit Payment Page."
@@ -662,9 +670,6 @@ msgstr ""
 #~ "Es wird noch keine Bezahlung vorgenommen. Die Bezahlung wird erst "
 #~ "ausgelöst, nachdem Du die Bestellung auf der nächsten Seite bestätigt "
 #~ "hast."
-
-#~ msgid "Pricing"
-#~ msgstr "Preise"
 
 #~ msgid "Order VM"
 #~ msgstr "VM bestellen"
