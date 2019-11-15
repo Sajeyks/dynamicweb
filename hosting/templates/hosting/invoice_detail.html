@@ -196,8 +196,8 @@
                     <p>
                         <span>{% trans "Recurring" %}: </span>
                         {% if invoice.order.generic_product.product_subscription_interval == 'year' %}
-                            <strong class="pull-right">{{invoice.order.created_at|date:'d'|ordinal}} {{invoice.order.created_at|date:'F'}}
-                            {% trans "of every year" %}</strong>
+                            <strong class="pull-right">{{invoice.order.created_at|date:'d'|ordinal}} {% trans "of" %}{{invoice.order.created_at|date:'F'}}
+                            {% trans "each year" %}</strong>
                         {% else %}
                             <strong class="pull-right">{{invoice.order.created_at|date:'d'|ordinal}}
                             {% trans "of every month" %}</strong>
