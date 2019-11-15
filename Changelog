@@ -1,3 +1,10 @@
+2.6.8: 2019-11-15
+   * feature: [EU VAT] Add EU VAT feature for generic products (MR!717)
+              Notes for deployment:
+              - do a db migrate a to create VATRates table
+                 ./manage.py migrate hosting
+              - load vat_rates.csv
+                 ./manage.py import_vat_rates vat_rates.csv
 2.6.7: 2019-11-04
    * bugfix: [admin] Improve dumpuser: show proper dates + bugfix
    * bugfix: [admin] Improve fetch_stripe_bills:
