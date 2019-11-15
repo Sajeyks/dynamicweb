@@ -1,3 +1,8 @@
+2.6.9: 2019-11-15
+   * feature: Allow creating yearly subscriptions for Generic Products (MR!718)
+              Notes for deployment:
+              - do a db migrate for new column added to Generic Product model
+                  ./manage.py migrate hosting
 2.6.8: 2019-11-15
    * feature: [EU VAT] Add EU VAT feature for generic products (MR!717)
               Notes for deployment:
