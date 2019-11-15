@@ -26,7 +26,9 @@ from utils.forms import (
     BillingAddressForm, BillingAddressFormSignup, UserBillingAddressForm,
     BillingAddress
 )
-from utils.hosting_utils import get_vm_price_with_vat, get_all_public_keys
+from utils.hosting_utils import (
+    get_vm_price_with_vat, get_all_public_keys, get_vat_rate_for_country
+)
 from utils.stripe_utils import StripeUtils
 from utils.tasks import send_plain_email_task
 from .cms_models import DCLCalculatorPluginModel
@@ -414,8 +416,9 @@ class PaymentOrderView(FormView):
                         )
                     gp_details = {
                         "product_name": product.product_name,
-                        "amount": generic_payment_form.cleaned_data.get(
-                            'amount'
+                        "amount": product.get_actual_price(
+                            explicit_vat=get_vat_rate_for_country(
+                                address_form["country"])
                         ),
                         "recurring": generic_payment_form.cleaned_data.get(
                             'recurring'

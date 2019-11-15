@@ -82,9 +82,10 @@ class GenericProduct(AssignPermissionsMixin, models.Model):
     def __str__(self):
         return self.product_name
 
-    def get_actual_price(self):
+    def get_actual_price(self, vat_rate=None):
+        VAT = vat_rate if vat_rate is not None else self.product_vat
         return round(
-            self.product_price + (self.product_price * self.product_vat), 2
+            self.product_price + (self.product_price * VAT), 2
         )
 
 

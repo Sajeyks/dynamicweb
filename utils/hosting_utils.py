@@ -5,7 +5,7 @@ import subprocess
 from oca.pool import WrongIdError
 
 from datacenterlight.models import VMPricing
-from hosting.models import UserHostingKey, VMDetail
+from hosting.models import UserHostingKey, VMDetail, VATRates
 from opennebula_api.serializers import VirtualMachineSerializer
 
 logger = logging.getLogger(__name__)
@@ -148,6 +148,18 @@ def ping_ok(host_ipv6):
         logger.debug(host_ipv6 + " not reachable via ping. Error = " + str(ex))
         return False
     return True
+
+
+def get_vat_rate_for_country(country):
+    vat_rate = VATRates.objects.get(
+        territory_codes=country, start_date__isnull=False, stop_date=None
+    )
+    if vat_rate:
+        logger.debug("VAT rate for %s is %s" % (country, vat_rate.rate))
+        return vat_rate.rate
+    else:
+        logger.debug("Did not find VAT rate for %s, returning 0" % country)
+        return 0
 
 
 class HostingUtils:
