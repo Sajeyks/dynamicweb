@@ -417,8 +417,8 @@ class PaymentOrderView(FormView):
                     gp_details = {
                         "product_name": product.product_name,
                         "amount": product.get_actual_price(
-                            explicit_vat=get_vat_rate_for_country(
-                                address_form["country"])
+                            vat_rate=get_vat_rate_for_country(
+                                address_form.cleaned_data["country"])
                         ),
                         "recurring": generic_payment_form.cleaned_data.get(
                             'recurring'
