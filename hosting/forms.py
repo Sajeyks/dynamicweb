@@ -109,9 +109,14 @@ class ProductPaymentForm(GenericPaymentForm):
             )
         )
         if self.product.product_is_subscription:
+            payment_type = "month"
+            if self.product.product_subscription_interval == "month":
+                payment_type = _('Monthly subscription')
+            elif self.product.product_subscription_interval == "year":
+                payment_type = _('Yearly subscription')
             self.fields['amount'].label = "{amt} ({payment_type})".format(
                 amt=_('Amount in CHF'),
-                payment_type=_('Monthly subscription')
+                payment_type=payment_type
             )
         else:
             self.fields['amount'].label = "{amt} ({payment_type})".format(
