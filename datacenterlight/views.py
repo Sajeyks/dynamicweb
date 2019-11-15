@@ -437,7 +437,9 @@ class PaymentOrderView(FormView):
                             'description'
                         ),
                         "product_id": product.id,
-                        "product_slug": product.product_slug
+                        "product_slug": product.product_slug,
+                        "recurring_interval":
+                            product.product_subscription_interval
                     }
                     request.session["generic_payment_details"] = (
                         gp_details
@@ -756,6 +758,7 @@ class OrderConfirmationView(DetailView, FormView):
 
         if ('generic_payment_type' not in request.session or
                 (request.session['generic_payment_details']['recurring'])):
+            recurring_interval = 'month'
             if 'generic_payment_details' in request.session:
                 amount_to_be_charged = (
                     round(
@@ -768,6 +771,10 @@ class OrderConfirmationView(DetailView, FormView):
                     amount_to_be_charged
                 )
                 stripe_plan_id = plan_name
+                recurring_interval = request.session['generic_payment_details']['recurring_interval']
+                if recurring_interval == "year":
+                    plan_name = "{}-yearly".format(plan_name)
+                    stripe_plan_id = plan_name
             else:
                 template = request.session.get('template')
                 specs = request.session.get('specs')
@@ -794,7 +801,9 @@ class OrderConfirmationView(DetailView, FormView):
             stripe_plan = stripe_utils.get_or_create_stripe_plan(
                 amount=amount_to_be_charged,
                 name=plan_name,
-                stripe_plan_id=stripe_plan_id)
+                stripe_plan_id=stripe_plan_id,
+                interval=recurring_interval
+            )
             subscription_result = stripe_utils.subscribe_customer_to_plan(
                 stripe_api_cus_id,
                 [{"plan": stripe_plan.get(

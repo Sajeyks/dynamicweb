@@ -226,7 +226,8 @@ class StripeUtils(object):
         return charge
 
     @handleStripeError
-    def get_or_create_stripe_plan(self, amount, name, stripe_plan_id):
+    def get_or_create_stripe_plan(self, amount, name, stripe_plan_id,
+                                  interval=""):
         """
         This function checks if a StripePlan with the given
         stripe_plan_id already exists. If it exists then the function
@@ -238,6 +239,10 @@ class StripeUtils(object):
         :param stripe_plan_id: The id of the Stripe plan to be
                created. Use get_stripe_plan_id_string function to
                obtain the name of the plan to be created
+        :param interval: str representing the interval of the Plan
+               Specifies billing frequency. Either day, week, month or year.
+               Ref: https://stripe.com/docs/api/plans/create#create_plan-interval
+               The default is month
         :return: The StripePlan object if it exists else creates a
                Plan object in Stripe and a local StripePlan and
                returns it. Returns None in case of Stripe error
@@ -245,6 +250,7 @@ class StripeUtils(object):
         _amount = float(amount)
         amount = int(_amount * 100)  # stripe amount unit, in cents
         stripe_plan_db_obj = None
+        plan_interval = interval if interval is not "" else self.INTERVAL
         try:
             stripe_plan_db_obj = StripePlan.objects.get(
                 stripe_plan_id=stripe_plan_id)
@@ -252,7 +258,7 @@ class StripeUtils(object):
             try:
                 self.stripe.Plan.create(
                     amount=amount,
-                    interval=self.INTERVAL,
+                    interval=plan_interval,
                     name=name,
                     currency=self.CURRENCY,
                     id=stripe_plan_id)
