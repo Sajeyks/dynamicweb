@@ -154,7 +154,11 @@
                 <div class="col-sm-8">
                     {% if generic_payment_details %}
                         {% if generic_payment_details.recurring %}
-                            <div class="dcl-place-order-text">{% blocktrans with total_price=generic_payment_details.amount|floatformat:2|intcomma %}By clicking "Place order" this plan will charge your credit card account with {{total_price}} CHF/month{% endblocktrans %}.</div>
+                            {% if generic_payment_details.recurring_interval == 'year' %}
+                                <div class="dcl-place-order-text">{% blocktrans with total_price=generic_payment_details.amount|floatformat:2|intcomma %}By clicking "Place order" this plan will charge your credit card account with {{total_price}} CHF/year{% endblocktrans %}.</div>
+                            {% else %}
+                                <div class="dcl-place-order-text">{% blocktrans with total_price=generic_payment_details.amount|floatformat:2|intcomma %}By clicking "Place order" this plan will charge your credit card account with {{total_price}} CHF/month{% endblocktrans %}.</div>
+                            {% endif %}
                         {% else %}
                             <div class="dcl-place-order-text">{% blocktrans with total_price=generic_payment_details.amount|floatformat:2|intcomma %}By clicking "Place order" this payment will charge your credit card account with a one time amount of {{total_price}} CHF{% endblocktrans %}.</div>
                         {% endif %}
