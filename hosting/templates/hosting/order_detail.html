@@ -186,7 +186,13 @@
                             {% if order.subscription_id %}
                             <p>
                                 <span>{% trans "Recurring" %}: </span>
-                                <strong class="pull-right">{{order.created_at|date:'d'|ordinal}} {% trans "of every month" %}</strong>
+                                {% if order.generic_product.product_subscription_interval == 'year' %}
+                                    <strong class="pull-right">{{order.created_at|date:'d'|ordinal}} {% trans "of" %} {{order.created_at|date:'b'|title}}
+                                    {% trans "each year" %}</strong>
+                                {% else %}
+                                    <strong class="pull-right">{{order.created_at|date:'d'|ordinal}}
+                                    {% trans "of every month" %}</strong>
+                                {% endif %}
                             </p>
                             {% endif %}
                         </div>
