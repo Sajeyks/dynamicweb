@@ -154,7 +154,7 @@ def get_vat_rate_for_country(country):
     vat_rate = None
     try:
         vat_rate = VATRates.objects.get(
-            territory_codes=country, start_date__isnull=False, stop_date=None
+            territory_codes__startswith=country, start_date__isnull=False, stop_date=None
         )
         logger.debug("VAT rate for %s is %s" % (country, vat_rate.rate))
         return vat_rate.rate
@@ -162,7 +162,6 @@ def get_vat_rate_for_country(country):
         logger.debug(str(dne))
         logger.debug("Did not find VAT rate for %s, returning 0" % country)
         return 0
-
 
 
 class HostingUtils:
