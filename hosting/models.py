@@ -79,6 +79,9 @@ class GenericProduct(AssignPermissionsMixin, models.Model):
     product_price = models.DecimalField(max_digits=6, decimal_places=2)
     product_vat = models.DecimalField(max_digits=6, decimal_places=4, default=0)
     product_is_subscription = models.BooleanField(default=True)
+    product_subscription_interval = models.CharField(
+        max_length=10, default="month",
+        help_text="Choose between `year` and `month`")
 
     def __str__(self):
         return self.product_name
