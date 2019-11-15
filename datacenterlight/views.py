@@ -994,6 +994,9 @@ class OrderConfirmationView(DetailView, FormView):
                 'reply_to': [context['email']],
             }
             send_plain_email_task.delay(email_data)
+            recurring_text = _(" This is a monthly recurring plan.")
+            if gp_details['recurring_interval'] == "year":
+                recurring_text = _(" This is an yearly recurring plan.")
 
             email_data = {
                 'subject': _("Confirmation of your payment"),
@@ -1007,7 +1010,7 @@ class OrderConfirmationView(DetailView, FormView):
                                  name=user.get('name'),
                                  amount=gp_details['amount'],
                                  recurring=(
-                                     _(' This is a monthly recurring plan.')
+                                     recurring_text
                                      if gp_details['recurring'] else ''
                                  )
                              )
