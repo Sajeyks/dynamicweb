@@ -414,8 +414,18 @@ class PaymentOrderView(FormView):
                         product = generic_payment_form.cleaned_data.get(
                             'product_name'
                         )
+                    user_country_vat_rate = get_vat_rate_for_country(
+                        address_form.cleaned_data["country"]
+                    )
                     gp_details = {
                         "product_name": product.product_name,
+                        "vat_rate": user_country_vat_rate * 100,
+                        "vat_amount": round(
+                            float(product.product_price) *
+                            user_country_vat_rate, 2),
+                        "vat_country": address_form.cleaned_data["country"],
+                        "amount_before_vat": round(
+                            float(product.product_price), 2),
                         "amount": product.get_actual_price(
                             vat_rate=get_vat_rate_for_country(
                                 address_form.cleaned_data["country"])

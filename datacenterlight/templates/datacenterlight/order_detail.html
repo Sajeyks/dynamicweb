@@ -55,10 +55,25 @@
                         </p>
                         <div class="row">
                             <div class="col-sm-6">
+                                {% if generic_payment_details.vat_rate > 0 %}
+                                <p>
+                                    <span>{% trans "Price" %}: </span>
+                                    <strong class="pull-right">CHF {{generic_payment_details.amount_before_vat|floatformat:2|intcomma}}</strong>
+                                </p>
+                                <p>
+                                    <span>{% trans "VAT for" %} {{generic_payment_details.vat_country}} ({{generic_payment_details.vat_rate}}%) : </span>
+                                    <strong class="pull-right">CHF {{generic_payment_details.vat_amount|floatformat:2|intcomma}}</strong>
+                                </p>
+                                <p>
+                                    <span>{% trans "Total Amount" %} : </span>
+                                    <strong class="pull-right">CHF {{generic_payment_details.amount|floatformat:2|intcomma}}</strong>
+                                </p>
+                                {% else %}
                                 <p>
                                     <span>{% trans "Amount" %}: </span>
                                     <strong class="pull-right">CHF {{generic_payment_details.amount|floatformat:2|intcomma}}</strong>
                                 </p>
+                                {% endif %}
                                 {% if generic_payment_details.description %}
                                     <p>
                                         <span>{% trans "Description" %}: </span>
