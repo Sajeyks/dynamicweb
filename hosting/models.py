@@ -707,3 +707,13 @@ class UserCardDetail(AssignPermissionsMixin, models.Model):
             return ucd
         except UserCardDetail.DoesNotExist:
             return None
+
+
+class VATRates(AssignPermissionsMixin, models.Model):
+    start_date = models.DateField(blank=True, null=True)
+    stop_date = models.DateField(blank=True, null=True)
+    territory_codes = models.TextField(blank=True, default='')
+    currency_code = models.CharField(max_length=10)
+    rate = models.FloatField()
+    rate_type = models.TextField(blank=True, default='')
+    description = models.TextField(blank=True, default='')
