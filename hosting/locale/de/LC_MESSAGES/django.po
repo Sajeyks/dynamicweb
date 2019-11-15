@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-09-15 03:39+0000\n"
+"POT-Creation-Date: 2019-11-15 16:40+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -46,6 +46,9 @@ msgid "Product name"
 msgstr "Produkt"
 
 msgid "Monthly subscription"
+msgstr ""
+
+msgid "Yearly subscription"
 msgstr ""
 
 msgid "One time payment"
@@ -239,7 +242,8 @@ msgid "You can view your VM detail by clicking the button below."
 msgstr "Um die Rechnung zu sehen, klicke auf den Button unten."
 
 msgid "You can log in to your VM by the username <strong>puffy</strong>."
-msgstr "Du kannst Dich auf Deiner VM mit dem user <strong>puffy</strong> einloggen."
+msgstr ""
+"Du kannst Dich auf Deiner VM mit dem user <strong>puffy</strong> einloggen."
 
 msgid "View Detail"
 msgstr "Details anzeigen"
@@ -405,6 +409,12 @@ msgstr ""
 msgid "Recurring"
 msgstr ""
 
+msgid "of"
+msgstr ""
+
+msgid "each year"
+msgstr ""
+
 msgid "of every month"
 msgstr ""
 
@@ -424,9 +434,6 @@ msgid "See Invoice"
 msgstr "Siehe Rechnung"
 
 msgid "Page"
-msgstr ""
-
-msgid "of"
 msgstr ""
 
 msgid "Log in"
