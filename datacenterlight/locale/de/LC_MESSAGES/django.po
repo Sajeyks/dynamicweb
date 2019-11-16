@@ -20,7 +20,7 @@ msgstr ""
 "X-Translated-Using: django-rosetta 0.8.1\n"
 
 msgid "CMS Favicon"
-msgstr ""
+msgstr "CMS Favicon"
 
 #, python-format
 msgid "Your New VM %(vm_name)s at Data Center Light"
@@ -52,7 +52,7 @@ msgid "Login"
 msgstr "Anmelden"
 
 msgid "Dashboard"
-msgstr ""
+msgstr "Dashboard"
 
 msgid "Thank you for contacting us."
 msgstr "Nachricht gesendet."
@@ -64,7 +64,7 @@ msgid "Get in touch with us!"
 msgstr "Sende uns eine Nachricht."
 
 msgid "Name"
-msgstr ""
+msgstr "Name"
 
 msgid "Please enter your name."
 msgstr "Bitte gib Deinen Namen ein."
@@ -108,7 +108,7 @@ msgid "Your account details are as follows"
 msgstr "Deine Account Details sind unten aufgelistet"
 
 msgid "Username"
-msgstr "Username"
+msgstr "Benusername"
 
 msgid "Your email address"
 msgstr "Deine E-Mail-Adresse"
@@ -155,7 +155,7 @@ msgid "Please enter a value in range %(min_ram)s - 200."
 msgstr "Bitte gib einen Wert von %(min_ram)s bis 200 ein."
 
 msgid "VM hosting"
-msgstr ""
+msgstr "VM Hosting"
 
 msgid "month"
 msgstr "Monat"
@@ -207,14 +207,14 @@ msgstr ""
 
 msgid "Only wants you to pay for what you actually need."
 msgstr ""
-"Möchte, dass du nur bezahlst, was du auch wirklich brauchst: Wähle deine "
+"Du möchtest nur das bezahlen, was du auch wirklich brauchst: Wähle deine "
 "Ressourcen individuell aus! "
 
 msgid ""
 "Is creative, using a modern and alternative design for a data center in "
 "order to make it more sustainable and affordable at the same time."
 msgstr ""
-"Ist kreativ, indem es sich ein modernes und alternatives Layout zu Nutze "
+"Es ist kreativ, da es sich ein modernes und alternatives Layout zu Nutze"
 "macht um Nachhaltigkeit zu fördern und somit erschwingliche Preise bieten zu "
 "können. "
 
@@ -222,9 +222,9 @@ msgid ""
 "Cuts down the costs for you by using FOSS (Free Open Source Software) "
 "exclusively, wherefore we can save money from paying licenses."
 msgstr ""
-"Sorgt dafür, dass unnötige Kosten erspart werden, indem es ausschliesslich "
-"mit FOSS (Free Open Source Software) arbeitet und wir daher auf "
-"Lizenzgebühren verzichten können. "
+"Um unnötige Kosten zu sparen werden, wird ausschliesslich Software auf"
+"Basis von FOSS (Free Open Source Software) eingesetzt und dadurch können auf "
+"Lizenzgebühren verzichtet werden. "
 
 msgid "Scale out"
 msgstr "Skalierung"
@@ -311,7 +311,7 @@ msgid "Billing Address"
 msgstr "Rechnungsadresse"
 
 msgid "Make a payment"
-msgstr ""
+msgstr "Tätige eine Bezahlung"
 
 msgid "Your Order"
 msgstr "Deine Bestellung"
@@ -422,19 +422,19 @@ msgid "Price"
 msgstr "Preise"
 
 msgid "VAT for"
-msgstr ""
+msgstr "MwSt für"
 
 msgid "Total Amount"
 msgstr "Gesamtsumme"
 
 msgid "Amount"
-msgstr ""
+msgstr "Betrag"
 
 msgid "Description"
-msgstr ""
+msgstr "Beschreibung"
 
 msgid "Recurring"
-msgstr ""
+msgstr "Wiederholend"
 
 msgid "Subtotal"
 msgstr "Zwischensumme"
@@ -490,10 +490,10 @@ msgid "Hold tight, we are processing your request"
 msgstr "Bitte warten - wir verarbeiten Deine Anfrage gerade"
 
 msgid "OK"
-msgstr ""
+msgstr "Ok"
 
 msgid "Close"
-msgstr ""
+msgstr "Schliessen"
 
 msgid "Some problem encountered. Please try again later."
 msgstr "Ein Problem ist aufgetreten. Bitte versuche es später noch einmal."
@@ -505,7 +505,7 @@ msgid "Tech Stack"
 msgstr "Tech Stack"
 
 msgid "We are seriously open source."
-msgstr "Wir sind vollends opensource."
+msgstr "Wir sind vollends Open Source."
 
 msgid ""
 " Our full software stack is open source – We don't use anything that isn't "
@@ -575,13 +575,13 @@ msgid "Starting from only 15CHF per month. Try now."
 msgstr "Unser Angebot beginnt bei 15 CHF pro Monat. Probier's jetzt aus!"
 
 msgid "Actions speak louder than words. Let's do it, try our VM now."
-msgstr "Tagen sagen mehr als Worte – Teste jetzt unsere VM!"
+msgstr "Taten sagen mehr als Worte – Teste jetzt unsere VM!"
 
 msgid "Invalid number of cores"
 msgstr "Ungültige Anzahle CPU-Kerne"
 
 msgid "Invalid calculator properties"
-msgstr ""
+msgstr "Ungültige Berechnungseigenschaften"
 
 msgid "Invalid RAM size"
 msgstr "Ungültige RAM-Grösse"
@@ -591,7 +591,7 @@ msgstr "Ungültige Speicher-Grösse"
 
 #, python-brace-format
 msgid "Incorrect pricing name. Please contact support{support_email}"
-msgstr ""
+msgstr "Ungültige Preisbezeichnung. Bitte kontaktiere den Support{support_email}"
 
 #, python-brace-format
 msgid "{user} does not have permission to access the card"
@@ -619,13 +619,13 @@ msgstr ""
 "Beim Verbinden der Karte ist ein Fehler aufgetreten. Details: {details}"
 
 msgid " This is a monthly recurring plan."
-msgstr ""
+msgstr "Dies ist ein monatlich wiederkehrender Plan."
 
 msgid " This is an yearly recurring plan."
-msgstr ""
+msgstr "Dies ist ein jährlich wiederkehrender Plan."
 
 msgid "Confirmation of your payment"
-msgstr ""
+msgstr "Bestätigung deiner Zahlung"
 
 #, python-brace-format
 msgid ""
@@ -636,7 +636,8 @@ msgid ""
 "\n"
 "Cheers,\n"
 "Your Data Center Light team"
-msgstr ""
+msgstr "Hallo {name},\n" "\n" "vielen Dank für deine Bestellung!\n" "Wir haben deine Bezahlung in Höhe von {amount:.2f} CHF erhalten. {recurring}\n" "\n" "Grüsse\n"
+"Dein Data Center Light Team" 
 
 msgid "Thank you for the payment."
 msgstr "Danke für Deine Bestellung."
@@ -644,7 +645,7 @@ msgstr "Danke für Deine Bestellung."
 msgid ""
 "You will soon receive a confirmation email of the payment. You can always "
 "contact us at info@ungleich.ch for any question that you may have."
-msgstr ""
+msgstr "Du wirst bald eine Bestätigungs-E-Mail über die Zahlung erhalten. Du kannst jederzeit unter info@ungleich.ch kontaktieren."
 
 msgid "Thank you for the order."
 msgstr "Danke für Deine Bestellung."
