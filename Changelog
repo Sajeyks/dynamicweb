@@ -1,3 +1,5 @@
+2.6.10: 2019-11-16
+   * translation: Add DE translations for features in 2.6.{8,9} by moep (MR!719)
 2.6.9: 2019-11-15
    * feature: Allow creating yearly subscriptions for Generic Products (MR!718)
               Notes for deployment:
