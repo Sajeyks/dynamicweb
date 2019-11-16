@@ -28,31 +28,31 @@ msgid "User does not exist"
 msgstr "Der Benutzer existiert nicht"
 
 msgid "Choose a product"
-msgstr ""
+msgstr "Wähle ein Produkt"
 
 msgid "Amount in CHF"
 msgstr "Betrag"
 
 msgid "Recurring monthly"
-msgstr ""
+msgstr "monatlich wiederkehrend"
 
 msgid "Amount field does not match"
-msgstr ""
+msgstr "Betragsfeld stimmt nicht überein"
 
 msgid "Recurring field does not match"
-msgstr ""
+msgstr "Betragsfeld stimmt nicht überein"
 
 msgid "Product name"
 msgstr "Produkt"
 
 msgid "Monthly subscription"
-msgstr ""
+msgstr "Monatliches Abonnement"
 
 msgid "Yearly subscription"
-msgstr ""
+msgstr "Jährliches Abonnement"
 
 msgid "One time payment"
-msgstr ""
+msgstr "Einmalzahlung"
 
 msgid "Confirm Password"
 msgstr "Passwort Bestätigung"
@@ -76,7 +76,7 @@ msgid "Please input a proper SSH key"
 msgstr "Bitte verwende einen gültigen SSH-Key"
 
 msgid "Comma not accepted in the name of the key"
-msgstr ""
+msgstr "Komma im Namen des Keys wird nicht akzeptiert"
 
 msgid "All Rights Reserved"
 msgstr "Alle Rechte vorbehalten"
@@ -404,19 +404,19 @@ msgid "Amount"
 msgstr "Betrag"
 
 msgid "Description"
-msgstr ""
+msgstr "Beschreibung"
 
 msgid "Recurring"
-msgstr ""
+msgstr "wiederkehrend"
 
 msgid "of"
-msgstr ""
+msgstr "von"
 
 msgid "each year"
-msgstr ""
+msgstr "jedes Jahr"
 
 msgid "of every month"
-msgstr ""
+msgstr "jeden Monat"
 
 msgid "BACK TO LIST"
 msgstr "ZURÜCK ZUR LISTE"
@@ -428,13 +428,13 @@ msgid "VM ID"
 msgstr ""
 
 msgid "IP Address"
-msgstr ""
+msgstr "IP-Adresse"
 
 msgid "See Invoice"
 msgstr "Siehe Rechnung"
 
 msgid "Page"
-msgstr ""
+msgstr "Seite"
 
 msgid "Log in"
 msgstr "Anmelden"
@@ -496,7 +496,7 @@ msgid "Hold tight, we are processing your request"
 msgstr "Bitte warten - wir bearbeiten Deine Anfrage gerade"
 
 msgid "OK"
-msgstr ""
+msgstr "Ok"
 
 msgid "Close"
 msgstr "Schliessen"
@@ -852,7 +852,7 @@ msgstr "Ungültige Speicher-Grösse"
 
 #, python-brace-format
 msgid "Incorrect pricing name. Please contact support{support_email}"
-msgstr ""
+msgstr "Ungültige Preisbezeichnung. Bitte kontaktiere den Support{support_email}"
 
 msgid ""
 "We could not find the requested VM. Please                            "
@@ -871,7 +871,7 @@ msgstr "Fehler beenden VM"
 msgid ""
 "VM terminate action timed out. Please contact support@datacenterlight.ch for "
 "further information."
-msgstr ""
+msgstr "VM beendet wegen Zeitüberschreitung. Bitte kontaktiere support@datacenterlight.ch für weitere Informationen."
 
 #, python-format
 msgid "Virtual Machine %(vm_name)s Cancelled"
