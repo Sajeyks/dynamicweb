@@ -108,7 +108,7 @@ msgid "Your account details are as follows"
 msgstr "Deine Account Details sind unten aufgelistet"
 
 msgid "Username"
-msgstr "Benusername"
+msgstr "Benutzername"
 
 msgid "Your email address"
 msgstr "Deine E-Mail-Adresse"
