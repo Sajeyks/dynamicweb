@@ -1,3 +1,4 @@
+import datetime
 import logging
 
 from django.core.management.base import BaseCommand
@@ -19,6 +20,10 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         try:
             for email in options['customer_email']:
+                self.stdout.write(
+                    self.style.SUCCESS(
+                        "---------------------------------------------")
+                )
                 stripe_utils = StripeUtils()
                 user = CustomUser.objects.get(email=email)
                 if hasattr(user, 'stripecustomer'):
@@ -39,7 +44,9 @@ class Command(BaseCommand):
                     )
                     if all_invoices_response['error'] is not None:
                         self.stdout.write(self.style.ERROR(all_invoices_response['error']))
-                        exit(1)
+                        user.import_stripe_bill_remark += "{}: {},".format(datetime.datetime.now(), all_invoices_response['error'])
+                        user.save()
+                        continue
                     all_invoices = all_invoices_response['response_object']
                     self.stdout.write(self.style.SUCCESS("Obtained {} invoices".format(len(all_invoices) if all_invoices is not None else 0)))
                     num_invoice_created = 0
@@ -54,6 +61,10 @@ class Command(BaseCommand):
                             if MonthlyHostingBill.create(invoice) is not None:
                                 num_invoice_created += 1
                             else:
+                                user.import_stripe_bill_remark += "{}: Import failed - {},".format(
+                                    datetime.datetime.now(),
+                                    invoice['invoice_id'])
+                                user.save()
                                 logger.error("Did not import invoice for %s"
                                              "" % str(invoice))
                     self.stdout.write(
@@ -62,9 +73,9 @@ class Command(BaseCommand):
                 else:
                     self.stdout.write(self.style.SUCCESS(
                         'Customer email %s does not have a stripe customer.' % email))
-                self.stdout.write(
-                    self.style.SUCCESS(
-                        "---------------------------------------------")
-                )
+                    user.import_stripe_bill_remark += "{}: No stripecustomer,".format(
+                        datetime.datetime.now()
+                    )
+                    user.save()
         except Exception as e:
             print(" *** Error occurred. Details {}".format(str(e)))
