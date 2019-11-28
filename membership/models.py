@@ -82,6 +82,10 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         help_text=_(
             'Designates whether the user can log into this admin site.'),
     )
+    import_stripe_bill_remark = models.TextField(
+        default="",
+        help_text="Indicates any issues while importing stripe bills"
+    )
 
     objects = MyUserManager()
 
