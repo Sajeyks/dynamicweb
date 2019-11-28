@@ -345,7 +345,10 @@ class MonthlyHostingBill(AssignPermissionsMixin, models.Model):
                 args['period_start']).replace(tzinfo=pytz.utc),
             period_end=datetime.utcfromtimestamp(
                 args['period_end']).replace(tzinfo=pytz.utc),
-            billing_reason=args['billing_reason'],
+            billing_reason=(
+                args['billing_reason']
+                if args['billing_reason'] is not None else ''
+            ),
             discount=args['discount'],
             total=args['total'],
             lines_data_count=args['lines_data_count'],
