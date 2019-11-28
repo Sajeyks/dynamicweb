@@ -62,8 +62,9 @@ class Command(BaseCommand):
                 else:
                     self.stdout.write(self.style.SUCCESS(
                         'Customer email %s does not have a stripe customer.' % email))
+                self.stdout.write(
+                    self.style.SUCCESS(
+                        "---------------------------------------------")
+                )
         except Exception as e:
             print(" *** Error occurred. Details {}".format(str(e)))
-        self.stdout.write(
-            self.style.SUCCESS("---------------------------------------------")
-        )
