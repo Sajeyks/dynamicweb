@@ -616,7 +616,7 @@ class OrderConfirmationView(DetailView, FormView):
             vm_specs["price"] = price
             vm_specs["vat"] = vat
             vm_specs["vat_percent"] = vat_percent
-            vm_specs["vat_country"] = vat_percent
+            vm_specs["vat_country"] = user_vat_country
             vm_specs["discount"] = discount
             vm_specs["total_price"] = round(price + vat - discount['amount'], 2)
 
