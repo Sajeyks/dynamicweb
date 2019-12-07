@@ -27,7 +27,8 @@ from utils.forms import (
     BillingAddress
 )
 from utils.hosting_utils import (
-    get_vm_price_with_vat, get_all_public_keys, get_vat_rate_for_country
+    get_vm_price_with_vat, get_all_public_keys, get_vat_rate_for_country,
+    get_vm_price_for_given_vat
 )
 from utils.stripe_utils import StripeUtils
 from utils.tasks import send_plain_email_task
@@ -600,8 +601,27 @@ class OrderConfirmationView(DetailView, FormView):
                     request.session['generic_payment_details'],
             })
         else:
+            vm_specs = request.session.get('specs')
+            user_vat_country = (
+                request.session.get('billing_address_data').get("country")
+            )
+            user_country_vat_rate = get_vat_rate_for_country(user_vat_country)
+            price, vat, vat_percent, discount = get_vm_price_for_given_vat(
+                cpu=vm_specs['cpu'],
+                memory=vm_specs['memory'],
+                ssd_size=vm_specs['disk_size'],
+                pricing_name=vm_specs['pricing_name'],
+                vat_rate=user_country_vat_rate * 100
+            )
+            vm_specs["price"] = price
+            vm_specs["vat"] = vat
+            vm_specs["vat_percent"] = vat_percent
+            vm_specs["vat_country"] = vat_percent
+            vm_specs["discount"] = discount
+            vm_specs["total_price"] = round(price + vat - discount['amount'], 2)
+
             context.update({
-                'vm': request.session.get('specs'),
+                'vm': vm_specs,
                 'form': UserHostingKeyForm(request=self.request),
                 'keys': get_all_public_keys(self.request.user)
             })

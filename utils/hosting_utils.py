@@ -84,6 +84,41 @@ def get_vm_price(cpu, memory, disk_size, hdd_size=0, pricing_name='default'):
     return round(float(price), 2)
 
 
+def get_vm_price_for_given_vat(cpu, memory, ssd_size, hdd_size=0,
+                               pricing_name='default', vat_rate=0):
+    try:
+        pricing = VMPricing.objects.get(name=pricing_name)
+    except Exception as ex:
+        logger.error(
+            "Error getting VMPricing object for {pricing_name}."
+            "Details: {details}".format(
+                pricing_name=pricing_name, details=str(ex)
+            )
+        )
+        return None
+
+    price = (
+        (decimal.Decimal(cpu) * pricing.cores_unit_price) +
+        (decimal.Decimal(memory) * pricing.ram_unit_price) +
+        (decimal.Decimal(ssd_size) * pricing.ssd_unit_price) +
+        (decimal.Decimal(hdd_size) * pricing.hdd_unit_price)
+    )
+
+    vat = price * vat_rate * decimal.Decimal(0.01)
+    vat_percent = pricing.vat_percentage
+
+    cents = decimal.Decimal('.01')
+    price = price.quantize(cents, decimal.ROUND_HALF_UP)
+    vat = vat.quantize(cents, decimal.ROUND_HALF_UP)
+    discount = {
+        'name': pricing.discount_name,
+        'amount': round(float(pricing.discount_amount), 2)
+    }
+    return (round(float(price), 2), round(float(vat), 2),
+            round(float(vat_percent), 2), discount)
+
+
+
 def get_vm_price_with_vat(cpu, memory, ssd_size, hdd_size=0,
                           pricing_name='default'):
     """
