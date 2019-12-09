@@ -864,7 +864,7 @@ class OrdersHostingDetailView(LoginRequiredMixin, DetailView, FormView):
                         )
                     )
                     context['vm']["after_eu_vat_intro"] = (
-                        True if obj.vm_id > settings.FIRST_VM_ID_AFTER_EU_VAT
+                        True if obj.vm_id >= settings.FIRST_VM_ID_AFTER_EU_VAT
                         else False
                     )
                     context['vm']["price"] = price
@@ -898,7 +898,7 @@ class OrdersHostingDetailView(LoginRequiredMixin, DetailView, FormView):
                             )
                         )
                         context['vm']["after_eu_vat_intro"] = (
-                            True if obj.vm_id > settings.FIRST_VM_ID_AFTER_EU_VAT
+                            True if obj.vm_id >= settings.FIRST_VM_ID_AFTER_EU_VAT
                             else False
                         )
                         context['vm']["price"] = price
@@ -1298,7 +1298,7 @@ class InvoiceDetailView(LoginRequiredMixin, DetailView):
                     )
                 )
                 context['vm']["after_eu_vat_intro"] = (
-                    True if obj.order.vm_id > settings.FIRST_VM_ID_AFTER_EU_VAT
+                    True if obj.order.vm_id >= settings.FIRST_VM_ID_AFTER_EU_VAT
                     else False
                 )
                 context['vm']["price"] = price
@@ -1329,12 +1329,9 @@ class InvoiceDetailView(LoginRequiredMixin, DetailView):
                             else settings.PRE_EU_VAT_RATE
                         )
                     )
-                    context['vm']['vat'] = vat
-                    context['vm']['price'] = price
-                    context['vm']['discount'] = discount
-                    context['vm']['vat_percent'] = vat_percent
-                    context['vm']['total_price'] = (
-                            price + vat - discount['amount']
+                    context['vm']["after_eu_vat_intro"] = (
+                        True if obj.order.vm_id >= settings.FIRST_VM_ID_AFTER_EU_VAT
+                        else False
                     )
                 except TypeError:
                     logger.error("Type error. Probably we "
