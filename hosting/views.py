@@ -964,6 +964,7 @@ class OrdersHostingDetailView(LoginRequiredMixin, DetailView, FormView):
             vm_specs["discount"] = discount
             vm_specs["total_price"] = round(price + vat - discount['amount'],
                                             2)
+            context['vm']["after_eu_vat_intro"] = True
             context['vm'] = vm_specs
         return context
 
