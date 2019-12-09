@@ -1317,7 +1317,10 @@ class InvoiceDetailView(LoginRequiredMixin, DetailView):
                     )
                     vm = manager.get_vm(vm_id)
                     context['vm'] = VirtualMachineSerializer(vm).data
-                    price, vat, vat_percent, discount = get_vm_price_with_vat(
+                    user_vat_country = obj.order.billing_address.country
+                    user_country_vat_rate = get_vat_rate_for_country(
+                        user_vat_country)
+                    price, vat, vat_percent, discount = get_vm_price_for_given_vat(
                         cpu=context['vm']['cores'],
                         ssd_size=context['vm']['disk_size'],
                         memory=context['vm']['memory'],
@@ -1333,6 +1336,13 @@ class InvoiceDetailView(LoginRequiredMixin, DetailView):
                         True if obj.order.vm_id >= settings.FIRST_VM_ID_AFTER_EU_VAT
                         else False
                     )
+                    context['vm']["price"] = price
+                    context['vm']["vat"] = vat
+                    context['vm']["vat_percent"] = vat_percent
+                    context['vm']["vat_country"] = user_vat_country
+                    context['vm']["discount"] = discount
+                    context['vm']["total_price"] = round(
+                        price + vat - discount['amount'], 2)
                 except TypeError:
                     logger.error("Type error. Probably we "
                                  "came from a generic product. "
