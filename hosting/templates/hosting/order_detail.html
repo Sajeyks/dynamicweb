@@ -142,7 +142,12 @@
                                             <strong class="pull-right">{{vm.price|floatformat:2|intcomma}} CHF</strong>
                                         </p>
                                         <p>
-                                            <small>{% trans "VAT" %} ({{ vm.vat_percent|floatformat:2|intcomma }}%) </small>
+                                            {% if vm.after_eu_vat_intro %}
+                                                <small>{% trans "VAT for" %} {{vm.vat_country}} ({{vm.vat_percent}}%) : </small>
+                                            {% else %}
+                                                <small>{% trans "VAT" %} ({{ vm.vat_percent|floatformat:2|intcomma }}%)
+                                            </small>
+                                            {% endif %}
                                             <strong class="pull-right">{{vm.vat|floatformat:2|intcomma}} CHF</strong>
                                         </p>
                                     {% endif %}

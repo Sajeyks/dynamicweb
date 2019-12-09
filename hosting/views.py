@@ -50,7 +50,10 @@ from utils.forms import (
     ResendActivationEmailForm
 )
 from utils.hosting_utils import get_all_public_keys
-from utils.hosting_utils import get_vm_price_with_vat, HostingUtils
+from utils.hosting_utils import (
+    get_vm_price_with_vat, get_vm_price_for_given_vat, HostingUtils,
+    get_vat_rate_for_country
+)
 from utils.mailer import BaseEmail
 from utils.stripe_utils import StripeUtils
 from utils.tasks import send_plain_email_task
@@ -845,18 +848,32 @@ class OrdersHostingDetailView(LoginRequiredMixin, DetailView, FormView):
                     context['vm'] = vm_detail.__dict__
                     context['vm']['name'] = '{}-{}'.format(
                         context['vm']['configuration'], context['vm']['vm_id'])
-                    price, vat, vat_percent, discount = get_vm_price_with_vat(
+                    user_vat_country = obj.billing_address.country
+                    user_country_vat_rate = get_vat_rate_for_country(
+                        user_vat_country)
+                    price, vat, vat_percent, discount = get_vm_price_for_given_vat(
                         cpu=context['vm']['cores'],
                         ssd_size=context['vm']['disk_size'],
                         memory=context['vm']['memory'],
                         pricing_name=(obj.vm_pricing.name
-                                      if obj.vm_pricing else 'default')
+                                      if obj.vm_pricing else 'default'),
+                        vat_rate= (
+                            user_country_vat_rate * 100
+                            if obj.vm_id > settings.FIRST_VM_ID_AFTER_EU_VAT
+                            else 7.7
+                        )
                     )
-                    context['vm']['vat'] = vat
-                    context['vm']['price'] = price
-                    context['vm']['discount'] = discount
-                    context['vm']['vat_percent'] = vat_percent
-                    context['vm']['total_price'] = price + vat - discount['amount']
+                    context['vm']["after_eu_vat_intro"] = (
+                        True if obj.vm_id > settings.FIRST_VM_ID_AFTER_EU_VAT
+                        else False
+                    )
+                    context['vm']["price"] = price
+                    context['vm']["vat"] = vat
+                    context['vm']["vat_percent"] = vat_percent
+                    context['vm']["vat_country"] = user_vat_country
+                    context['vm']["discount"] = discount
+                    context['vm']["total_price"] = round(
+                        price + vat - discount['amount'], 2)
                     context['subscription_end_date'] = vm_detail.end_date()
                 except VMDetail.DoesNotExist:
                     try:
