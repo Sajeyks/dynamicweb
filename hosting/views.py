@@ -882,20 +882,32 @@ class OrdersHostingDetailView(LoginRequiredMixin, DetailView, FormView):
                         )
                         vm = manager.get_vm(obj.vm_id)
                         context['vm'] = VirtualMachineSerializer(vm).data
-                        price, vat, vat_percent, discount = get_vm_price_with_vat(
+                        user_vat_country = obj.billing_address.country
+                        user_country_vat_rate = get_vat_rate_for_country(
+                            user_vat_country)
+                        price, vat, vat_percent, discount = get_vm_price_for_given_vat(
                             cpu=context['vm']['cores'],
                             ssd_size=context['vm']['disk_size'],
                             memory=context['vm']['memory'],
                             pricing_name=(obj.vm_pricing.name
-                                          if obj.vm_pricing else 'default')
+                                          if obj.vm_pricing else 'default'),
+                            vat_rate=(
+                                user_country_vat_rate * 100
+                                if obj.vm_id > settings.FIRST_VM_ID_AFTER_EU_VAT
+                                else 7.7
+                            )
                         )
-                        context['vm']['vat'] = vat
-                        context['vm']['price'] = price
-                        context['vm']['discount'] = discount
-                        context['vm']['vat_percent'] = vat_percent
-                        context['vm']['total_price'] = (
-                                price + vat - discount['amount']
+                        context['vm']["after_eu_vat_intro"] = (
+                            True if obj.vm_id > settings.FIRST_VM_ID_AFTER_EU_VAT
+                            else False
                         )
+                        context['vm']["price"] = price
+                        context['vm']["vat"] = vat
+                        context['vm']["vat_percent"] = vat_percent
+                        context['vm']["vat_country"] = user_vat_country
+                        context['vm']["discount"] = discount
+                        context['vm']["total_price"] = round(
+                            price + vat - discount['amount'], 2)
                     except WrongIdError:
                         messages.error(
                             self.request,
@@ -933,7 +945,26 @@ class OrdersHostingDetailView(LoginRequiredMixin, DetailView, FormView):
                 context['cc_exp_year'] = card_detail.exp_year
                 context['cc_exp_month'] = '{:02d}'.format(card_detail.exp_month)
             context['site_url'] = reverse('hosting:create_virtual_machine')
-            context['vm'] = self.request.session.get('specs')
+            vm_specs = self.request.session.get('specs')
+            user_vat_country = (
+                self.request.session.get('billing_address_data').get("country")
+            )
+            user_country_vat_rate = get_vat_rate_for_country(user_vat_country)
+            price, vat, vat_percent, discount = get_vm_price_for_given_vat(
+                cpu=vm_specs['cpu'],
+                memory=vm_specs['memory'],
+                ssd_size=vm_specs['disk_size'],
+                pricing_name=vm_specs['pricing_name'],
+                vat_rate=user_country_vat_rate * 100
+            )
+            vm_specs["price"] = price
+            vm_specs["vat"] = vat
+            vm_specs["vat_percent"] = vat_percent
+            vm_specs["vat_country"] = user_vat_country
+            vm_specs["discount"] = discount
+            vm_specs["total_price"] = round(price + vat - discount['amount'],
+                                            2)
+            context['vm'] = vm_specs
         return context
 
     @method_decorator(decorators)
