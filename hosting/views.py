@@ -859,8 +859,8 @@ class OrdersHostingDetailView(LoginRequiredMixin, DetailView, FormView):
                                       if obj.vm_pricing else 'default'),
                         vat_rate= (
                             user_country_vat_rate * 100
-                            if obj.vm_id > settings.FIRST_VM_ID_AFTER_EU_VAT
-                            else 7.7
+                            if obj.vm_id >= settings.FIRST_VM_ID_AFTER_EU_VAT
+                            else settings.PRE_EU_VAT_RATE
                         )
                     )
                     context['vm']["after_eu_vat_intro"] = (
@@ -893,8 +893,8 @@ class OrdersHostingDetailView(LoginRequiredMixin, DetailView, FormView):
                                           if obj.vm_pricing else 'default'),
                             vat_rate=(
                                 user_country_vat_rate * 100
-                                if obj.vm_id > settings.FIRST_VM_ID_AFTER_EU_VAT
-                                else 7.7
+                                if obj.vm_id >= settings.FIRST_VM_ID_AFTER_EU_VAT
+                                else settings.PRE_EU_VAT_RATE
                             )
                         )
                         context['vm']["after_eu_vat_intro"] = (
@@ -1293,8 +1293,8 @@ class InvoiceDetailView(LoginRequiredMixin, DetailView):
                                   if obj.order.vm_pricing else 'default'),
                     vat_rate=(
                         user_country_vat_rate * 100
-                        if obj.order.vm_id > settings.FIRST_VM_ID_AFTER_EU_VAT
-                        else 7.7
+                        if obj.order.vm_id >= settings.FIRST_VM_ID_AFTER_EU_VAT
+                        else settings.PRE_EU_VAT_RATE
                     )
                 )
                 context['vm']["after_eu_vat_intro"] = (
@@ -1322,7 +1322,12 @@ class InvoiceDetailView(LoginRequiredMixin, DetailView):
                         ssd_size=context['vm']['disk_size'],
                         memory=context['vm']['memory'],
                         pricing_name=(obj.order.vm_pricing.name
-                                      if obj.order.vm_pricing else 'default')
+                                      if obj.order.vm_pricing else 'default'),
+                        vat_rate=(
+                            user_country_vat_rate * 100
+                            if obj.order.vm_id >= settings.FIRST_VM_ID_AFTER_EU_VAT
+                            else settings.PRE_EU_VAT_RATE
+                        )
                     )
                     context['vm']['vat'] = vat
                     context['vm']['price'] = price
