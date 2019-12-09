@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-11-15 17:33+0000\n"
+"POT-Creation-Date: 2019-12-09 12:13+0000\n"
 "PO-Revision-Date: 2018-03-30 23:22+0000\n"
 "Last-Translator: b'Anonymous User <coder.purple+25@gmail.com>'\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -144,8 +144,9 @@ msgid ""
 "the heart of Switzerland."
 msgstr "Bei uns findest Du die günstiges VMs aus der Schweiz."
 
-msgid "Try now, order a VM. VM price starts from only 15CHF per month."
-msgstr "Unser Angebot beginnt bei 15 CHF pro Monat. Probier's jetzt aus!"
+
+msgid "Try now, order a VM. VM price starts from only 10.5 CHF per month."
+msgstr "Unser Angebot beginnt bei 10.5 CHF pro Monat. Probier's jetzt aus!"
 
 msgid "ORDER VM"
 msgstr "VM BESTELLEN"
@@ -214,16 +215,16 @@ msgid ""
 "Is creative, using a modern and alternative design for a data center in "
 "order to make it more sustainable and affordable at the same time."
 msgstr ""
-"Es ist kreativ, da es sich ein modernes und alternatives Layout zu Nutze"
-"macht um Nachhaltigkeit zu fördern und somit erschwingliche Preise bieten zu "
-"können. "
+"Es ist kreativ, da es sich ein modernes und alternatives Layout zu "
+"Nutzemacht um Nachhaltigkeit zu fördern und somit erschwingliche Preise "
+"bieten zu können. "
 
 msgid ""
 "Cuts down the costs for you by using FOSS (Free Open Source Software) "
 "exclusively, wherefore we can save money from paying licenses."
 msgstr ""
-"Um unnötige Kosten zu sparen werden, wird ausschliesslich Software auf"
-"Basis von FOSS (Free Open Source Software) eingesetzt und dadurch können auf "
+"Um unnötige Kosten zu sparen werden, wird ausschliesslich Software aufBasis "
+"von FOSS (Free Open Source Software) eingesetzt und dadurch können auf "
 "Lizenzgebühren verzichtet werden. "
 
 msgid "Scale out"
@@ -439,9 +440,6 @@ msgstr "Wiederholend"
 msgid "Subtotal"
 msgstr "Zwischensumme"
 
-msgid "VAT"
-msgstr "Mehrwertsteuer"
-
 #, fuzzy, python-format
 #| msgid ""
 #| "By clicking \"Place order\" this plan will charge your credit card "
@@ -453,7 +451,7 @@ msgstr ""
 "Wenn Du \"bestellen\" auswählst, wird Deine Kreditkarte mit %(total_price)s "
 "CHF pro Jahr belastet"
 
-
+#, python-format
 msgid ""
 "By clicking \"Place order\" this plan will charge your credit card account "
 "with %(total_price)s CHF/month"
@@ -591,7 +589,8 @@ msgstr "Ungültige Speicher-Grösse"
 
 #, python-brace-format
 msgid "Incorrect pricing name. Please contact support{support_email}"
-msgstr "Ungültige Preisbezeichnung. Bitte kontaktiere den Support{support_email}"
+msgstr ""
+"Ungültige Preisbezeichnung. Bitte kontaktiere den Support{support_email}"
 
 #, python-brace-format
 msgid "{user} does not have permission to access the card"
@@ -636,8 +635,15 @@ msgid ""
 "\n"
 "Cheers,\n"
 "Your Data Center Light team"
-msgstr "Hallo {name},\n" "\n" "vielen Dank für deine Bestellung!\n" "Wir haben deine Bezahlung in Höhe von {amount:.2f} CHF erhalten. {recurring}\n" "\n" "Grüsse\n"
-"Dein Data Center Light Team" 
+msgstr ""
+"Hallo {name},\n"
+"\n"
+"vielen Dank für deine Bestellung!\n"
+"Wir haben deine Bezahlung in Höhe von {amount:.2f} CHF erhalten. "
+"{recurring}\n"
+"\n"
+"Grüsse\n"
+"Dein Data Center Light Team"
 
 msgid "Thank you for the payment."
 msgstr "Danke für Deine Bestellung."
@@ -645,7 +651,9 @@ msgstr "Danke für Deine Bestellung."
 msgid ""
 "You will soon receive a confirmation email of the payment. You can always "
 "contact us at info@ungleich.ch for any question that you may have."
-msgstr "Du wirst bald eine Bestätigungs-E-Mail über die Zahlung erhalten. Du kannst jederzeit unter info@ungleich.ch kontaktieren."
+msgstr ""
+"Du wirst bald eine Bestätigungs-E-Mail über die Zahlung erhalten. Du kannst "
+"jederzeit unter info@ungleich.ch kontaktieren."
 
 msgid "Thank you for the order."
 msgstr "Danke für Deine Bestellung."
@@ -656,6 +664,9 @@ msgid ""
 msgstr ""
 "Deine VM ist gleich bereit. Wir senden Dir eine Bestätigungsemail, sobald Du "
 "auf sie zugreifen kannst."
+
+#~ msgid "VAT"
+#~ msgstr "Mehrwertsteuer"
 
 #~ msgid ""
 #~ "You are not making any payment yet. After submitting your card "
