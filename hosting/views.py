@@ -1257,16 +1257,16 @@ class InvoiceDetailView(LoginRequiredMixin, DetailView):
                     cpu=context['vm']['cores'],
                     ssd_size=context['vm']['disk_size'],
                     memory=context['vm']['memory'],
-                    pricing_name=(obj.vm_pricing.name
-                                  if obj.vm_pricing else 'default'),
+                    pricing_name=(obj.order.vm_pricing.name
+                                  if obj.order.vm_pricing else 'default'),
                     vat_rate=(
                         user_country_vat_rate * 100
-                        if obj.vm_id > settings.FIRST_VM_ID_AFTER_EU_VAT
+                        if obj.order.vm_id > settings.FIRST_VM_ID_AFTER_EU_VAT
                         else 7.7
                     )
                 )
                 context['vm']["after_eu_vat_intro"] = (
-                    True if obj.vm_id > settings.FIRST_VM_ID_AFTER_EU_VAT
+                    True if obj.order.vm_id > settings.FIRST_VM_ID_AFTER_EU_VAT
                     else False
                 )
                 context['vm']["price"] = price
