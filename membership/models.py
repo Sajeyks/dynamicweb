@@ -1,5 +1,6 @@
-from datetime import datetime
+import logging
 
+from datetime import datetime
 from django.conf import settings
 from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, \
@@ -7,13 +8,16 @@ from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, \
 from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.core.validators import RegexValidator
-from django.db import models
+from django.db import models, IntegrityError
 from django.utils.crypto import get_random_string
 from django.utils.translation import ugettext_lazy as _
 
 from utils.mailer import BaseEmail
 from utils.mailer import DigitalGlarusRegistrationMailer
 from utils.stripe_utils import StripeUtils
+from utils.ldap_manager import LdapManager
+
+logger = logging.getLogger(__name__)
 
 REGISTRATION_MESSAGE = {'subject': "Validation mail",
                         'message': 'Please validate Your account under this link '
@@ -42,6 +46,7 @@ class MyUserManager(BaseUserManager):
         user.is_admin = False
         user.set_password(password)
         user.save(using=self._db)
+        user.create_ldap_account()
         return user
 
     def create_superuser(self, email, name, password):
@@ -63,13 +68,43 @@ def get_validation_slug():
     return make_password(None)
 
 
+def get_first_and_last_name(full_name):
+    first_name, *last_name = full_name.split(" ")
+    first_name = first_name
+    last_name = " ".join(last_name)
+    return first_name, last_name
+
+
+def assign_username(user):
+    if not user.username:
+        first_name, last_name = get_first_and_last_name(user.name)
+        user.username = first_name.lower() + last_name.lower()
+        user.username = "".join(user.username.split())
+        try:
+            user.save()
+        except IntegrityError:
+            try:
+                user.username = user.username + str(user.id)
+                user.save()
+            except IntegrityError:
+                while True:
+                    user.username = user.username + str(random.randint(0, 2 ** 50))
+                    try:
+                        user.save()
+                    except IntegrityError:
+                        continue
+                    else:
+                        break
+
+
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     VALIDATED_CHOICES = ((0, 'Not validated'), (1, 'Validated'))
     site = models.ForeignKey(Site, default=1)
     name = models.CharField(max_length=50)
     email = models.EmailField(unique=True)
-
+    username = models.CharField(max_length=50, unique=True, null=True)
     validated = models.IntegerField(choices=VALIDATED_CHOICES, default=0)
+    in_ldap = models.BooleanField(default=False)
     # By default, we initialize the validation_slug with appropriate value
     # This is required for User(page) admin
     validation_slug = models.CharField(
@@ -164,6 +199,34 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         # The user is identified by their email address
         return self.email
 
+    def create_ldap_account(self):
+        # create ldap account for user if it does not exists already.
+        if self.in_ldap:
+            return
+
+        assign_username(self)
+        ldap_manager = LdapManager()
+        try:
+            user_exists_in_ldap, entries = ldap_manager.check_user_exists(
+                uid=self.username,
+                attributes=['uid', 'givenName', 'sn', 'mail', 'userPassword'],
+                search_base=settings.ENTIRE_SEARCH_BASE,
+                search_attr='uid'
+            )
+        except Exception:
+            logger.exception("Exception occur while searching for user in LDAP")
+        else:
+            if not user_exists_in_ldap:
+                # IF no ldap account
+                first_name, last_name = get_first_and_last_name(self.name)
+                if not last_name:
+                    last_name = first_name
+
+                ldap_manager.create_user(self.username, password=self.password,
+                                         firstname=first_name, lastname=last_name,
+                                         email=self.email)
+                self.in_ldap = True
+                self.save()
     def __str__(self):  # __unicode__ on Python 2
         return self.email
 

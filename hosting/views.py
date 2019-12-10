@@ -57,6 +57,8 @@ from utils.hosting_utils import (
 from utils.mailer import BaseEmail
 from utils.stripe_utils import StripeUtils
 from utils.tasks import send_plain_email_task
+from utils.ldap_manager import LdapManager
+
 from utils.views import (
     PasswordResetViewMixin, PasswordResetConfirmViewMixin, LoginViewMixin,
     ResendActivationLinkViewMixin
@@ -394,9 +396,12 @@ class PasswordResetConfirmView(HostingContextMixin,
         if user is not None and default_token_generator.check_token(user,
                                                                     token):
             if form.is_valid():
+                ldap_manager = LdapManager()
                 new_password = form.cleaned_data['new_password2']
+                user.create_ldap_account()
                 user.set_password(new_password)
                 user.save()
+                ldap_manager.change_password(user.username, user.password)
                 messages.success(request, _('Password has been reset.'))
 
                 # Change opennebula password
