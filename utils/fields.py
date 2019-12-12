@@ -241,7 +241,6 @@ COUNTRIES = (
     ('ZM', _('Zambia')),
     ('ZR', _('Zaire')),
     ('ZW', _('Zimbabwe')),
-    ('ZZ', _('Unknown or unspecified country')),
 )
 
 
