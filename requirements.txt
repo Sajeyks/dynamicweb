@@ -63,6 +63,7 @@ djangocms-text-ckeditor==2.9.3
 djangocms-video==1.0.0
 easy-thumbnails==2.3
 html5lib==0.9999999
+ldap3==2.6.1
 lxml==3.6.0
 model-mommy==1.2.6
 phonenumbers==7.4.0

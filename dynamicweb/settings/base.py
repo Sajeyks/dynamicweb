@@ -10,10 +10,7 @@ import os
 
 # dotenv
 import dotenv
-import ldap
-
 from django.utils.translation import ugettext_lazy as _
-from django_auth_ldap.config import LDAPSearch, LDAPSearchUnion
 
 logger = logging.getLogger(__name__)
 
@@ -741,8 +738,6 @@ LDAP_DEFAULT_START_UID = int(env('LDAP_DEFAULT_START_UID'))
 
 # Search union over OUs
 search_base = env('LDAPSEARCH').split()
-search_base_ldap = [LDAPSearch(x, ldap.SCOPE_SUBTREE, "(uid=%(user)s)") for x in search_base]
-AUTH_LDAP_USER_SEARCH = LDAPSearchUnion(*search_base_ldap)
 AUTH_LDAP_START_TLS = bool(os.environ.get('LDAP_USE_TLS', False))
 
 ENTIRE_SEARCH_BASE = env("ENTIRE_SEARCH_BASE")
