@@ -1,5 +1,6 @@
 import logging
 import random
+import unicodedata
 
 from datetime import datetime
 from django.conf import settings
@@ -12,6 +13,8 @@ from django.core.validators import RegexValidator
 from django.db import models, IntegrityError
 from django.utils.crypto import get_random_string
 from django.utils.translation import ugettext_lazy as _
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 
 from utils.mailer import BaseEmail
 from utils.mailer import DigitalGlarusRegistrationMailer
@@ -82,10 +85,8 @@ def assign_username(user):
 
         # Try to come up with a username
         first_name, last_name = get_first_and_last_name(user.name)
-        user.username = first_name + last_name
-        user.username = "".join(user.username.split()).lower()
-        user.username = "".join([char for char in user.username if char.isalnum()])
-
+        user.username = unicodedata.normalize('NFKD', first_name + last_name)
+        user.username = "".join([char for char in user.username if char.isalnum()]).lower()
         exist = True
         while exist:
             # Check if it exists
@@ -102,12 +103,21 @@ def assign_username(user):
                     user.username = user.username + str(random.randint(0, 2 ** 10))
 
 
+def validate_name(value):
+    valid_chars = [char for char in value if (char.isalpha() or char == "-" or char == " ")]
+    if len(valid_chars) < len(value):
+        raise ValidationError(
+            _('%(value)s is not a valid name. A valid name can only include letters, spaces or -'),
+            params={'value': value},
+        )
+
+
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     VALIDATED_CHOICES = ((0, 'Not validated'), (1, 'Validated'))
     site = models.ForeignKey(Site, default=1)
-    name = models.CharField(max_length=50)
+    name = models.CharField(max_length=50, validators=[validate_name])
     email = models.EmailField(unique=True)
-    username = models.CharField(max_length=50, unique=True, null=True)
+    username = models.CharField(max_length=60, unique=True, null=True)
     validated = models.IntegerField(choices=VALIDATED_CHOICES, default=0)
     in_ldap = models.BooleanField(default=False)
     # By default, we initialize the validation_slug with appropriate value
@@ -232,6 +242,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
                                          email=self.email)
                 self.in_ldap = True
                 self.save()
+
     def __str__(self):  # __unicode__ on Python 2
         return self.email
 
