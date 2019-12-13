@@ -1,4 +1,5 @@
 import logging
+import random
 
 from datetime import datetime
 from django.conf import settings
@@ -77,24 +78,27 @@ def get_first_and_last_name(full_name):
 
 def assign_username(user):
     if not user.username:
+        ldap_manager = LdapManager()
+
+        # Try to come up with a username
         first_name, last_name = get_first_and_last_name(user.name)
         user.username = first_name.lower() + last_name.lower()
         user.username = "".join(user.username.split())
-        try:
-            user.save()
-        except IntegrityError:
-            try:
-                user.username = user.username + str(user.id)
-                user.save()
-            except IntegrityError:
-                while True:
+
+        exist = True
+        while exist:
+            # Check if it exists
+            exist, entries = ldap_manager.check_user_exists(user.username)
+            if exist:
+                # If username exists in ldap, come up with a new user name and check it again
+                user.username = user.username + str(random.randint(0, 2 ** 50))
+            else:
+                # If username does not exists in ldap, try to save it in database
+                try:
+                    user.save()
+                except IntegrityError:
+                    # If username exists in database then come up with a new username
                     user.username = user.username + str(random.randint(0, 2 ** 50))
-                    try:
-                        user.save()
-                    except IntegrityError:
-                        continue
-                    else:
-                        break
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
