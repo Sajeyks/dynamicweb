@@ -82,8 +82,9 @@ def assign_username(user):
 
         # Try to come up with a username
         first_name, last_name = get_first_and_last_name(user.name)
-        user.username = first_name.lower() + last_name.lower()
-        user.username = "".join(user.username.split())
+        user.username = first_name + last_name
+        user.username = "".join(user.username.split()).lower()
+        user.username = "".join([char for char in user.username if char.isalnum()])
 
         exist = True
         while exist:
@@ -91,14 +92,14 @@ def assign_username(user):
             exist, entries = ldap_manager.check_user_exists(user.username)
             if exist:
                 # If username exists in ldap, come up with a new user name and check it again
-                user.username = user.username + str(random.randint(0, 2 ** 50))
+                user.username = user.username + str(random.randint(0, 2 ** 10))
             else:
                 # If username does not exists in ldap, try to save it in database
                 try:
                     user.save()
                 except IntegrityError:
                     # If username exists in database then come up with a new username
-                    user.username = user.username + str(random.randint(0, 2 ** 50))
+                    user.username = user.username + str(random.randint(0, 2 ** 10))
 
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):

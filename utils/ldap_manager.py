@@ -88,23 +88,23 @@ class LdapManager:
         logger.debug("{uid} does not exist. Using it".format(uid=uidNumber))
         self._set_max_uid(uidNumber)
         try:
-            uid = user
+            uid = user.encode("utf-8")
             conn.add("uid={uid},{customer_dn}".format(
                     uid=uid, customer_dn=settings.LDAP_CUSTOMER_DN
                 ),
                 ["inetOrgPerson", "posixAccount", "ldapPublickey"],
                 {
                     "uid": [uid],
-                    "sn": [lastname],
-                    "givenName": [firstname],
+                    "sn": [lastname.encode("utf-8")],
+                    "givenName": [firstname.encode("utf-8")],
                     "cn": [uid],
-                    "displayName": ["{} {}".format(firstname, lastname)],
+                    "displayName": ["{} {}".format(firstname, lastname).encode("utf-8")],
                     "uidNumber": [str(uidNumber)],
                     "gidNumber": [str(settings.LDAP_CUSTOMER_GROUP_ID)],
                     "loginShell": ["/bin/bash"],
-                    "homeDirectory": ["/home/{}".format(user)],
-                    "mail": email,
-                    "userPassword": [password]
+                    "homeDirectory": ["/home/{}".format(user).encode("utf-8")],
+                    "mail": email.encode("utf-8"),
+                    "userPassword": [password.encode("utf-8")]
                 }
             )
             logger.debug('Created user %s %s' % (user.encode('utf-8'),
@@ -139,7 +139,7 @@ class LdapManager:
                     {
                         "userpassword": (
                             ldap3.MODIFY_REPLACE,
-                            [new_password]
+                            [new_password.encode("utf-8")]
                         )
                     }
                 )
@@ -150,6 +150,7 @@ class LdapManager:
 
         conn.unbind()
         return return_val
+
 
     def change_user_details(self, uid, details):
         """
