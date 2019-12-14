@@ -26,11 +26,13 @@ class Command(BaseCommand):
             )
             for customer in all_customers:
                 all_customers_set.add(customer.email)
-                print(customer.email)
         else:
-            all_hosting_orders = HostingOrder.objects.all()
+            all_hosting_orders = HostingOrder.objects.filter()
+            running_vm_details = VMDetail.objects.filter(terminated_at=None)
+            running_vm_ids = [rvm.vm_id for rvm in running_vm_details]
             for order in all_hosting_orders:
-                all_customers_set.add(order.customer.user.email)
-                print(order.customer.user.email)
-
+                if order.vm_id in running_vm_ids:
+                    all_customers_set.add(order.customer.user.email)
+        for cu in all_customers_set:
+            print(cu)
         print("Total customers = %s" % len(all_customers_set))
