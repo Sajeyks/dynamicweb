@@ -50,7 +50,7 @@ class MyUserManager(BaseUserManager):
         user.is_admin = False
         user.set_password(password)
         user.save(using=self._db)
-        user.create_ldap_account()
+        user.create_ldap_account(password)
         return user
 
     def create_superuser(self, email, name, password):
@@ -214,7 +214,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         # The user is identified by their email address
         return self.email
 
-    def create_ldap_account(self):
+    def create_ldap_account(self, password):
         # create ldap account for user if it does not exists already.
         if self.in_ldap:
             return
@@ -236,8 +236,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
                 first_name, last_name = get_first_and_last_name(self.name)
                 if not last_name:
                     last_name = first_name
-
-                ldap_manager.create_user(self.username, password=self.password,
+                ldap_manager.create_user(self.username, password=password,
                                          firstname=first_name, lastname=last_name,
                                          email=self.email)
                 self.in_ldap = True

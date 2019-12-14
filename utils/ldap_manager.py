@@ -58,8 +58,7 @@ class LdapManager:
         SALT_BYTES = 15
 
         sha1 = hashlib.sha1()
-        salt = self.rng.getrandbits(SALT_BYTES * 8).to_bytes(SALT_BYTES,
-                                                               "little")
+        salt = self.rng.getrandbits(SALT_BYTES * 8).to_bytes(SALT_BYTES, "little")
         sha1.update(password)
         sha1.update(salt)
 
@@ -104,7 +103,9 @@ class LdapManager:
                     "loginShell": ["/bin/bash"],
                     "homeDirectory": ["/home/{}".format(user).encode("utf-8")],
                     "mail": email.encode("utf-8"),
-                    "userPassword": [password.encode("utf-8")]
+                    "userPassword": [self._ssha_password(
+                        password.encode("utf-8")
+                    )]
                 }
             )
             logger.debug('Created user %s %s' % (user.encode('utf-8'),
@@ -139,7 +140,7 @@ class LdapManager:
                     {
                         "userpassword": (
                             ldap3.MODIFY_REPLACE,
-                            [new_password.encode("utf-8")]
+                            [self._ssha_password(new_password.encode("utf-8"))]
                         )
                     }
                 )

@@ -398,10 +398,12 @@ class PasswordResetConfirmView(HostingContextMixin,
             if form.is_valid():
                 ldap_manager = LdapManager()
                 new_password = form.cleaned_data['new_password2']
-                user.create_ldap_account()
+
+                user.create_ldap_account(new_password)
                 user.set_password(new_password)
                 user.save()
-                ldap_manager.change_password(user.username, user.password)
+
+                ldap_manager.change_password(user.username, new_password)
                 messages.success(request, _('Password has been reset.'))
 
                 # Change opennebula password

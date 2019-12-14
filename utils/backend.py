@@ -13,7 +13,7 @@ class MyLDAPBackend(object):
             # User does not exists in Database
             return None
         else:
-            user.create_ldap_account()
+            user.create_ldap_account(password)
             if user.check_password(password):
                 return user
             else:
