@@ -1,3 +1,5 @@
+2.7.1: 2019-12-14
+   * feature: Add management command to list active VM customers (MR!723)
 2.7: 2019-12-9
    * feature: EU VAT for new subscriptions (MR!721)
               Notes for deployment:
