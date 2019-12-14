@@ -491,11 +491,11 @@ class OpenNebulaManager():
         else:
             logger.debug("opennebula_user is object and corresponding id is %s"
                          % self.opennebula_user.id)
-        # self.oneadmin_client.call(
-        #     oca.User.METHODS['passwd'],
-        #     self.opennebula_user if type(self.opennebula_user) == int else self.opennebula_user.id,
-        #     passwd_hash
-        # )
+        self.oneadmin_client.call(
+            oca.User.METHODS['passwd'],
+            self.opennebula_user if type(self.opennebula_user) == int else self.opennebula_user.id,
+            passwd_hash
+        )
 
     def add_public_key(self, user, public_key='', merge=False):
         """
