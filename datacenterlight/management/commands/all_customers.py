@@ -35,4 +35,7 @@ class Command(BaseCommand):
                     all_customers_set.add(order.customer.user.email)
         for cu in all_customers_set:
             print(cu)
-        print("Total customers = %s" % len(all_customers_set))
+        if all_registered:
+            print("All registered users = %s" % len(all_customers_set))
+        else:
+            print("Total active customers = %s" % len(all_customers_set))
