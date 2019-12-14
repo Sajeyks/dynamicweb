@@ -1,12 +1,12 @@
-import json
 import logging
-import sys
 
 from django.core.management.base import BaseCommand
-from membership.models import CustomUser
+
 from hosting.models import (
-    HostingOrder, VMDetail, UserCardDetail, UserHostingKey
+    HostingOrder, VMDetail
 )
+from membership.models import CustomUser
+
 logger = logging.getLogger(__name__)
 
 
