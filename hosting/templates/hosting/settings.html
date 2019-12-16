@@ -15,6 +15,10 @@
         <div class="settings-container">
             <div class="row">
                 <div class="col-sm-5 col-md-6  billing dcl-billing">
+                    <h3><b>{%trans "My Username"%}</b></h3>
+                    <hr class="top-hr">
+                    <p>{{request.user.username}}</p>
+                    <br>
                     <h3>{%trans "Billing Address" %}</h3>
                     <hr>
                     <form role="form" id="billing-form" method="post" action="" novalidate>
