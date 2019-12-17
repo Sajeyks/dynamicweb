@@ -942,6 +942,11 @@ class OrderConfirmationView(DetailView, FormView):
             'user': custom_user.id
         })
 
+        # Customer is created, we save his VAT Number
+        custom_user.vat_number = request.session.get(
+            'billing_address_data').get("vat_number")
+        custom_user.save()
+
         if 'generic_payment_type' in request.session:
             stripe_cus = StripeCustomer.objects.filter(
                 stripe_id=stripe_api_cus_id

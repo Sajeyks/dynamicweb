@@ -616,6 +616,9 @@ class SettingsView(LoginRequiredMixin, FormView):
                     instance=self.request.user.billing_addresses.first(),
                     data=billing_address_data)
                 billing_address_user_form.save()
+                self.request.user.vat_number = billing_address_data.get(
+                    "vat_number")
+                self.request.user.save()
                 msg = _("Billing address updated successfully")
                 messages.add_message(request, messages.SUCCESS, msg)
             else:
