@@ -779,6 +779,8 @@ class PaymentVMView(LoginRequiredMixin, FormView):
                         reverse('hosting:payment') + '#payment_error')
                 request.session['token'] = token
             request.session['billing_address_data'] = billing_address_data
+            owner.vat_number = billing_address_data.get("vat_number")
+            owner.save()
             self.request.session['order_confirm_url'] = "{url}?{query_params}".format(
                     url=reverse('hosting:order-confirmation'),
                     query_params='page=payment')

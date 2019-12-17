@@ -491,6 +491,9 @@ class PaymentOrderView(FormView):
                 customer = StripeCustomer.get_or_create(
                     email=this_user.get('email'), token=token
                 )
+                request.user.vat_number = address_form.cleaned_data.get(
+                    "vat_number")
+                request.user.save()
             else:
                 user_email = address_form.cleaned_data.get('email')
                 user_name = address_form.cleaned_data.get('name')
