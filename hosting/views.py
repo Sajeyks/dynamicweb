@@ -694,6 +694,7 @@ class PaymentVMView(LoginRequiredMixin, FormView):
                 'city': current_billing_address.city,
                 'postal_code': current_billing_address.postal_code,
                 'country': current_billing_address.country,
+                'vat_number': self.request.user.vat_number
             }
         })
         return form_kwargs

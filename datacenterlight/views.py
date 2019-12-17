@@ -254,6 +254,9 @@ class PaymentOrderView(FormView):
                 billing_address_form = BillingAddressForm(
                     instance=self.request.user.billing_addresses.first()
                 )
+            billing_address_form.fields['vat_number'].initial = (
+                self.request.user.vat_number
+            )
             user = self.request.user
             if hasattr(user, 'stripecustomer'):
                 stripe_customer = user.stripecustomer
