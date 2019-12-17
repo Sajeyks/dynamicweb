@@ -120,17 +120,19 @@ class EditCreditCardForm(forms.Form):
 class BillingAddressForm(forms.ModelForm):
     token = forms.CharField(widget=forms.HiddenInput(), required=False)
     card = forms.CharField(widget=forms.HiddenInput(), required=False)
+    vat_number = forms.CharField(max_length=100, default="")
 
     class Meta:
         model = BillingAddress
         fields = ['cardholder_name', 'street_address',
-                  'city', 'postal_code', 'country']
+                  'city', 'postal_code', 'country', 'vat_number']
         labels = {
             'cardholder_name': _('Cardholder Name'),
             'street_address': _('Street Address'),
             'city': _('City'),
             'postal_code': _('Postal Code'),
             'Country': _('Country'),
+            'VAT Number': _('VAT Number')
         }
 
 
@@ -142,7 +144,7 @@ class BillingAddressFormSignup(BillingAddressForm):
     class Meta:
         model = BillingAddress
         fields = ['name', 'email', 'cardholder_name', 'street_address',
-                  'city', 'postal_code', 'country']
+                  'city', 'postal_code', 'country', 'vat_number']
         labels = {
             'name': 'Name',
             'email': _('Email'),
@@ -151,6 +153,7 @@ class BillingAddressFormSignup(BillingAddressForm):
             'city': _('City'),
             'postal_code': _('Postal Code'),
             'Country': _('Country'),
+            'vat_number': _('VAT Number')
         }
 
     def clean_email(self):
