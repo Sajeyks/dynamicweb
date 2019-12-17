@@ -20,7 +20,10 @@ class BaseBillingAddress(models.Model):
 
 class BillingAddress(BaseBillingAddress):
     def __str__(self):
-        return self.street_address
+        return "%s, %s, %s, %s, %s" % (
+            self.cardholder_name, self.street_address, self.city,
+            self.postal_code, self.country
+        )
 
 
 class UserBillingAddress(BaseBillingAddress):
@@ -28,7 +31,10 @@ class UserBillingAddress(BaseBillingAddress):
     current = models.BooleanField(default=True)
 
     def __str__(self):
-        return self.street_address
+        return "%s, %s, %s, %s, %s" % (
+            self.cardholder_name, self.street_address, self.city,
+            self.postal_code, self.country
+        )
 
     def to_dict(self):
         return {
