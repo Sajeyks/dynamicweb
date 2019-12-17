@@ -68,6 +68,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     site = models.ForeignKey(Site, default=1)
     name = models.CharField(max_length=50)
     email = models.EmailField(unique=True)
+    vat_number = models.CharField(max_length=100, default="")
 
     validated = models.IntegerField(choices=VALIDATED_CHOICES, default=0)
     # By default, we initialize the validation_slug with appropriate value
