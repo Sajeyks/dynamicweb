@@ -67,6 +67,9 @@
                                 {{billing_address.cardholder_name}}<br>
                                 {{billing_address.street_address}}, {{billing_address.postal_code}}<br>
                                 {{billing_address.city}}, {{billing_address.country}}
+                                {% if user.vat_number %}
+                                    <br/>{% trans "VAT Number" %} {{user.vat_number}}
+                                {% endif %}
                             {% endwith %}
                         {% endif %}
                     </p>
