@@ -538,9 +538,12 @@ class SettingsView(LoginRequiredMixin, FormView):
         Check if the user already saved contact details. If so, then show
         the form populated with those details, to let user change them.
         """
-        return form_class(
+
+        bill_form = form_class(
             instance=self.request.user.billing_addresses.first(),
             **self.get_form_kwargs())
+        bill_form.fields['vat_number'].initial = self.request.user.vat_number
+        return bill_form
 
     def get_context_data(self, **kwargs):
         context = super(SettingsView, self).get_context_data(**kwargs)
