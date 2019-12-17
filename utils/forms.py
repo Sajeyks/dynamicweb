@@ -120,7 +120,7 @@ class EditCreditCardForm(forms.Form):
 class BillingAddressForm(forms.ModelForm):
     token = forms.CharField(widget=forms.HiddenInput(), required=False)
     card = forms.CharField(widget=forms.HiddenInput(), required=False)
-    vat_number = forms.CharField(max_length=100, default="")
+    vat_number = forms.CharField(max_length=100)
 
     class Meta:
         model = BillingAddress
