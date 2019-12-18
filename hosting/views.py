@@ -399,23 +399,27 @@ class PasswordResetConfirmView(HostingContextMixin,
                 ldap_manager = LdapManager()
                 new_password = form.cleaned_data['new_password2']
 
+                # Make sure the user have an ldap account already
                 user.create_ldap_account(new_password)
-                user.set_password(new_password)
-                user.save()
 
-                ldap_manager.change_password(user.username, new_password)
-                messages.success(request, _('Password has been reset.'))
+                # We are changing password in ldap before changing in database because
+                # ldap have more chances of failure than local database
+                if ldap_manager.change_password(user.username, new_password):
+                    user.set_password(new_password)
+                    user.save()
 
-                # Change opennebula password
-                opennebula_client.change_user_password(user.password)
+                    messages.success(request, _('Password has been reset.'))
 
-                return self.form_valid(form)
-            else:
-                messages.error(
-                    request, _('Password reset has not been successful.'))
-                form.add_error(None,
-                               _('Password reset has not been successful.'))
-                return self.form_invalid(form)
+                    # Change opennebula password
+                    opennebula_client.change_user_password(user.password)
+
+                    return self.form_valid(form)
+
+            messages.error(
+                request, _('Password reset has not been successful.'))
+            form.add_error(None,
+                           _('Password reset has not been successful.'))
+            return self.form_invalid(form)
 
         else:
             error_msg = _('The reset password link is no longer valid.')

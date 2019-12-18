@@ -74,7 +74,6 @@ def get_validation_slug():
 
 def get_first_and_last_name(full_name):
     first_name, *last_name = full_name.split(" ")
-    first_name = first_name
     last_name = " ".join(last_name)
     return first_name, last_name
 
