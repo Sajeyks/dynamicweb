@@ -100,6 +100,7 @@ def assign_username(user):
                 except IntegrityError:
                     # If username exists in database then come up with a new username
                     user.username = user.username + str(random.randint(0, 2 ** 10))
+                    exist = True
 
 
 def validate_name(value):
@@ -221,12 +222,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
         assign_username(self)
         ldap_manager = LdapManager()
         try:
-            user_exists_in_ldap, entries = ldap_manager.check_user_exists(
-                uid=self.username,
-                attributes=['uid', 'givenName', 'sn', 'mail', 'userPassword'],
-                search_base=settings.ENTIRE_SEARCH_BASE,
-                search_attr='uid'
-            )
+            user_exists_in_ldap, entries = ldap_manager.check_user_exists(self.username)
         except Exception:
             logger.exception("Exception occur while searching for user in LDAP")
         else:

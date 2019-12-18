@@ -737,7 +737,6 @@ LDAP_MAX_UID_FILE_PATH = os.environ.get('LDAP_MAX_UID_FILE_PATH',
 LDAP_DEFAULT_START_UID = int(env('LDAP_DEFAULT_START_UID'))
 
 # Search union over OUs
-search_base = env('LDAPSEARCH').split()
 AUTH_LDAP_START_TLS = bool(os.environ.get('LDAP_USE_TLS', False))
 
 ENTIRE_SEARCH_BASE = env("ENTIRE_SEARCH_BASE")
