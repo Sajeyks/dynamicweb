@@ -1,3 +1,15 @@
+2.7.3: 2019-12-18
+   * Bugfix: Swiss VAT being wrongly added to non-EU customers
+2.7.2: 2019-12-17
+   * Add vat rates for AD, TK and IS
+   * Improve billing address' string representation
+     Notes for deployment:
+         - Import the newly added vat rates into db
+         ```
+         ./manage.py import_vat_rates vat_rates.csv
+         ```
+2.7.1: 2019-12-14
+   * feature: Add management command to list active VM customers (MR!723)
 2.7: 2019-12-9
    * feature: EU VAT for new subscriptions (MR!721)
               Notes for deployment:
