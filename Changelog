@@ -1,3 +1,13 @@
+Next:
+   * ldap_migration
+     Notes for deployment:
+        ```
+        1. Git Pull
+        2. Ensure the newly dependencies in requirements.txt are installed
+        3. Put new values in .env
+        4. Run migrations
+        5. Restart uwsgi
+        ```
 2.7.3: 2019-12-18
    * Bugfix: Swiss VAT being wrongly added to non-EU customers
 2.7.2: 2019-12-17
