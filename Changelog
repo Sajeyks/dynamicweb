@@ -1,5 +1,5 @@
-Next:
-   * ldap_migration
+2.8: 2019-12-20
+   * ldap_migration: Migrate django users to Ldap
      Notes for deployment:
         ```
         1. Git Pull
