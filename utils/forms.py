@@ -175,7 +175,7 @@ class UserBillingAddressForm(forms.ModelForm):
     class Meta:
         model = UserBillingAddress
         fields = ['cardholder_name', 'street_address',
-                  'city', 'postal_code', 'country', 'user']
+                  'city', 'postal_code', 'country', 'user', 'vat_number']
         labels = {
             'cardholder_name': _('Cardholder Name'),
             'street_address': _('Street Building'),
