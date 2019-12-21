@@ -952,8 +952,8 @@ class OrderConfirmationView(DetailView, FormView):
                 street_address=billing_address_data['street_address'],
                 city=billing_address_data['city'],
                 postal_code=billing_address_data['postal_code'],
-                country=billing_address_data['country']
-		vat_number=billing_address_data['vat_number']
+                country=billing_address_data['country'],
+                vat_number=billing_address_data['vat_number']
             )
             billing_address.save()
 
