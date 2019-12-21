@@ -13,6 +13,7 @@ class BaseBillingAddress(models.Model):
     city = models.CharField(max_length=50)
     postal_code = models.CharField(max_length=50)
     country = CountryField()
+    vat_number = models.CharField(max_length=100)
 
     class Meta:
         abstract = True

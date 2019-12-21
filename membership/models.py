@@ -117,8 +117,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     name = models.CharField(max_length=50, validators=[validate_name])
     email = models.EmailField(unique=True)
     username = models.CharField(max_length=60, unique=True, null=True)
-    vat_number = models.CharField(max_length=100, default="")
-
     validated = models.IntegerField(choices=VALIDATED_CHOICES, default=0)
     in_ldap = models.BooleanField(default=False)
     # By default, we initialize the validation_slug with appropriate value

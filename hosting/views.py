@@ -549,12 +549,9 @@ class SettingsView(LoginRequiredMixin, FormView):
         Check if the user already saved contact details. If so, then show
         the form populated with those details, to let user change them.
         """
-
-        bill_form = form_class(
+        return form_class(
             instance=self.request.user.billing_addresses.first(),
             **self.get_form_kwargs())
-        bill_form.fields['vat_number'].initial = self.request.user.vat_number
-        return bill_form
 
     def get_context_data(self, **kwargs):
         context = super(SettingsView, self).get_context_data(**kwargs)
@@ -630,9 +627,6 @@ class SettingsView(LoginRequiredMixin, FormView):
                     instance=self.request.user.billing_addresses.first(),
                     data=billing_address_data)
                 billing_address_user_form.save()
-                self.request.user.vat_number = billing_address_data.get(
-                    "vat_number")
-                self.request.user.save()
                 msg = _("Billing address updated successfully")
                 messages.add_message(request, messages.SUCCESS, msg)
             else:
@@ -705,7 +699,7 @@ class PaymentVMView(LoginRequiredMixin, FormView):
                 'city': current_billing_address.city,
                 'postal_code': current_billing_address.postal_code,
                 'country': current_billing_address.country,
-                'vat_number': self.request.user.vat_number
+                'vat_number': current_billing_address.vat_number
             }
         })
         return form_kwargs
@@ -790,8 +784,6 @@ class PaymentVMView(LoginRequiredMixin, FormView):
                         reverse('hosting:payment') + '#payment_error')
                 request.session['token'] = token
             request.session['billing_address_data'] = billing_address_data
-            owner.vat_number = billing_address_data.get("vat_number")
-            owner.save()
             self.request.session['order_confirm_url'] = "{url}?{query_params}".format(
                     url=reverse('hosting:order-confirmation'),
                     query_params='page=payment')

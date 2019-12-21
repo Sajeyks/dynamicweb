@@ -254,9 +254,6 @@ class PaymentOrderView(FormView):
                 billing_address_form = BillingAddressForm(
                     instance=self.request.user.billing_addresses.first()
                 )
-            billing_address_form.fields['vat_number'].initial = (
-                self.request.user.vat_number
-            )
             user = self.request.user
             if hasattr(user, 'stripecustomer'):
                 stripe_customer = user.stripecustomer
@@ -491,9 +488,6 @@ class PaymentOrderView(FormView):
                 customer = StripeCustomer.get_or_create(
                     email=this_user.get('email'), token=token
                 )
-                request.user.vat_number = address_form.cleaned_data.get(
-                    "vat_number")
-                request.user.save()
             else:
                 user_email = address_form.cleaned_data.get('email')
                 user_name = address_form.cleaned_data.get('name')
@@ -949,11 +943,6 @@ class OrderConfirmationView(DetailView, FormView):
             'user': custom_user.id
         })
 
-        # Customer is created, we save his VAT Number
-        custom_user.vat_number = request.session.get(
-            'billing_address_data').get("vat_number")
-        custom_user.save()
-
         if 'generic_payment_type' in request.session:
             stripe_cus = StripeCustomer.objects.filter(
                 stripe_id=stripe_api_cus_id
@@ -964,6 +953,7 @@ class OrderConfirmationView(DetailView, FormView):
                 city=billing_address_data['city'],
                 postal_code=billing_address_data['postal_code'],
                 country=billing_address_data['country']
+		vat_number=billing_address_data['vat_number']
             )
             billing_address.save()
 
