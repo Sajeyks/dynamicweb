@@ -10,7 +10,7 @@ __pycache__/
 .ropeproject/
 #django
 local_settings.py
-
+Pipfile
 media/
 !media/keep
 /CACHE/
@@ -43,3 +43,4 @@ secret-key
 # to keep empty dirs
 !.gitkeep
 *.orig
+.vscode/settings.json

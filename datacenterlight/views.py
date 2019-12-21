@@ -625,6 +625,7 @@ class OrderConfirmationView(DetailView, FormView):
             vm_specs["vat_country"] = user_vat_country
             vm_specs["discount"] = discount
             vm_specs["total_price"] = round(price + vat - discount['amount'], 2)
+            request.session['specs'] = vm_specs
 
             context.update({
                 'vm': vm_specs,

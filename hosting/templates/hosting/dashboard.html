@@ -7,6 +7,9 @@
             <div class="dashboard-container-head">
                 <h1 class="dashboard-title-thin">{% trans "My Dashboard" %}</h1>
             </div>
+            <div style="color:#fff; font-size: 18px; font-weight:300; padding: 0 8px; margin-top: 30px; margin-bottom: 30px;">
+                {% trans "Welcome" %} {{request.user.name}}
+            </div>
             <div class="hosting-dashboard-content">
                 <a href="{% url 'hosting:create_virtual_machine' %}" class="hosting-dashboard-item">
                     <h2>{% trans "Create VM" %}</h2>

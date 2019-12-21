@@ -57,6 +57,8 @@ from utils.hosting_utils import (
 from utils.mailer import BaseEmail
 from utils.stripe_utils import StripeUtils
 from utils.tasks import send_plain_email_task
+from utils.ldap_manager import LdapManager
+
 from utils.views import (
     PasswordResetViewMixin, PasswordResetConfirmViewMixin, LoginViewMixin,
     ResendActivationLinkViewMixin
@@ -394,21 +396,30 @@ class PasswordResetConfirmView(HostingContextMixin,
         if user is not None and default_token_generator.check_token(user,
                                                                     token):
             if form.is_valid():
+                ldap_manager = LdapManager()
                 new_password = form.cleaned_data['new_password2']
-                user.set_password(new_password)
-                user.save()
-                messages.success(request, _('Password has been reset.'))
 
-                # Change opennebula password
-                opennebula_client.change_user_password(user.password)
+                # Make sure the user have an ldap account already
+                user.create_ldap_account(new_password)
 
-                return self.form_valid(form)
-            else:
-                messages.error(
-                    request, _('Password reset has not been successful.'))
-                form.add_error(None,
-                               _('Password reset has not been successful.'))
-                return self.form_invalid(form)
+                # We are changing password in ldap before changing in database because
+                # ldap have more chances of failure than local database
+                if ldap_manager.change_password(user.username, new_password):
+                    user.set_password(new_password)
+                    user.save()
+
+                    messages.success(request, _('Password has been reset.'))
+
+                    # Change opennebula password
+                    opennebula_client.change_user_password(user.password)
+
+                    return self.form_valid(form)
+
+            messages.error(
+                request, _('Password reset has not been successful.'))
+            form.add_error(None,
+                           _('Password reset has not been successful.'))
+            return self.form_invalid(form)
 
         else:
             error_msg = _('The reset password link is no longer valid.')

@@ -52,7 +52,7 @@ PROJECT_DIR = os.path.abspath(
 )
 
 # load .env file
-dotenv.read_dotenv("{0}/.env".format(PROJECT_DIR))
+dotenv.load_dotenv("{0}/.env".format(PROJECT_DIR))
 
 from multisite import SiteID
 
@@ -244,8 +244,9 @@ DATABASES = {
 }
 
 AUTHENTICATION_BACKENDS = (
+    'utils.backend.MyLDAPBackend',
     'guardian.backends.ObjectPermissionBackend',
-    'django.contrib.auth.backends.ModelBackend',
+
 )
 
 # Internationalization
@@ -720,6 +721,31 @@ X_FRAME_OPTIONS = ('SAMEORIGIN' if X_FRAME_OPTIONS_ALLOW_FROM_URI is None else
                    ))
 
 DEBUG = bool_env('DEBUG')
+
+
+# LDAP setup
+LDAP_ADMIN_DN = env('LDAP_ADMIN_DN')
+LDAP_ADMIN_PASSWORD = env('LDAP_ADMIN_PASSWORD')
+AUTH_LDAP_SERVER = env('LDAPSERVER')
+
+LDAP_CUSTOMER_DN = env('LDAP_CUSTOMER_DN')
+LDAP_CUSTOMER_GROUP_ID = int(env('LDAP_CUSTOMER_GROUP_ID'))
+LDAP_MAX_UID_FILE_PATH = os.environ.get('LDAP_MAX_UID_FILE_PATH',
+                                        os.path.join(os.path.abspath(os.path.dirname(__file__)), 'ldap_max_uid_file')
+)
+LDAP_DEFAULT_START_UID = int(env('LDAP_DEFAULT_START_UID'))
+
+# Search union over OUs
+AUTH_LDAP_START_TLS = bool(os.environ.get('LDAP_USE_TLS', False))
+
+ENTIRE_SEARCH_BASE = env("ENTIRE_SEARCH_BASE")
+
+
+AUTH_LDAP_USER_ATTR_MAP = {
+    "first_name": "givenName",
+    "last_name": "sn",
+    "email": "mail"
+}
 
 READ_VM_REALM = env('READ_VM_REALM')
 AUTH_NAME = env('AUTH_NAME')

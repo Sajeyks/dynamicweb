@@ -10,13 +10,35 @@ Requirements
 
 Install
 =======
+
+.. note::
+    lxml that is one of the dependency of dynamicweb couldn't
+    get build on Python 3.7 so, please use Python 3.5.
+
+
+First install packages from requirements.archlinux.txt or 
+requirements.debian.txt based on your distribution.
+
+
 The quick way:
     ``pip install -r requirements.txt``
 
 Next find the dump.db file on stagging server. Path for the file is under the base application folder.
 
+or you can create one for yourself by running the following commands on dynamicweb server
+
+.. code:: sh
+
+    sudo su - postgres
+    pg_dump app > /tmp/postgres_db.bak
+    exit
+    cp /tmp/postgres_db.bak /root/postgres_db.bak
+
+Now, you can download this using sftp.
+
+
 Install the postgresql server and import the database::
-    ``psql -d app < dump.db``
+    ``psql -d app -U root < dump.db``
     
 **No migration is needed after a clean install, and You are ready to start developing.**
 
@@ -25,9 +47,9 @@ Development
 Project is separated in master branch and development branch, and feature branches.
 Master branch is currently used on `Digital Glarus <https://digitalglarus.ungleich.ch/en-us/digitalglarus/>`_ and `Ungleich blog <https://digitalglarus.ungleich.ch/en-us/blog/>`_.
 
-If You are starting to  create a new feature fork the github `repo <https://github.com/ungleich/dynamicweb>`_ and branch the development branch. 
+If You are starting to create a new feature fork the github `repo <https://github.com/ungleich/dynamicweb>`_ and branch the development branch. 
 
-After You have complited the task create a pull request and ask someone to review the code from other developers. 
+After You have completed the task, create a pull request and ask someone to review the code from other developers. 
 
 **Cheat sheet for branching and forking**:
 

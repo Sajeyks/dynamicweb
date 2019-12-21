@@ -485,9 +485,15 @@ class OpenNebulaManager():
         )
 
     def change_user_password(self, passwd_hash):
+        if type(self.opennebula_user) == int:
+            logger.debug("opennebula_user is int and has value = %s" %
+                         self.opennebula_user)
+        else:
+            logger.debug("opennebula_user is object and corresponding id is %s"
+                         % self.opennebula_user.id)
         self.oneadmin_client.call(
             oca.User.METHODS['passwd'],
-            self.opennebula_user.id,
+            self.opennebula_user if type(self.opennebula_user) == int else self.opennebula_user.id,
             passwd_hash
         )
 

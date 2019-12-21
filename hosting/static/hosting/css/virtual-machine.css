@@ -248,6 +248,9 @@
   .dashboard-title-thin {
     font-size: 22px;
   }
+  .dashboard-greetings-thin {
+    font-size: 16px;
+  }
 }
 
 .btn-vm-invoice {
@@ -313,6 +316,11 @@
 .dashboard-title-thin {
   font-weight: 300;
   font-size: 32px;
+}
+
+.dashboard-greetings-thin {
+  font-weight: 300;
+  font-size: 24px;
 }
 
 .dashboard-title-thin .un-icon {
@@ -410,6 +418,9 @@
 @media (max-width:767px) {
   .dashboard-title-thin {
     font-size: 22px;
+  }
+  .dashboard-greetings-thin {
+    font-size: 16px;
   }
   .dashboard-title-thin .un-icon {
     height: 22px;
