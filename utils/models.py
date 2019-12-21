@@ -38,10 +38,16 @@ class UserBillingAddress(BaseBillingAddress):
     current = models.BooleanField(default=True)
 
     def __str__(self):
-        return "%s, %s, %s, %s, %s" % (
-            self.cardholder_name, self.street_address, self.city,
-            self.postal_code, self.country
-        )
+        if self.vat_number:
+            return "%s, %s, %s, %s, %s, %s" % (
+                self.cardholder_name, self.street_address, self.city,
+                self.postal_code, self.country, self.vat_number
+            )
+        else:
+            return "%s, %s, %s, %s, %s" % (
+                self.cardholder_name, self.street_address, self.city,
+                self.postal_code, self.country
+            )
 
     def to_dict(self):
         return {
@@ -50,6 +56,7 @@ class UserBillingAddress(BaseBillingAddress):
             'City': self.city,
             'Postal Code': self.postal_code,
             'Country': self.country,
+            'VAT Number': self.vat_number
         }
 
 

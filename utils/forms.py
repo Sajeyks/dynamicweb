@@ -182,6 +182,7 @@ class UserBillingAddressForm(forms.ModelForm):
             'city': _('City'),
             'postal_code': _('Postal Code'),
             'Country': _('Country'),
+            'vat_number': _('VAT Number'),
         }
 
 
