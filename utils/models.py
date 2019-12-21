@@ -21,10 +21,16 @@ class BaseBillingAddress(models.Model):
 
 class BillingAddress(BaseBillingAddress):
     def __str__(self):
-        return "%s, %s, %s, %s, %s" % (
-            self.cardholder_name, self.street_address, self.city,
-            self.postal_code, self.country
-        )
+        if self.vat_number:
+            return "%s, %s, %s, %s, %s, %s" % (
+                self.cardholder_name, self.street_address, self.city,
+                self.postal_code, self.country, self.vat_number
+            )
+        else:
+            return "%s, %s, %s, %s, %s" % (
+                self.cardholder_name, self.street_address, self.city,
+                self.postal_code, self.country
+            )
 
 
 class UserBillingAddress(BaseBillingAddress):
