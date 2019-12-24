@@ -14,7 +14,7 @@
     </script>
 {% endif %}
 
-<form id="order_form" method="POST" action="{{calculator_form_url}}" data-toggle="validator" role="form">
+<form id="order_form" method="POST" action="{% url 'datacenterlight:index' %}" data-toggle="validator" role="form">
     {% csrf_token %}
     <input type="hidden" name="pid" value="{{instance.id}}">
     <div class="title">
