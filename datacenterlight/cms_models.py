@@ -184,6 +184,11 @@ class DCLNavbarPluginModel(CMSPlugin):
         default=True,
         help_text='Uncheck this if you do not want to show login/dashboard.'
     )
+    show_non_transparent_navbar_always = models.BooleanField(
+        default=False,
+        help_text='Check this if you want to show non transparent navbar only.'
+                  '(Useful when we want to setup a simple page)'
+    )
 
     def get_logo_dark(self):
         # used only if atleast one logo exists
