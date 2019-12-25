@@ -153,6 +153,7 @@ INSTALLED_APPS = (
     'rest_framework',
     'opennebula_api',
     'django_celery_results',
+    'webhook',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -720,7 +721,10 @@ X_FRAME_OPTIONS = ('SAMEORIGIN' if X_FRAME_OPTIONS_ALLOW_FROM_URI is None else
                        X_FRAME_OPTIONS_ALLOW_FROM_URI.strip()
                    ))
 
+WEBHOOK_SECRET = env('WEBHOOK_SECRET')
+
 DEBUG = bool_env('DEBUG')
+ADD_TRIAL_PERIOD_TO_SUBSCRIPTION = bool_env('ADD_TRIAL_PERIOD_TO_SUBSCRIPTION')
 
 
 # LDAP setup
