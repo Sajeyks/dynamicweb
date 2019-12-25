@@ -14,6 +14,7 @@ class BaseBillingAddress(models.Model):
     postal_code = models.CharField(max_length=50)
     country = CountryField()
     vat_number = models.CharField(max_length=100, default="", blank=True)
+    stripe_tax_id = models.DateTimeField(blank=True, null=True)
     vat_number_validated_on = models.DateTimeField(blank=True, null=True)
 
     class Meta:
