@@ -194,14 +194,12 @@ def create_tax_id(stripe_customer_id, vat_number, type):
         return tax_id_response
 
     b_addresses = BillingAddress.objects.filter(
-        stripe_customer_id=stripe_customer_id,
         vat_number=vat_number
     )
     for b_address in b_addresses:
         b_address.stripe_tax_id = tax_id_obj.id
 
     ub_addresses = UserBillingAddress.objects.filter(
-        stripe_customer_id=stripe_customer_id,
         vat_number=vat_number
     )
     for ub_address in ub_addresses:
