@@ -548,7 +548,13 @@ class PaymentOrderView(FormView):
             )
 
             if 'response_object' in validate_result:
-                raise forms.ValidationError(validate_result["error"])
+                messages.add_message(
+                    request, messages.ERROR, validate_result["error"],
+                    extra_tags='vat_error'
+                )
+                return HttpResponseRedirect(
+                    reverse('datacenterlight:payment') + '#vat_error'
+                )
 
             request.session["vat_validation_status"] = validate_result["status"]
             request.session["vat_validated_on"] = validate_result["validated_on"]

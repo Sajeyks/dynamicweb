@@ -13,6 +13,15 @@
 <!-- Credit card form -->
 <div class="dcl-order-container">
     <div class="payment-container">
+        <div id='payment_error'>
+        {% for message in messages %}
+            {% if 'vat_error' in message.tags %}
+                <ul class="list-unstyled">
+                    <li><p class="card-warning-content card-warning-error">An error occurred while validating VAT number: {{ message|safe }}</p></li>
+                </ul>
+            {% endif %}
+        {% endfor %}
+        </div>
         <div class="dcl-payment-grid">
             <div class="dcl-payment-box">
                 <div class="dcl-payment-section">
