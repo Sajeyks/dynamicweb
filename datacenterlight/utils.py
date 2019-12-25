@@ -1,7 +1,9 @@
+import datetime
 import logging
 
 import pyotp
 import requests
+import stripe
 from django.conf import settings
 from django.contrib.sites.models import Site
 
@@ -9,11 +11,12 @@ from datacenterlight.tasks import create_vm_task
 from hosting.models import HostingOrder, HostingBill, OrderDetail
 from membership.models import StripeCustomer
 from utils.forms import UserBillingAddressForm
-from utils.models import BillingAddress
+from utils.models import BillingAddress, UserBillingAddress
 from .cms_models import CMSIntegration
 from .models import VMPricing, VMTemplate
 
 logger = logging.getLogger(__name__)
+
 
 def get_cms_integration(name):
     current_site = Site.objects.get_current()
@@ -124,3 +127,67 @@ def check_otp(name, realm, token):
         data=data
     )
     return response.status_code
+
+
+def validate_vat_number(self, stripe_customer_id, vat_number):
+    try:
+        billing_address = BillingAddress.objects.get(vat_number=vat_number)
+    except BillingAddress.DoesNotExist as dne:
+        billing_address = None
+        logger.debug("BillingAddress does not exist for %s" % vat_number)
+    except BillingAddress.MultipleObjectsReturned as mor:
+        logger.debug("Multiple BillingAddress exist for %s" % vat_number)
+        billing_address = BillingAddress.objects.last(vat_number=vat_number)
+    if billing_address is not None:
+        if billing_address.vat_number_validated_on:
+            return {
+                "validated_on": billing_address.vat_number_validated_on,
+                "status": "verified"
+            }
+        else:
+            if billing_address.stripe_tax_id:
+                tax_id_obj = stripe.Customer.retrieve_tax_id(
+                  stripe_customer_id,
+                  billing_address.stripe_tax_id,
+                )
+                if tax_id_obj.verification.status == "verified":
+                    return {
+                        "status": "verified",
+                        "validated_on": billing_address.vat_number_validated_on
+                    }
+                else:
+                    return {
+                        "status": tax_id_obj.verification.status,
+                        "validated_on": ""
+                    }
+            else:
+                tax_id_obj = create_tax_id(stripe_customer_id, vat_number)
+    else:
+        tax_id_obj = create_tax_id(stripe_customer_id, vat_number)
+
+    return {
+        "status": tax_id_obj.verification.status,
+        "validated_on": datetime.datetime.now() if tax_id_obj.verification.status == "verified" else ""
+    }
+
+
+def create_tax_id(stripe_customer_id, vat_number):
+    tax_id_obj = stripe.Customer.create_tax_id(
+        stripe_customer_id,
+        type="eu_vat",
+        value=vat_number,
+    )
+    b_addresses = BillingAddress.objects.filter(
+        stripe_customer_id=stripe_customer_id,
+        vat_number=vat_number
+    )
+    for b_address in b_addresses:
+        b_address.stripe_tax_id = tax_id_obj.id
+
+    ub_addresses = UserBillingAddress.objects.filter(
+        stripe_customer_id=stripe_customer_id,
+        vat_number=vat_number
+    )
+    for ub_address in ub_addresses:
+        ub_address.stripe_tax_id = tax_id_obj.id
+    return tax_id_obj

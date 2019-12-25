@@ -35,7 +35,9 @@ from utils.tasks import send_plain_email_task
 from .cms_models import DCLCalculatorPluginModel
 from .forms import ContactForm
 from .models import VMTemplate, VMPricing
-from .utils import get_cms_integration, create_vm, clear_all_session_vars
+from .utils import (
+    get_cms_integration, create_vm, clear_all_session_vars, validate_vat_number
+)
 
 logger = logging.getLogger(__name__)
 
@@ -540,6 +542,14 @@ class PaymentOrderView(FormView):
             else:
                 request.session['customer'] = customer
 
+            validate_result = validate_vat_number(
+                stripe_customer_id=request.session['customer'],
+                vat_number=address_form.cleaned_data.get('vat_number')
+            )
+
+            request.session["vat_validation_status"] = validate_result["status"]
+            request.session["vat_validated_on"] = validate_result["validated_on"]
+
             # For generic payment we take the user directly to confirmation
             if ('generic_payment_type' in request.session and
                     self.request.session['generic_payment_type'] == 'generic'):
@@ -596,6 +606,10 @@ class OrderConfirmationView(DetailView, FormView):
 
         if ('generic_payment_type' in request.session and
                 self.request.session['generic_payment_type'] == 'generic'):
+            if request.session["vat_validation_status"] == "verified":
+                request.session['generic_payment_details']['vat_rate'] = 0
+                request.session['generic_payment_details']['vat_amount'] = 0
+                request.session['generic_payment_details']['amount'] = request.session['generic_payment_details']['amount_before_vat']
             context.update({
                 'generic_payment_details':
                     request.session['generic_payment_details'],
@@ -614,11 +628,20 @@ class OrderConfirmationView(DetailView, FormView):
                 vat_rate=user_country_vat_rate * 100
             )
             vm_specs["price"] = price
-            vm_specs["vat"] = vat
-            vm_specs["vat_percent"] = vat_percent
+
+            if request.session["vat_validation_status"] == "verified":
+                vm_specs["vat_percent"] = 0
+                vm_specs["vat"] = 0
+                vm_specs["total_price"] = price
+                vm_specs["vat_validation_status"] = "verified"
+            else:
+                vm_specs["vat"] = vat
+                vm_specs["vat_percent"] = vat_percent
+                vm_specs["total_price"] = round(price + vat - discount['amount'], 2)
+                vm_specs["vat_validation_status"] = request.session["vat_validation_status"]
+
             vm_specs["vat_country"] = user_vat_country
             vm_specs["discount"] = discount
-            vm_specs["total_price"] = round(price + vat - discount['amount'], 2)
             request.session['specs'] = vm_specs
 
             context.update({
