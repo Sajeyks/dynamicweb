@@ -129,7 +129,7 @@ def check_otp(name, realm, token):
     return response.status_code
 
 
-def validate_vat_number(self, stripe_customer_id, vat_number):
+def validate_vat_number(stripe_customer_id, vat_number):
     try:
         billing_address = BillingAddress.objects.get(vat_number=vat_number)
     except BillingAddress.DoesNotExist as dne:
