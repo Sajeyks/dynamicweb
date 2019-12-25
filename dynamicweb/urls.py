@@ -11,6 +11,7 @@ from hosting.views import (
     RailsHostingView, DjangoHostingView, NodeJSHostingView
 )
 from datacenterlight.views import PaymentOrderView
+from webhook import views as webhook_views
 from membership import urls as membership_urls
 from ungleich_page.views import LandingView
 from django.views.generic import RedirectView
@@ -62,6 +63,7 @@ urlpatterns += i18n_patterns(
         name='blog_list_view'),
     url(r'^cms/', include('cms.urls')),
     url(r'^blog/', include('djangocms_blog.urls', namespace='djangocms_blog')),
+    url(r'^webhooks/', webhook_views.handle_webhook),
     url(r'^$', RedirectView.as_view(url='/cms') if REDIRECT_TO_CMS
         else LandingView.as_view()),
     url(r'^', include('ungleich_page.urls', namespace='ungleich_page')),
