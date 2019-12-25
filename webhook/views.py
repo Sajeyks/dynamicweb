@@ -14,6 +14,27 @@ from utils.tasks import send_plain_email_task
 logger = logging.getLogger(__name__)
 
 
+# Things to do for webhooks feature
+# 1. Uninstall old version and install a more recent version of stripe
+#    ```
+#    source venv/bin/activate
+#    ./manage.py shell
+#    pip uninstall stripe
+#    pip install stripe==2.24.1
+#    ```
+# 2. Create tax id updated webhook
+#    ```
+#    ./manage.py webhook --create \
+#    --webhook_endpoint https://datacenterlight.ch/en-us/webhooks/ \
+#    --events_csv customer.tax_id.updated
+#    ```
+#
+# 3. From the secret obtained in 2, setup an environment variable
+#    ```
+#    WEBHOOK_SECRET='whsec......'
+#    ```
+
+
 @require_POST
 @csrf_exempt
 def handle_webhook(request):
