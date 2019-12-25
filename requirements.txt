@@ -79,7 +79,7 @@ requests==2.10.0
 rjsmin==1.0.12
 six==1.10.0
 sqlparse==0.1.19
-stripe==1.33.0
+stripe==2.24.1
 wheel==0.29.0
 django-admin-honeypot==1.0.0
 coverage==4.3.4
