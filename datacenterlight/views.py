@@ -542,22 +542,24 @@ class PaymentOrderView(FormView):
             else:
                 request.session['customer'] = customer
 
-            validate_result = validate_vat_number(
-                stripe_customer_id=request.session['customer'],
-                vat_number=address_form.cleaned_data.get('vat_number')
-            )
-
-            if 'response_object' in validate_result:
-                messages.add_message(
-                    request, messages.ERROR, validate_result["error"],
-                    extra_tags='vat_error'
-                )
-                return HttpResponseRedirect(
-                    reverse('datacenterlight:payment') + '#vat_error'
+            vat_number = address_form.cleaned_data.get('vat_number').strip()
+            if vat_number:
+                validate_result = validate_vat_number(
+                    stripe_customer_id=request.session['customer'],
+                    vat_number=address_form.cleaned_data.get('vat_number')
                 )
 
-            request.session["vat_validation_status"] = validate_result["status"]
-            request.session["vat_validated_on"] = validate_result["validated_on"]
+                if 'response_object' in validate_result:
+                    messages.add_message(
+                        request, messages.ERROR, validate_result["error"],
+                        extra_tags='vat_error'
+                    )
+                    return HttpResponseRedirect(
+                        reverse('datacenterlight:payment') + '#vat_error'
+                    )
+
+                request.session["vat_validation_status"] = validate_result["status"]
+                request.session["vat_validated_on"] = validate_result["validated_on"]
 
             # For generic payment we take the user directly to confirmation
             if ('generic_payment_type' in request.session and
