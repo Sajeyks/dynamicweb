@@ -35,6 +35,7 @@ class MembershipBillingForm(BillingAddressForm):
             'city': _('City'),
             'postal_code': _('Postal Code'),
             'country': _('Country'),
+            'vat_number': _('VAT Number'),
         }
 
 

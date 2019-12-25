@@ -34,7 +34,8 @@ def create_vm(billing_address_data, stripe_customer_id, specs,
         street_address=billing_address_data['street_address'],
         city=billing_address_data['city'],
         postal_code=billing_address_data['postal_code'],
-        country=billing_address_data['country']
+        country=billing_address_data['country'],
+        vat_number=billing_address_data['vat_number'],
     )
     billing_address.save()
     customer = StripeCustomer.objects.filter(id=stripe_customer_id).first()
