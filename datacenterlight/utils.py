@@ -12,6 +12,7 @@ from hosting.models import HostingOrder, HostingBill, OrderDetail
 from membership.models import StripeCustomer
 from utils.forms import UserBillingAddressForm
 from utils.models import BillingAddress, UserBillingAddress
+from utils.stripe_utils import StripeUtils
 from .cms_models import CMSIntegration
 from .models import VMPricing, VMTemplate
 
@@ -165,6 +166,9 @@ def validate_vat_number(stripe_customer_id, vat_number):
     else:
         tax_id_obj = create_tax_id(stripe_customer_id, vat_number)
 
+    if 'response_object' in tax_id_obj:
+        return tax_id_obj
+
     return {
         "status": tax_id_obj.verification.status,
         "validated_on": datetime.datetime.now() if tax_id_obj.verification.status == "verified" else ""
@@ -172,11 +176,17 @@ def validate_vat_number(stripe_customer_id, vat_number):
 
 
 def create_tax_id(stripe_customer_id, vat_number):
-    tax_id_obj = stripe.Customer.create_tax_id(
+    stripe_utils = StripeUtils()
+    tax_id_response = stripe_utils.create_tax_id_for_user(
         stripe_customer_id,
-        type="eu_vat",
         value=vat_number,
     )
+
+    tax_id_obj = tax_id_response.get('response_object')
+
+    if not tax_id_obj:
+        return tax_id_response
+
     b_addresses = BillingAddress.objects.filter(
         stripe_customer_id=stripe_customer_id,
         vat_number=vat_number
