@@ -436,10 +436,10 @@ class StripeUtils(object):
         subscription.save()
 
     @handleStripeError
-    def create_tax_id_for_user(self, stripe_customer_id, vat_number):
+    def create_tax_id_for_user(self, stripe_customer_id, vat_number, type="eu_vat"):
         tax_id_obj = stripe.Customer.create_tax_id(
             stripe_customer_id,
-            type="eu_vat",
+            type=type,
             value=vat_number,
         )
         return tax_id_obj

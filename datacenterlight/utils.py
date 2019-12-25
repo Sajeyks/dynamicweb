@@ -131,7 +131,7 @@ def check_otp(name, realm, token):
     return response.status_code
 
 
-def validate_vat_number(stripe_customer_id, vat_number):
+def validate_vat_number(stripe_customer_id, vat_number, country):
     try:
         billing_address = BillingAddress.objects.get(vat_number=vat_number)
     except BillingAddress.DoesNotExist as dne:
@@ -163,9 +163,13 @@ def validate_vat_number(stripe_customer_id, vat_number):
                         "validated_on": ""
                     }
             else:
-                tax_id_obj = create_tax_id(stripe_customer_id, vat_number)
+                tax_id_obj = create_tax_id(
+                    stripe_customer_id, vat_number,
+                    "ch_vat" if country.lower() == "ch" else "eu_vat")
     else:
-        tax_id_obj = create_tax_id(stripe_customer_id, vat_number)
+        tax_id_obj = create_tax_id(
+            stripe_customer_id, vat_number,
+            "ch_vat" if country.lower() == "ch" else "eu_vat")
 
     if 'response_object' in tax_id_obj:
         return tax_id_obj
@@ -176,11 +180,12 @@ def validate_vat_number(stripe_customer_id, vat_number):
     }
 
 
-def create_tax_id(stripe_customer_id, vat_number):
+def create_tax_id(stripe_customer_id, vat_number, type):
     stripe_utils = StripeUtils()
     tax_id_response = stripe_utils.create_tax_id_for_user(
         stripe_customer_id,
         vat_number=vat_number,
+        type=type
     )
 
     tax_id_obj = tax_id_response.get('response_object')

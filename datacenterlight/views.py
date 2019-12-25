@@ -546,7 +546,8 @@ class PaymentOrderView(FormView):
             if vat_number:
                 validate_result = validate_vat_number(
                     stripe_customer_id=request.session['customer'],
-                    vat_number=address_form.cleaned_data.get('vat_number')
+                    vat_number=address_form.cleaned_data.get('vat_number'),
+                    country=address_form.cleaned_data.get("country").strip()
                 )
 
                 if 'response_object' in validate_result:
