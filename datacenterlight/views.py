@@ -548,14 +548,7 @@ class PaymentOrderView(FormView):
             )
 
             if 'response_object' in validate_result:
-                address_form.add_error(
-                    "__all__", validate_result["error"]
-                )
-                return self.render_to_response(
-                    self.get_context_data(
-                        billing_address_form=address_form
-                    )
-                )
+                raise forms.ValidationError(validate_result["error"])
 
             request.session["vat_validation_status"] = validate_result["status"]
             request.session["vat_validated_on"] = validate_result["validated_on"]

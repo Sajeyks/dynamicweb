@@ -179,7 +179,7 @@ def create_tax_id(stripe_customer_id, vat_number):
     stripe_utils = StripeUtils()
     tax_id_response = stripe_utils.create_tax_id_for_user(
         stripe_customer_id,
-        value=vat_number,
+        vat_number=vat_number,
     )
 
     tax_id_obj = tax_id_response.get('response_object')
