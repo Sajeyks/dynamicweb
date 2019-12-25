@@ -138,7 +138,7 @@ def validate_vat_number(stripe_customer_id, vat_number):
         logger.debug("BillingAddress does not exist for %s" % vat_number)
     except BillingAddress.MultipleObjectsReturned as mor:
         logger.debug("Multiple BillingAddress exist for %s" % vat_number)
-        billing_address = BillingAddress.objects.all(vat_number=vat_number).order_by('-id').first()
+        billing_address = BillingAddress.objects.filter(vat_number=vat_number).order_by('-id').first()
     if billing_address is not None:
         if billing_address.vat_number_validated_on:
             return {
