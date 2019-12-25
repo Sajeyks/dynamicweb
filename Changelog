@@ -1,3 +1,5 @@
+2.8.1: 2019-12-24
+   * [dcl cms navbar plugin]: Provide an option to show non transparent navar always
 2.8: 2019-12-20
    * ldap_migration: Migrate django users to Ldap
      Notes for deployment:
