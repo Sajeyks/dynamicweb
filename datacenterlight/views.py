@@ -662,14 +662,13 @@ class OrderConfirmationView(DetailView, FormView):
                     request.session["vat_validation_status"] == "verified"):
                 vm_specs["vat_percent"] = 0
                 vm_specs["vat"] = 0
-                vm_specs["total_price"] = price
                 vm_specs["vat_validation_status"] = "verified"
             else:
                 vm_specs["vat"] = vat
                 vm_specs["vat_percent"] = vat_percent
-                vm_specs["total_price"] = round(price + vat - discount['amount'], 2)
                 vm_specs["vat_validation_status"] = request.session["vat_validation_status"] if "vat_validation_status" in request.session else ""
-
+            vm_specs["total_price"] = round(price + vat - discount['amount'],
+                                            2)
             vm_specs["vat_country"] = user_vat_country
             vm_specs["discount"] = discount
             request.session['specs'] = vm_specs
