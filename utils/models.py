@@ -16,6 +16,8 @@ class BaseBillingAddress(models.Model):
     vat_number = models.CharField(max_length=100, default="", blank=True)
     stripe_tax_id = models.CharField(max_length=100, default="", blank=True)
     vat_number_validated_on = models.DateTimeField(blank=True, null=True)
+    vat_validation_status = models.CharField(max_length=25, default="",
+                                             blank=True)
 
     class Meta:
         abstract = True

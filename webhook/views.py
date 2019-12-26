@@ -73,11 +73,13 @@ def handle_webhook(request):
         if tax_id_obj.verification.status == "verified":
             b_addresses = BillingAddress.objects.filter(stripe_tax_id=tax_id_obj.id)
             for b_address in b_addresses:
+                b_address.vat_validation_status = tax_id_obj.verification.status
                 b_address.vat_number_validated_on = datetime.datetime.now()
                 b_address.save()
 
             ub_addresses = UserBillingAddress.objects.filter(stripe_tax_id=tax_id_obj.id)
             for ub_address in ub_addresses:
+                ub_address.vat_validation_status = tax_id_obj.verification.status
                 ub_address.vat_number_validated_on = datetime.datetime.now()
                 ub_address.save()
         else:
