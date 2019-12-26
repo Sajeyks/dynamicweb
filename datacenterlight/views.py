@@ -641,6 +641,26 @@ class OrderConfirmationView(DetailView, FormView):
             )
             vm_specs["price"] = price
 
+            vat_number = request.session.get('billing_address_data').get("vat_number")
+            billing_address = BillingAddress.objects.get(
+                request.session["billing_address_id"])
+            if vat_number:
+                validate_result = validate_vat_number(
+                    stripe_customer_id=request.session['customer'],
+                    billing_address_id=billing_address.id
+                )
+                if 'error' in validate_result and validate_result['error']:
+                    messages.add_message(
+                        request, messages.ERROR, validate_result["error"],
+                        extra_tags='vat_error'
+                    )
+                    return HttpResponseRedirect(
+                        reverse('datacenterlight:payment') + '#vat_error'
+                    )
+
+                request.session["vat_validation_status"] = validate_result["status"]
+                request.session["vat_validated_on"] = validate_result["validated_on"]
+
             if ("vat_validation_status" in request.session and
                     request.session["vat_validation_status"] == "verified"):
                 vm_specs["vat_percent"] = 0
