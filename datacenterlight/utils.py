@@ -131,15 +131,15 @@ def check_otp(name, realm, token):
     return response.status_code
 
 
-def validate_vat_number(stripe_customer_id, vat_number, country):
+def validate_vat_number(stripe_customer_id, billing_address_id):
     try:
-        billing_address = BillingAddress.objects.get(vat_number=vat_number)
+        billing_address = BillingAddress.objects.get(billing_address_id)
     except BillingAddress.DoesNotExist as dne:
         billing_address = None
-        logger.debug("BillingAddress does not exist for %s" % vat_number)
+        logger.debug("BillingAddress does not exist for %s" % billing_address_id)
     except BillingAddress.MultipleObjectsReturned as mor:
-        logger.debug("Multiple BillingAddress exist for %s" % vat_number)
-        billing_address = BillingAddress.objects.filter(vat_number=vat_number).order_by('-id').first()
+        logger.debug("Multiple BillingAddress exist for %s" % billing_address_id)
+        billing_address = BillingAddress.objects.filter(billing_address_id).order_by('-id').first()
     if billing_address is not None:
         if billing_address.vat_number_validated_on:
             return {
@@ -153,6 +153,9 @@ def validate_vat_number(stripe_customer_id, vat_number, country):
                   billing_address.stripe_tax_id,
                 )
                 if tax_id_obj.verification.status == "verified":
+                    # update billing address
+                    billing_address.vat_number_validated_on = datetime.datetime.now()
+                    billing_address.save()
                     return {
                         "status": "verified",
                         "validated_on": billing_address.vat_number_validated_on
@@ -164,12 +167,13 @@ def validate_vat_number(stripe_customer_id, vat_number, country):
                     }
             else:
                 tax_id_obj = create_tax_id(
-                    stripe_customer_id, vat_number,
-                    "ch_vat" if country.lower() == "ch" else "eu_vat")
+                    stripe_customer_id, billing_address.vat_number,
+                    "ch_vat" if billing_address.country.lower() == "ch" else "eu_vat")
     else:
-        tax_id_obj = create_tax_id(
-            stripe_customer_id, vat_number,
-            "ch_vat" if country.lower() == "ch" else "eu_vat")
+        return {
+            "status": "invalid billing address",
+            "validated_on": ""
+        }
 
     if 'response_object' in tax_id_obj:
         return tax_id_obj
