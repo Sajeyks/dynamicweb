@@ -245,11 +245,13 @@ def create_tax_id(stripe_customer_id, billing_address_id, type,
                 billing_address_set.add(ho.billing_address)
         for b_address in billing_address_set:
             b_address.stripe_tax_id = tax_id_obj.id
+            b_address.save()
 
         ub_addresses = stripe_customer.user.billing_addresses.filter(
             vat_number=billing_address.vat_number)
         for ub_address in ub_addresses:
             ub_address.stripe_tax_id = tax_id_obj.id
+            ub_address.save()
     except StripeCustomer.DoesNotExist as dne:
         logger.debug("StripeCustomer %s does not exist" % stripe_customer_id)
         billing_address.stripe_tax_id = tax_id_obj.id
