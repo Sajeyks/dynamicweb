@@ -167,7 +167,7 @@ def validate_vat_number(stripe_customer_id, billing_address_id):
                     }
             else:
                 tax_id_obj = create_tax_id(
-                    stripe_customer_id, billing_address.vat_number,
+                    stripe_customer_id, billing_address_id,
                     "ch_vat" if billing_address.country.lower() == "ch" else "eu_vat")
     else:
         return {
@@ -184,11 +184,19 @@ def validate_vat_number(stripe_customer_id, billing_address_id):
     }
 
 
-def create_tax_id(stripe_customer_id, vat_number, type):
+def create_tax_id(stripe_customer_id, billing_address_id, type):
+    try:
+        billing_address = BillingAddress.objects.get(id=billing_address_id)
+    except BillingAddress.DoesNotExist as dne:
+        billing_address = None
+        logger.debug("BillingAddress does not exist for %s" % billing_address_id)
+    except BillingAddress.MultipleObjectsReturned as mor:
+        logger.debug("Multiple BillingAddress exist for %s" % billing_address_id)
+        billing_address = BillingAddress.objects.filter(billing_address_id).order_by('-id').first()
     stripe_utils = StripeUtils()
     tax_id_response = stripe_utils.create_tax_id_for_user(
         stripe_customer_id,
-        vat_number=vat_number,
+        vat_number=billing_address.vat_number,
         type=type
     )
 
@@ -197,16 +205,21 @@ def create_tax_id(stripe_customer_id, vat_number, type):
     if not tax_id_obj:
         return tax_id_response
 
-    stripe_customer = StripeCustomer.objects.get(stripe_id=stripe_customer_id)
-    billing_address_set = set()
-    for ho in stripe_customer.hostingorder_set.all():
-        if ho.billing_address.vat_number==vat_number:
-            billing_address_set.add(ho.billing_address)
-    for b_address in billing_address_set:
-        b_address.stripe_tax_id = tax_id_obj.id
+    try:
+        stripe_customer = StripeCustomer.objects.get(stripe_id=stripe_customer_id)
+        billing_address_set = set()
+        for ho in stripe_customer.hostingorder_set.all():
+            if ho.billing_address.vat_number == billing_address.vat_number:
+                billing_address_set.add(ho.billing_address)
+        for b_address in billing_address_set:
+            b_address.stripe_tax_id = tax_id_obj.id
 
-    ub_addresses = stripe_customer.user.billing_addresses.filter(
-        vat_number=vat_number)
-    for ub_address in ub_addresses:
-        ub_address.stripe_tax_id = tax_id_obj.id
+        ub_addresses = stripe_customer.user.billing_addresses.filter(
+            vat_number=billing_address.vat_number)
+        for ub_address in ub_addresses:
+            ub_address.stripe_tax_id = tax_id_obj.id
+    except StripeCustomer.DoesNotExist as dne:
+        logger.debug("StripeCustomer %s does not exist" % stripe_customer_id)
+        billing_address.stripe_tax_id = tax_id_obj.id
+        billing_address.save()
     return tax_id_obj
