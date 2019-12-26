@@ -199,15 +199,30 @@ def validate_vat_number(stripe_customer_id, billing_address_id,
     }
 
 
-def create_tax_id(stripe_customer_id, billing_address_id, type):
-    try:
-        billing_address = BillingAddress.objects.get(id=billing_address_id)
-    except BillingAddress.DoesNotExist as dne:
-        billing_address = None
-        logger.debug("BillingAddress does not exist for %s" % billing_address_id)
-    except BillingAddress.MultipleObjectsReturned as mor:
-        logger.debug("Multiple BillingAddress exist for %s" % billing_address_id)
-        billing_address = BillingAddress.objects.filter(billing_address_id).order_by('-id').first()
+def create_tax_id(stripe_customer_id, billing_address_id, type,
+                  is_user_ba=False):
+    if is_user_ba:
+        try:
+            billing_address = UserBillingAddress.objects.get(
+                id=billing_address_id)
+        except UserBillingAddress.DoesNotExist as dne:
+            billing_address = None
+            logger.debug(
+                "UserBillingAddress does not exist for %s" % billing_address_id)
+        except UserBillingAddress.MultipleObjectsReturned as mor:
+            logger.debug(
+                "Multiple UserBillingAddress exist for %s" % billing_address_id)
+            billing_address = UserBillingAddress.objects.filter(
+                id=billing_address_id).order_by('-id').first()
+    else:
+        try:
+            billing_address = BillingAddress.objects.get(id=billing_address_id)
+        except BillingAddress.DoesNotExist as dne:
+            billing_address = None
+            logger.debug("BillingAddress does not exist for %s" % billing_address_id)
+        except BillingAddress.MultipleObjectsReturned as mor:
+            logger.debug("Multiple BillingAddress exist for %s" % billing_address_id)
+            billing_address = BillingAddress.objects.filter(billing_address_id).order_by('-id').first()
     stripe_utils = StripeUtils()
     tax_id_response = stripe_utils.create_tax_id_for_user(
         stripe_customer_id,
