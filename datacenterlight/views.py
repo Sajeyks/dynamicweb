@@ -642,8 +642,7 @@ class OrderConfirmationView(DetailView, FormView):
             vm_specs["price"] = price
 
             vat_number = request.session.get('billing_address_data').get("vat_number")
-            billing_address = BillingAddress.objects.get(
-                request.session["billing_address_id"])
+            billing_address = BillingAddress.objects.get(id=request.session["billing_address_id"])
             if vat_number:
                 validate_result = validate_vat_number(
                     stripe_customer_id=request.session['customer'],
