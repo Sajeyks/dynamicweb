@@ -644,7 +644,7 @@ class SettingsView(LoginRequiredMixin, FormView):
                         messages.add_message(
                             request, messages.ERROR,
                             "VAT Number validation error: %s" % validate_result["error"],
-                            extra_tags='vat_error'
+                            extra_tags='error'
                         )
                     else:
                         msg = _("Billing address updated successfully")
