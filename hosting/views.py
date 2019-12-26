@@ -37,7 +37,9 @@ from stored_messages.settings import stored_messages_settings
 
 from datacenterlight.cms_models import DCLCalculatorPluginModel
 from datacenterlight.models import VMTemplate, VMPricing
-from datacenterlight.utils import create_vm, get_cms_integration, check_otp
+from datacenterlight.utils import (
+    create_vm, get_cms_integration, check_otp, validate_vat_number
+)
 from hosting.models import UserCardDetail
 from membership.models import CustomUser, StripeCustomer
 from opennebula_api.models import OpenNebulaManager
@@ -626,9 +628,26 @@ class SettingsView(LoginRequiredMixin, FormView):
                 billing_address_user_form = UserBillingAddressForm(
                     instance=self.request.user.billing_addresses.first(),
                     data=billing_address_data)
-                billing_address_user_form.save()
-                msg = _("Billing address updated successfully")
-                messages.add_message(request, messages.SUCCESS, msg)
+                billing_address = billing_address_user_form.save()
+                vat_number = billing_address_user_form.cleaned_data.get(
+                    'vat_number').strip()
+                if vat_number:
+                    validate_result = validate_vat_number(
+                        stripe_customer_id=request.user.stripecustomer.stripe_id,
+                        billing_address_id=billing_address.id,
+                        is_user_ba=True
+                    )
+                    if 'error' in validate_result and validate_result['error']:
+                        messages.add_message(
+                            request, messages.ERROR, validate_result["error"],
+                            extra_tags='vat_error'
+                        )
+                    else:
+                        msg = _("Billing address updated successfully")
+                        messages.add_message(request, messages.SUCCESS, msg)
+                else:
+                    msg = _("Billing address updated successfully")
+                    messages.add_message(request, messages.SUCCESS, msg)
             else:
                 token = form.cleaned_data.get('token')
                 stripe_utils = StripeUtils()

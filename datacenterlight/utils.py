@@ -131,15 +131,30 @@ def check_otp(name, realm, token):
     return response.status_code
 
 
-def validate_vat_number(stripe_customer_id, billing_address_id):
-    try:
-        billing_address = BillingAddress.objects.get(id=billing_address_id)
-    except BillingAddress.DoesNotExist as dne:
-        billing_address = None
-        logger.debug("BillingAddress does not exist for %s" % billing_address_id)
-    except BillingAddress.MultipleObjectsReturned as mor:
-        logger.debug("Multiple BillingAddress exist for %s" % billing_address_id)
-        billing_address = BillingAddress.objects.filter(billing_address_id).order_by('-id').first()
+def validate_vat_number(stripe_customer_id, billing_address_id,
+                        is_user_ba=False):
+    if is_user_ba:
+        try:
+            billing_address = UserBillingAddress.objects.get(
+                id=billing_address_id)
+        except UserBillingAddress.DoesNotExist as dne:
+            billing_address = None
+            logger.debug(
+                "UserBillingAddress does not exist for %s" % billing_address_id)
+        except UserBillingAddress.MultipleObjectsReturned as mor:
+            logger.debug(
+                "Multiple UserBillingAddress exist for %s" % billing_address_id)
+            billing_address = UserBillingAddress.objects.filter(
+                id=billing_address_id).order_by('-id').first()
+    else:
+        try:
+            billing_address = BillingAddress.objects.get(id=billing_address_id)
+        except BillingAddress.DoesNotExist as dne:
+            billing_address = None
+            logger.debug("BillingAddress does not exist for %s" % billing_address_id)
+        except BillingAddress.MultipleObjectsReturned as mor:
+            logger.debug("Multiple BillingAddress exist for %s" % billing_address_id)
+            billing_address = BillingAddress.objects.filter(id=billing_address_id).order_by('-id').first()
     if billing_address is not None:
         if billing_address.vat_number_validated_on:
             return {
