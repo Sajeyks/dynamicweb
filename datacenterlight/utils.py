@@ -179,12 +179,15 @@ def validate_vat_number(stripe_customer_id, billing_address_id,
                                  tax_id_obj.verification.status)
                     # update billing address
                     billing_address.vat_number_validated_on = datetime.datetime.now()
+                    billing_address.vat_validation_status = tax_id_obj.verification.status
                     billing_address.save()
                     return {
                         "status": "verified",
                         "validated_on": billing_address.vat_number_validated_on
                     }
                 else:
+                    billing_address.vat_validation_status = tax_id_obj.verification.status
+                    billing_address.save()
                     logger.debug(
                         "Latest status on Stripe=%s" % str(tax_id_obj)
                     )
