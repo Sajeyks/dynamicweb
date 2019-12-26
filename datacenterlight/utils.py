@@ -197,7 +197,7 @@ def create_tax_id(stripe_customer_id, vat_number, type):
     if not tax_id_obj:
         return tax_id_response
 
-    stripe_customer = StripeCustomer.objects.get(stripe_customer_id)
+    stripe_customer = StripeCustomer.objects.get(stripe_id=stripe_customer_id)
     billing_address_set = set()
     for ho in stripe_customer.hostingorder_set.all():
         if ho.billing_address.vat_number==vat_number:
