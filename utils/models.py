@@ -24,9 +24,10 @@ class BaseBillingAddress(models.Model):
 class BillingAddress(BaseBillingAddress):
     def __str__(self):
         if self.vat_number:
-            return "%s, %s, %s, %s, %s, %s" % (
+            return "%s, %s, %s, %s, %s, %s %s %s" % (
                 self.cardholder_name, self.street_address, self.city,
-                self.postal_code, self.country, self.vat_number
+                self.postal_code, self.country, self.vat_number,
+                self.stripe_tax_id, self.vat_number_validated_on
             )
         else:
             return "%s, %s, %s, %s, %s" % (
@@ -41,9 +42,10 @@ class UserBillingAddress(BaseBillingAddress):
 
     def __str__(self):
         if self.vat_number:
-            return "%s, %s, %s, %s, %s, %s" % (
+            return "%s, %s, %s, %s, %s, %s %s %s" % (
                 self.cardholder_name, self.street_address, self.city,
-                self.postal_code, self.country, self.vat_number
+                self.postal_code, self.country, self.vat_number,
+                self.stripe_tax_id, self.vat_number_validated_on
             )
         else:
             return "%s, %s, %s, %s, %s" % (
