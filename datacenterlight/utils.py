@@ -201,7 +201,6 @@ def validate_vat_number(stripe_customer_id, billing_address_id,
                     is_user_ba=is_user_ba
                 )
                 logger.debug("tax_id_obj = %s" % str(tax_id_obj))
-                logger.debug("Created tax_id %s" % tax_id_obj.id)
     else:
         logger.debug("invalid billing address")
         return {
