@@ -1,10 +1,11 @@
 {% if messages %}
     <ul class="list-unstyled msg-list">
     {% for message in messages %}
-        {% if message.tags and message.tags == 'error' %}
+        {% if message.tags and 'error' in message.tags %}
             <p class="card-warning-content card-warning-error">{{ message|safe }}</p>
-        {% else %}
+        {% elif message.tags %}
             <div class="alert alert-{{message.tags}}">{{ message|safe }}</div>
+        {{message.tags}}
         {% endif %}
     {% endfor %}
     </ul>
