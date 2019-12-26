@@ -525,6 +525,8 @@ class PaymentOrderView(FormView):
                         token=token,
                         customer_name=user_name)
 
+            billing_address = address_form.save()
+            request.session["billing_address_id"] = billing_address.id
             request.session['billing_address_data'] = address_form.cleaned_data
             request.session['user'] = this_user
             # Get or create stripe customer
@@ -546,11 +548,10 @@ class PaymentOrderView(FormView):
             if vat_number:
                 validate_result = validate_vat_number(
                     stripe_customer_id=request.session['customer'],
-                    vat_number=address_form.cleaned_data.get('vat_number'),
-                    country=address_form.cleaned_data.get("country").strip()
+                    billing_address_id=billing_address.id
                 )
 
-                if 'response_object' in validate_result:
+                if 'error' in validate_result and validate_result['error']:
                     messages.add_message(
                         request, messages.ERROR, validate_result["error"],
                         extra_tags='vat_error'
@@ -558,7 +559,6 @@ class PaymentOrderView(FormView):
                     return HttpResponseRedirect(
                         reverse('datacenterlight:payment') + '#vat_error'
                     )
-
                 request.session["vat_validation_status"] = validate_result["status"]
                 request.session["vat_validated_on"] = validate_result["validated_on"]
 
