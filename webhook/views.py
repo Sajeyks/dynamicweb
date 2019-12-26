@@ -68,8 +68,8 @@ def handle_webhook(request):
     if event.type == "customer.tax_id.updated":
         logger.debug("Webhook Event: customer.tax_id.updated")
         tax_id_obj = event.data.object
-        logger.debug("Tax_id %s is %s" % tax_id_obj.id,
-                     tax_id_obj.verification.status)
+        logger.debug("Tax_id %s is %s" % (tax_id_obj.id,
+                     tax_id_obj.verification.status))
         if tax_id_obj.verification.status == "verified":
             b_addresses = BillingAddress.objects.filter(vat_number=tax_id_obj.value)
             for b_address in b_addresses:
@@ -79,8 +79,8 @@ def handle_webhook(request):
             for ub_address in ub_addresses:
                 ub_address.vat_number_validated_on = datetime.datetime.now()
         else:
-            logger.debug("Tax_id %s is %s" % tax_id_obj.id,
-                         tax_id_obj.verification.status)
+            logger.debug("Tax_id %s is %s" % (tax_id_obj.id,
+                         tax_id_obj.verification.status))
     else:
         logger.error("Unhandled event : " + event.type)
     return HttpResponse(status=200)
