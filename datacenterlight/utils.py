@@ -183,7 +183,9 @@ def validate_vat_number(stripe_customer_id, billing_address_id,
             else:
                 tax_id_obj = create_tax_id(
                     stripe_customer_id, billing_address_id,
-                    "ch_vat" if billing_address.country.lower() == "ch" else "eu_vat")
+                    "ch_vat" if billing_address.country.lower() == "ch" else "eu_vat",
+                    is_user_ba=is_user_ba
+                )
     else:
         return {
             "status": "invalid billing address",
