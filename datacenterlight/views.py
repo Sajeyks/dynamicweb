@@ -658,7 +658,10 @@ class OrderConfirmationView(DetailView, FormView):
 
                 request.session["vat_validation_status"] = validate_result["status"]
 
-            if ("vat_validation_status" in request.session and
+            if user_vat_country.lower() == "ch":
+                vm_specs["vat"] = vat
+                vm_specs["vat_percent"] = vat_percent
+            elif ("vat_validation_status" in request.session and
                     request.session["vat_validation_status"] == "verified"):
                 vm_specs["vat_percent"] = 0
                 vm_specs["vat"] = 0
