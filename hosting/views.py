@@ -642,7 +642,8 @@ class SettingsView(LoginRequiredMixin, FormView):
                     )
                     if 'error' in validate_result and validate_result['error']:
                         messages.add_message(
-                            request, messages.ERROR, validate_result["error"],
+                            request, messages.ERROR,
+                            "VAT Number validation error: %s" % validate_result["error"],
                             extra_tags='vat_error'
                         )
                     else:
