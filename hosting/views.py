@@ -634,12 +634,14 @@ class SettingsView(LoginRequiredMixin, FormView):
                 billing_address.save()
                 vat_number = billing_address_user_form.cleaned_data.get(
                     'vat_number').strip()
+                logger.debug("Vat number = %s" % vat_number)
                 if vat_number:
                     validate_result = validate_vat_number(
                         stripe_customer_id=request.user.stripecustomer.stripe_id,
                         billing_address_id=billing_address.id,
                         is_user_ba=True
                     )
+                    logger.debug("validate_result = %s" % str(validate_result))
                     if 'error' in validate_result and validate_result['error']:
                         messages.add_message(
                             request, messages.ERROR,
