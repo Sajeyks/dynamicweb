@@ -200,6 +200,7 @@ def validate_vat_number(stripe_customer_id, billing_address_id,
                     "ch_vat" if billing_address.country.lower() == "ch" else "eu_vat",
                     is_user_ba=is_user_ba
                 )
+                logger.debug("tax_id_obj = %s" % str(tax_id_obj))
                 logger.debug("Created tax_id %s" % tax_id_obj['response_object'].id)
     else:
         logger.debug("invalid billing address")
