@@ -37,7 +37,7 @@ def handleStripeError(f):
             return response
         except stripe.error.InvalidRequestError as e:
             logger.error(str(e))
-            response.update({'error': str(e)})
+            response.update({'error': str(e._message)})
             return response
         except stripe.error.AuthenticationError as e:
             # Authentication with Stripe's API failed
