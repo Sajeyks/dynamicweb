@@ -524,6 +524,7 @@ class PaymentOrderView(FormView):
                         email=user_email,
                         token=token,
                         customer_name=user_name)
+                    customer.save()
 
             billing_address = address_form.save()
             request.session["billing_address_id"] = billing_address.id
