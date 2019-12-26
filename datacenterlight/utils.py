@@ -107,7 +107,7 @@ def clear_all_session_vars(request):
                             'token', 'customer', 'generic_payment_type',
                             'generic_payment_details', 'product_id',
                             'order_confirm_url', 'new_user_hosting_key_id',
-                            'vat_validation_status']:
+                            'vat_validation_status', 'billing_address_id']:
             if session_var in request.session:
                 del request.session[session_var]
 
