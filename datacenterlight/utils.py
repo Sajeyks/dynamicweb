@@ -156,18 +156,27 @@ def validate_vat_number(stripe_customer_id, billing_address_id,
             logger.debug("Multiple BillingAddress exist for %s" % billing_address_id)
             billing_address = BillingAddress.objects.filter(id=billing_address_id).order_by('-id').first()
     if billing_address is not None:
+        logger.debug("BillingAddress found: %s %s type=%s" % (
+            billing_address_id, str(billing_address), type(billing_address)))
         if billing_address.vat_number_validated_on:
+            logger.debug("billing_address verified on %s" %
+                         billing_address.vat_number_validated_on)
             return {
                 "validated_on": billing_address.vat_number_validated_on,
                 "status": "verified"
             }
         else:
+            logger.debug("billing_address not yet verified, "
+                         "Checking if we already have a tax id")
             if billing_address.stripe_tax_id:
+                logger.debug("We have a tax id %s" % billing_address.stripe_tax_id)
                 tax_id_obj = stripe.Customer.retrieve_tax_id(
                   stripe_customer_id,
                   billing_address.stripe_tax_id,
                 )
                 if tax_id_obj.verification.status == "verified":
+                    logger.debug("Latest status on Stripe=%s. Updating" %
+                                 tax_id_obj.verification.status)
                     # update billing address
                     billing_address.vat_number_validated_on = datetime.datetime.now()
                     billing_address.save()
@@ -176,17 +185,24 @@ def validate_vat_number(stripe_customer_id, billing_address_id,
                         "validated_on": billing_address.vat_number_validated_on
                     }
                 else:
+                    logger.debug(
+                        "Latest status on Stripe=%s" % str(tax_id_obj)
+                    )
                     return {
-                        "status": tax_id_obj.verification.status,
+                        "status": tax_id_obj.verification.status if tax_id_obj
+                        else "unknown",
                         "validated_on": ""
                     }
             else:
+                logger.debug("Creating a tax id")
                 tax_id_obj = create_tax_id(
                     stripe_customer_id, billing_address_id,
                     "ch_vat" if billing_address.country.lower() == "ch" else "eu_vat",
                     is_user_ba=is_user_ba
                 )
+                logger.debug("Created tax_id %s" % tax_id_obj['response_object'].id)
     else:
+        logger.debug("invalid billing address")
         return {
             "status": "invalid billing address",
             "validated_on": ""
