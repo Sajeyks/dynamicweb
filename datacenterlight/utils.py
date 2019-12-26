@@ -133,7 +133,7 @@ def check_otp(name, realm, token):
 
 def validate_vat_number(stripe_customer_id, billing_address_id):
     try:
-        billing_address = BillingAddress.objects.get(billing_address_id)
+        billing_address = BillingAddress.objects.get(id=billing_address_id)
     except BillingAddress.DoesNotExist as dne:
         billing_address = None
         logger.debug("BillingAddress does not exist for %s" % billing_address_id)
