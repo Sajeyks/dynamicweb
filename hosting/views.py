@@ -626,7 +626,7 @@ class SettingsView(LoginRequiredMixin, FormView):
                     'user': self.request.user.id
                 })
                 billing_address_user_form = UserBillingAddressForm(
-                    instance=self.request.user.billing_addresses.first(),
+                    instance=self.request.user.billing_addresses.order_by('-id').first(),
                     data=billing_address_data)
                 billing_address = billing_address_user_form.save()
                 billing_address.stripe_tax_id = ''

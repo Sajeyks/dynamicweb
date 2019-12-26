@@ -254,7 +254,7 @@ class PaymentOrderView(FormView):
                 )
             else:
                 billing_address_form = BillingAddressForm(
-                    instance=self.request.user.billing_addresses.first()
+                    instance=self.request.user.billing_addresses.order_by('-id').first()
                 )
             user = self.request.user
             if hasattr(user, 'stripecustomer'):
