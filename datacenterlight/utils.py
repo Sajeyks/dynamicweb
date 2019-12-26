@@ -226,7 +226,7 @@ def create_tax_id(stripe_customer_id, billing_address_id, type,
             logger.debug("Multiple BillingAddress exist for %s" % billing_address_id)
             billing_address = BillingAddress.objects.filter(billing_address_id).order_by('-id').first()
     stripe_utils = StripeUtils()
-    tax_id_response = stripe_utils.create_tax_id_for_user(
+    tax_id_response = stripe_utils.get_or_create_tax_id_for_user(
         stripe_customer_id,
         vat_number=billing_address.vat_number,
         type=type

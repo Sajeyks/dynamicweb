@@ -436,14 +436,19 @@ class StripeUtils(object):
         subscription.save()
 
     @handleStripeError
-    def create_tax_id_for_user(self, stripe_customer_id, vat_number, type="eu_vat"):
-        tax_id_obj = stripe.Customer.retrieve(
-            stripe_customer_id,type=type, value=vat_number
+    def get_or_create_tax_id_for_user(self, stripe_customer_id, vat_number, type="eu_vat"):
+        tax_ids_list = stripe.Customer.list_tax_ids(
+            stripe_customer_id,
+            limit=100,
         )
-        if tax_id_obj["response_object"]["error"]:
-            tax_id_obj = stripe.Customer.create_tax_id(
-                stripe_customer_id,
-                type=type,
-                value=vat_number,
-            )
+        for tax_id_obj in tax_ids_list.data:
+            if tax_id_obj.value == vat_number:
+                logger.debug("tax id obj exists already")
+                return tax_id_obj
+        logger.debug("tax id obj does not exist. Creating a new one")
+        tax_id_obj = stripe.Customer.create_tax_id(
+            stripe_customer_id,
+            type=type,
+            value=vat_number,
+        )
         return tax_id_obj
