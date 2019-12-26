@@ -266,6 +266,7 @@ def create_tax_id(stripe_customer_id, billing_address_id, type,
                 billing_address_set.add(ho.billing_address)
         for b_address in billing_address_set:
             b_address.stripe_tax_id = tax_id_obj.id
+            b_address.vat_validation_status = tax_id_obj.verification.status
             b_address.save()
             logger.debug("Updated billing_address %s" % str(b_address))
 
@@ -273,10 +274,12 @@ def create_tax_id(stripe_customer_id, billing_address_id, type,
             vat_number=billing_address.vat_number)
         for ub_address in ub_addresses:
             ub_address.stripe_tax_id = tax_id_obj.id
+            ub_address.vat_validation_status = tax_id_obj.verification.status
             ub_address.save()
             logger.debug("Updated user_billing_address %s" % str(ub_address))
     except StripeCustomer.DoesNotExist as dne:
         logger.debug("StripeCustomer %s does not exist" % stripe_customer_id)
         billing_address.stripe_tax_id = tax_id_obj.id
+        billing_address.vat_validation_status = tax_id_obj.verification.status
         billing_address.save()
     return tax_id_obj
