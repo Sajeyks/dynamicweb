@@ -560,7 +560,6 @@ class PaymentOrderView(FormView):
                         reverse('datacenterlight:payment') + '#vat_error'
                     )
                 request.session["vat_validation_status"] = validate_result["status"]
-                request.session["vat_validated_on"] = validate_result["validated_on"]
 
             # For generic payment we take the user directly to confirmation
             if ('generic_payment_type' in request.session and
@@ -658,7 +657,6 @@ class OrderConfirmationView(DetailView, FormView):
                     )
 
                 request.session["vat_validation_status"] = validate_result["status"]
-                request.session["vat_validated_on"] = validate_result["validated_on"]
 
             if ("vat_validation_status" in request.session and
                     request.session["vat_validation_status"] == "verified"):
