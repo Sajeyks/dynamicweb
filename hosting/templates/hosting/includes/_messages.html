@@ -1,7 +1,11 @@
 {% if messages %}
     <ul class="list-unstyled msg-list">
     {% for message in messages %}
-        <div class="alert {% if message.tags and message.tags == 'error' %} alert-danger {% else %} alert-{{message.tags}} {% endif %}">{{ message|safe }}</div>
+        {% if message.tags and message.tags == 'error' %}
+            <p class="card-warning-content card-warning-error">{{ message|safe }}</p>
+        {% else %}
+            <div class="alert alert-{{message.tags}}">{{ message|safe }}</div>
+        {% endif %}
     {% endfor %}
     </ul>
 {% endif %}
