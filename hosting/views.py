@@ -631,6 +631,7 @@ class SettingsView(LoginRequiredMixin, FormView):
                 billing_address = billing_address_user_form.save()
                 billing_address.stripe_tax_id = ''
                 billing_address.vat_number_validated_on = None
+                billing_address.vat_validation_status = ''
                 billing_address.save()
                 vat_number = billing_address_user_form.cleaned_data.get(
                     'vat_number').strip()
