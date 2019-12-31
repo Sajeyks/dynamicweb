@@ -74,7 +74,7 @@ def handle_webhook(request):
                      tax_id_obj.verification.status))
         stripe_customer = None
         try:
-            stripe_customer = StripeCustomer.objects.get(tax_id_obj.customer)
+            stripe_customer = StripeCustomer.objects.get(stripe_id=tax_id_obj.customer)
         except StripeCustomer.DoesNotExist as dne:
             logger.debug(
                 "StripeCustomer %s does not exist" % tax_id_obj.customer)
