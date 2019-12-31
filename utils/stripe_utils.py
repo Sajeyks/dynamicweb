@@ -445,7 +445,13 @@ class StripeUtils(object):
             if tax_id_obj.value == vat_number:
                 logger.debug("tax id obj exists already")
                 return tax_id_obj
-        logger.debug("tax id obj does not exist. Creating a new one")
+            else:
+                logger.debug("{val1} is not equal to {val2}".format(
+                    val1=tax_id_obj.value, val2=vat_number
+                ))
+        logger.debug("tax id obj does not exist for {val}. Creating a new one".format(
+            val=vat_number
+        ))
         tax_id_obj = stripe.Customer.create_tax_id(
             stripe_customer_id,
             type=type,
