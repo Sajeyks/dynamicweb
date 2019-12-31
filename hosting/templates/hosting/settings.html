@@ -27,10 +27,13 @@
                             {% bootstrap_field field show_label=False type='fields' bound_css_class='' %}
                         {% endfor %}
                         {% if form.instance.vat_number %}
-                            {% if form.instance.vat_validation_status == "verified" %}
-                                        <span class="fa fa-fw fa-check-circle" aria-hidden="true" title='{% trans "Your VAT number has been verified" %}'></span>
-                            {% elif form.instance.vat_validation_status == "pending" %}
-                                        <span class="fa fa-fw fa-info-circle" aria-hidden="true" title='{% trans "Your VAT number is under validation. VAT will be adjusted, once the validation is complete." %}'></span>
+                            {% if form.instance.vat_validation_status != "ch_vat" and form.instance.vat_validation_status != "not_needed" %}
+
+                                {% if form.instance.vat_validation_status == "verified" %}
+                                            <span class="fa fa-fw fa-check-circle" aria-hidden="true" title='{% trans "Your VAT number has been verified" %}'></span>
+                                {% elif form.instance.vat_validation_status == "pending" %}
+                                            <span class="fa fa-fw fa-info-circle" aria-hidden="true" title='{% trans "Your VAT number is under validation. VAT will be adjusted, once the validation is complete." %}'></span>
+                                {% endif %}
                             {% endif %}
                         {% endif %}
                         <div class="form-group text-right">

@@ -18,6 +18,11 @@ from .models import VMPricing, VMTemplate
 
 logger = logging.getLogger(__name__)
 
+eu_countries = ['at', 'be', 'bg', 'ch', 'cy', 'cz', 'hr', 'dk',
+                'ee', 'fi', 'fr', 'mc', 'de', 'gr', 'hu', 'ie', 'it',
+                'lv', 'lu', 'mt', 'nl', 'po', 'pt', 'ro','sk', 'si', 'es',
+                'se', 'gb']
+
 
 def get_cms_integration(name):
     current_site = Site.objects.get_current()
@@ -158,6 +163,11 @@ def validate_vat_number(stripe_customer_id, billing_address_id,
     if billing_address is not None:
         logger.debug("BillingAddress found: %s %s type=%s" % (
             billing_address_id, str(billing_address), type(billing_address)))
+        if billing_address.country.lower().strip() not in eu_countries:
+            return {
+                "validated_on": "",
+                "status": "not_needed"
+            }
         if billing_address.vat_number_validated_on:
             logger.debug("billing_address verified on %s" %
                          billing_address.vat_number_validated_on)

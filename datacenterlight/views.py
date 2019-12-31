@@ -562,7 +562,7 @@ class PaymentOrderView(FormView):
                 request.session["vat_validation_status"] = validate_result["status"]
 
             # For generic payment we take the user directly to confirmation
-            if ('generic_payment_type' in request.session and
+            if ('generic_p`ayment_type' in request.session and
                     self.request.session['generic_payment_type'] == 'generic'):
                 return HttpResponseRedirect(
                     reverse('datacenterlight:order_confirmation'))
@@ -617,7 +617,8 @@ class OrderConfirmationView(DetailView, FormView):
 
         if ('generic_payment_type' in request.session and
                 self.request.session['generic_payment_type'] == 'generic'):
-            if request.session["vat_validation_status"] == "verified":
+            if (request.session["vat_validation_status"] == "verified" or
+                    request.session["vat_validation_status"] == "not_needed"):
                 request.session['generic_payment_details']['vat_rate'] = 0
                 request.session['generic_payment_details']['vat_amount'] = 0
                 request.session['generic_payment_details']['amount'] = request.session['generic_payment_details']['amount_before_vat']
@@ -661,11 +662,13 @@ class OrderConfirmationView(DetailView, FormView):
             if user_vat_country.lower() == "ch":
                 vm_specs["vat"] = vat
                 vm_specs["vat_percent"] = vat_percent
+                vm_specs["vat_validation_status"] = "ch_vat"
             elif ("vat_validation_status" in request.session and
-                    request.session["vat_validation_status"] == "verified"):
+                    (request.session["vat_validation_status"] == "verified" or
+                     request.session["vat_validation_status"] == "not_needed")):
                 vm_specs["vat_percent"] = 0
                 vm_specs["vat"] = 0
-                vm_specs["vat_validation_status"] = "verified"
+                vm_specs["vat_validation_status"] = request.session["vat_validation_status"]
             else:
                 vm_specs["vat"] = vat
                 vm_specs["vat_percent"] = vat_percent
