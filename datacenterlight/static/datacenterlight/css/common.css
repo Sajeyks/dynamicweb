@@ -191,3 +191,9 @@ footer .dcl-link-separator::before {
   font-weight: bold;
   font-size: 14px;
 }
+
+@media(max-width:767px) {
+  .vspace-top {
+      margin-top: 35px;
+  }
+}

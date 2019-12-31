@@ -1,3 +1,5 @@
+2.8.2: 2019-12-24
+   * Bugfix: [dcl calculator plugin] Set the POST action url explicitly
 2.8.1: 2019-12-24
    * [dcl cms navbar plugin]: Provide an option to show non transparent navar always
 2.8: 2019-12-20
