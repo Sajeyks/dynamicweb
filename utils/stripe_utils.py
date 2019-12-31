@@ -442,7 +442,7 @@ class StripeUtils(object):
             limit=100,
         )
         for tax_id_obj in tax_ids_list.data:
-            if tax_id_obj.value == vat_number:
+            if self.compare_vat_numbers(tax_id_obj.value, vat_number):
                 logger.debug("tax id obj exists already")
                 return tax_id_obj
             else:
@@ -458,3 +458,8 @@ class StripeUtils(object):
             value=vat_number,
         )
         return tax_id_obj
+
+    def compare_vat_numbers(self, vat1, vat2):
+        _vat1 = vat1.replace(" ", "").replace(".", "").replace("-","")
+        _vat2 = vat2.replace(" ", "").replace(".", "").replace("-","")
+        return True if _vat1 == _vat2 else False
