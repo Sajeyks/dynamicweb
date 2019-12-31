@@ -40,6 +40,7 @@ from datacenterlight.models import VMTemplate, VMPricing
 from datacenterlight.utils import (
     create_vm, get_cms_integration, check_otp, validate_vat_number
 )
+from dynamicweb.settings.base import DCL_ERROR_EMAILS_TO_LIST
 from hosting.models import UserCardDetail
 from membership.models import CustomUser, StripeCustomer
 from opennebula_api.models import OpenNebulaManager
@@ -663,9 +664,29 @@ class SettingsView(LoginRequiredMixin, FormView):
                         )
                         billing_address = current_billing_address
                         billing_address.save()
+                        email_data = {
+                            'subject': "%s updated VAT number to %s but failed" %
+                                       (request.user.email, vat_number),
+                            'from_email': settings.DCL_SUPPORT_FROM_ADDRESS,
+                            'to': settings.DCL_ERROR_EMAILS_TO_LIST,
+                            'body': "\n".join(
+                                ["%s=%s" % (k, v) for (k, v) in
+                                 validate_result.items()]),
+                        }
                     else:
+                        email_data = {
+                            'subject': "%s updated VAT number to %s" % (
+                                request.user.email, vat_number
+                            ),
+                            'from_email': settings.DCL_SUPPORT_FROM_ADDRESS,
+                            'to': settings.DCL_ERROR_EMAILS_TO_LIST,
+                            'body': "\n".join(
+                                ["%s=%s" % (k, v) for (k, v) in
+                                 validate_result.items()]),
+                        }
                         msg = _("Billing address updated successfully")
                         messages.add_message(request, messages.SUCCESS, msg)
+                    send_plain_email_task.delay(email_data)
                 else:
                     msg = _("Billing address updated successfully")
                     messages.add_message(request, messages.SUCCESS, msg)

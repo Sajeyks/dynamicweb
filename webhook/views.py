@@ -8,6 +8,8 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
+from membership.models import StripeCustomer
+
 from utils.models import BillingAddress, UserBillingAddress
 from utils.tasks import send_plain_email_task
 
@@ -70,6 +72,12 @@ def handle_webhook(request):
         tax_id_obj = event.data.object
         logger.debug("Tax_id %s is %s" % (tax_id_obj.id,
                      tax_id_obj.verification.status))
+        stripe_customer = None
+        try:
+            stripe_customer = StripeCustomer.objects.get(tax_id_obj.customer)
+        except StripeCustomer.DoesNotExist as dne:
+            logger.debug(
+                "StripeCustomer %s does not exist" % tax_id_obj.customer)
         if tax_id_obj.verification.status == "verified":
             b_addresses = BillingAddress.objects.filter(stripe_tax_id=tax_id_obj.id)
             for b_address in b_addresses:
@@ -82,9 +90,25 @@ def handle_webhook(request):
                 ub_address.vat_validation_status = tax_id_obj.verification.status
                 ub_address.vat_number_validated_on = datetime.datetime.now()
                 ub_address.save()
+            email_data = {
+                'subject': "The VAT %s associated with %s was verified" %
+                           (tax_id_obj.value,  stripe_customer.user.email if stripe_customer else "unknown"),
+                'from_email': settings.DCL_SUPPORT_FROM_ADDRESS,
+                'to': settings.DCL_ERROR_EMAILS_TO_LIST,
+                'body': "The following objects were modified:\n".join(b_addresses).join(ub_addresses),
+            }
         else:
             logger.debug("Tax_id %s is %s" % (tax_id_obj.id,
                          tax_id_obj.verification.status))
+            email_data = {
+                'subject': "The VAT %s associated with %s was %s" %
+                           (tax_id_obj.value,  stripe_customer.user.email if stripe_customer else "unknown", tax_id_obj.verification.status),
+                'from_email': settings.DCL_SUPPORT_FROM_ADDRESS,
+                'to': settings.DCL_ERROR_EMAILS_TO_LIST,
+                'body': "Response = %s" % str(tax_id_obj),
+            }
+
+        send_plain_email_task.delay(email_data)
     else:
         logger.error("Unhandled event : " + event.type)
     return HttpResponse(status=200)
