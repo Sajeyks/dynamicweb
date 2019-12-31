@@ -1,8 +1,6 @@
 2.9: 2019-12-31
    * Feature: Enable saving user's VAT Number and validate it (MR!725)
    Notes for deployment:
-   Notes for deployment:
-
    1. Migrate db for utils app
       ./manage.py migrate utils
 
