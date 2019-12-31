@@ -95,7 +95,11 @@ def handle_webhook(request):
                            (tax_id_obj.value,  stripe_customer.user.email if stripe_customer else "unknown"),
                 'from_email': settings.DCL_SUPPORT_FROM_ADDRESS,
                 'to': settings.DCL_ERROR_EMAILS_TO_LIST,
-                'body': "The following objects were modified:\n".join(b_addresses).join(ub_addresses),
+                'body': "The following objects were modified:\n".join(
+                    '\n'.join([str(b_address) for b_address in b_addresses])
+                ).join(
+                    '\n'.join([str(ub_address) for ub_address in ub_addresses])
+                ),
             }
         else:
             logger.debug("Tax_id %s is %s" % (tax_id_obj.id,
