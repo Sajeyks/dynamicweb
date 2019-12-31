@@ -638,6 +638,17 @@ class SettingsView(LoginRequiredMixin, FormView):
                     'vat_number').strip()
                 logger.debug("Vat number = %s" % vat_number)
                 if vat_number:
+                    try:
+                        stripe_customer = request.user.stripecustomer
+                    except StripeCustomer.DoesNotExist as dne:
+                        logger.debug(
+                            "User %s does not have a stripecustomer. "
+                            "Creating one." % request.user.email)
+                        stripe_customer = StripeCustomer.get_or_create(
+                            email=request.user.email,
+                            token=None)
+                        request.user.stripecustomer = stripe_customer
+                        request.user.save()
                     validate_result = validate_vat_number(
                         stripe_customer_id=request.user.stripecustomer.stripe_id,
                         billing_address_id=billing_address.id,
