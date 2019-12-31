@@ -562,7 +562,7 @@ class PaymentOrderView(FormView):
                 request.session["vat_validation_status"] = validate_result["status"]
 
             # For generic payment we take the user directly to confirmation
-            if ('generic_p`ayment_type' in request.session and
+            if ('generic_payment_type' in request.session and
                     self.request.session['generic_payment_type'] == 'generic'):
                 return HttpResponseRedirect(
                     reverse('datacenterlight:order_confirmation'))
