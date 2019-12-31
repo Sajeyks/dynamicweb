@@ -621,6 +621,7 @@ class SettingsView(LoginRequiredMixin, FormView):
         form = self.get_form()
         if form.is_valid():
             if 'billing-form' in request.POST:
+                current_billing_address = self.request.user.billing_addresses.last()
                 billing_address_data = form.cleaned_data
                 billing_address_data.update({
                     'user': self.request.user.id
