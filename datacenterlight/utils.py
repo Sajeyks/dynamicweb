@@ -208,6 +208,7 @@ def validate_vat_number(stripe_customer_id, billing_address_id,
                     }
             else:
                 logger.debug("Creating a tax id")
+                logger.debug("Billing address = %s" % str(billing_address))
                 tax_id_obj = create_tax_id(
                     stripe_customer_id, billing_address_id,
                     "ch_vat" if billing_address.country.lower() == "ch" else "eu_vat",
