@@ -661,6 +661,8 @@ class SettingsView(LoginRequiredMixin, FormView):
                             "VAT Number validation error: %s" % validate_result["error"],
                             extra_tags='error'
                         )
+                        billing_address = current_billing_address
+                        billing_address.save()
                     else:
                         msg = _("Billing address updated successfully")
                         messages.add_message(request, messages.SUCCESS, msg)
@@ -725,7 +727,7 @@ class PaymentVMView(LoginRequiredMixin, FormView):
     form_class = BillingAddressForm
 
     def get_form_kwargs(self):
-        current_billing_address = self.request.user.billing_addresses.first()
+        current_billing_address = self.request.user.billing_addresses.last()
         form_kwargs = super(PaymentVMView, self).get_form_kwargs()
         if not current_billing_address:
             return form_kwargs
