@@ -1,5 +1,32 @@
 2.9: 2019-12-31
    * Feature: Enable saving user's VAT Number and validate it (MR!725)
+   Notes for deployment:
+   Notes for deployment:
+
+   1. Migrate db for utils app
+      ./manage.py migrate utils
+
+   2. Uninstall old version and install a more recent version of stripe
+
+      ```
+      source venv/bin/activate
+      ./manage.py shell
+      pip uninstall stripe
+      pip install stripe==2.41.0
+      ```
+
+   3. Create tax id updated webhook
+      ```
+      ./manage.py webhook --create \
+      --webhook_endpoint https://datacenterlight.ch/en-us/webhooks/ \
+      --events_csv customer.tax_id.updated
+      ```
+
+   4. From the secret obtained in 3, setup an environment variable
+      ```
+      WEBHOOK_SECRET='whsec......'
+      ```
+   5. Deploy
 2.8.2: 2019-12-24
    * Bugfix: [dcl calculator plugin] Set the POST action url explicitly
 2.8.1: 2019-12-24
