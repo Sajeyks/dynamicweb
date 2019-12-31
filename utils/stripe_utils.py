@@ -443,9 +443,7 @@ class StripeUtils(object):
             limit=100,
         )
         for tax_id_obj in tax_ids_list.data:
-            if (self.compare_vat_numbers(tax_id_obj.value, vat_number) and
-                    tax_id_obj.country.lower().strip() ==
-                    country.lower().strip()):
+            if self.compare_vat_numbers(tax_id_obj.value, vat_number):
                 logger.debug("tax id obj exists already")
                 return tax_id_obj
             else:
