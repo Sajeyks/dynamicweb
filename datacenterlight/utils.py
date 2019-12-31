@@ -255,18 +255,26 @@ def create_tax_id(stripe_customer_id, billing_address_id, type,
         except BillingAddress.MultipleObjectsReturned as mor:
             logger.debug("Multiple BillingAddress exist for %s" % billing_address_id)
             billing_address = BillingAddress.objects.filter(billing_address_id).order_by('-id').first()
-    stripe_utils = StripeUtils()
-    tax_id_response = stripe_utils.get_or_create_tax_id_for_user(
-        stripe_customer_id,
-        vat_number=billing_address.vat_number,
-        type=type
-    )
 
-    tax_id_obj = tax_id_response.get('response_object')
+    tax_id_obj = None
+    if billing_address:
+        stripe_utils = StripeUtils()
+        tax_id_response = stripe_utils.get_or_create_tax_id_for_user(
+            stripe_customer_id,
+            vat_number=billing_address.vat_number,
+            type=type,
+            country=billing_address.country
+        )
+
+        tax_id_obj = tax_id_response.get('response_object')
 
     if not tax_id_obj:
         logger.debug("Received none in tax_id_obj")
-        return tax_id_response
+        return {
+            'paid': False,
+            'response_object': None,
+            'error': "No such address found"
+        }
 
     try:
         stripe_customer = StripeCustomer.objects.get(stripe_id=stripe_customer_id)
