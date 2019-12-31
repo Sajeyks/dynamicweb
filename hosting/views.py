@@ -663,7 +663,8 @@ class SettingsView(LoginRequiredMixin, FormView):
                             extra_tags='error'
                         )
                         billing_address = current_billing_address
-                        billing_address.save()
+                        if billing_address:
+                            billing_address.save()
                         email_data = {
                             'subject': "%s updated VAT number to %s but failed" %
                                        (request.user.email, vat_number),
