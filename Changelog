@@ -1,3 +1,5 @@
+2.9: 2019-12-31
+   * Feature: Enable saving user's VAT Number and validate it (MR!725)
 2.8.2: 2019-12-24
    * Bugfix: [dcl calculator plugin] Set the POST action url explicitly
 2.8.1: 2019-12-24
