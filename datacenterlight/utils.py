@@ -273,7 +273,8 @@ def create_tax_id(stripe_customer_id, billing_address_id, type,
         return {
             'paid': False,
             'response_object': None,
-            'error': "No such address found"
+            'error': "No such address found" if 'error' not in tax_id_obj else
+            tax_id_obj["error"]
         }
 
     try:
