@@ -1824,7 +1824,7 @@ class VirtualMachineView(LoginRequiredMixin, View):
             'subject': ("Deleted " if response['status']
                         else "ERROR deleting ") + admin_msg_sub,
             'from_email': settings.DCL_SUPPORT_FROM_ADDRESS,
-            'to': [settings.DCL_ERROR_EMAILS_TO_LIST],
+            'to': settings.DCL_ERROR_EMAILS_TO_LIST,
             'body': "\n".join(
                 ["%s=%s" % (k, v) for (k, v) in admin_email_body.items()]),
         }
