@@ -1712,6 +1712,7 @@ class VirtualMachineView(LoginRequiredMixin, View):
         # Cancel Stripe subscription
         stripe_utils = StripeUtils()
         hosting_order = None
+        stripe_subscription_obj = None
         try:
             hosting_order = HostingOrder.objects.get(
                 vm_id=vm.id
@@ -1802,6 +1803,19 @@ class VirtualMachineView(LoginRequiredMixin, View):
         admin_email_body["VM_created_at"] = (str(hosting_order.created_at) if
                                              hosting_order is not None
                                              else "unknown")
+        content = ""
+        total_amount = 0
+        if stripe_subscription_obj:
+            for line_item in stripe_subscription_obj["items"]["data"]:
+                total_amount += (line_item["quantity"] *
+                                 line_item.plan["amount"])
+                content += "   %s => %s x %s => %s\n" % (
+                    line_item.plan["name"], line_item["quantity"],
+                    line_item.plan["amount"]/100,
+                    (line_item["quantity"] * line_item.plan["amount"])/100
+                )
+        admin_email_body["subscription_amount"] = total_amount/100
+        admin_email_body["subscription_detail"] = content
         admin_msg_sub = "VM and Subscription for VM {} and user: {}".format(
             vm.id,
             owner.email
