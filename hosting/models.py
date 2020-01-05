@@ -725,3 +725,12 @@ class VATRates(AssignPermissionsMixin, models.Model):
     rate = models.FloatField()
     rate_type = models.TextField(blank=True, default='')
     description = models.TextField(blank=True, default='')
+
+
+class StripeTaxRate(AssignPermissionsMixin, models.Model):
+    tax_rate_id = models.CharField(max_length=100, unique=True)
+    jurisdiction = models.CharField(max_length=10)
+    inclusive = models.BooleanField(default=False)
+    display_name = models.CharField(max_length=100)
+    percentage = models.FloatField(default=0)
+    description = models.CharField(max_length=100)
