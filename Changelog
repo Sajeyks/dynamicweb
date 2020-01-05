@@ -1,4 +1,4 @@
-Next:
+2.9.3: 2020-01-05
    * Feature: Add StripeTaxRate model to save tax rates created in Stripe
    * Bugfix: Add vat rates for CY, IL and LI manually
 2.9.2: 2020-01-02
