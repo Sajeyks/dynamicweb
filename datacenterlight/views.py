@@ -617,7 +617,8 @@ class OrderConfirmationView(DetailView, FormView):
 
         if ('generic_payment_type' in request.session and
                 self.request.session['generic_payment_type'] == 'generic'):
-            if (request.session["vat_validation_status"] == "verified" or
+            if "vat_validation_status" in request.session and (
+                    request.session["vat_validation_status"] == "verified" or
                     request.session["vat_validation_status"] == "not_needed"):
                 request.session['generic_payment_details']['vat_rate'] = 0
                 request.session['generic_payment_details']['vat_amount'] = 0
