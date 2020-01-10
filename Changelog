@@ -1,3 +1,5 @@
+2.9.4: 2020-01-10
+   * Bugfix: Buying VPN generic item caused 500 error
 2.9.3: 2020-01-05
    * Feature: Add StripeTaxRate model to save tax rates created in Stripe
    * Bugfix: Add vat rates for CY, IL and LI manually
