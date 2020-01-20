@@ -1,3 +1,5 @@
+2.9.5: 2020-01-20
+   * Feature: Show invoices directly from stripe (MR!727)
 2.9.4: 2020-01-10
    * Bugfix: Buying VPN generic item caused 500 error
 2.9.3: 2020-01-05
