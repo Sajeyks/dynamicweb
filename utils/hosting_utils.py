@@ -208,6 +208,7 @@ def get_ip_addresses(vm_id):
         logger.error("VMDetail for %s does not exist" % vm_id)
         return "--"
 
+
 class HostingUtils:
     @staticmethod
     def clear_items_from_list(from_list, items_list):
