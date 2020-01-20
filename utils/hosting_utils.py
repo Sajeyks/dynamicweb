@@ -199,6 +199,15 @@ def get_vat_rate_for_country(country):
         return 0
 
 
+def get_ip_addresses(vm_id):
+    try:
+        vm_detail = VMDetail.objects.get(vm_id=vm_id)
+        return "%s <br/>%s" % (vm_detail.ipv6, vm_detail.ipv4)
+    except VMDetail.DoesNotExist as dne:
+        logger.error(str(dne))
+        logger.error("VMDetail for %s does not exist" % vm_id)
+        return "--"
+
 class HostingUtils:
     @staticmethod
     def clear_items_from_list(from_list, items_list):

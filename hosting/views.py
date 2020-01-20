@@ -3,6 +3,7 @@ import uuid
 from datetime import datetime
 from time import sleep
 
+import stripe
 from django import forms
 from django.conf import settings
 from django.contrib import messages
@@ -10,6 +11,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.tokens import default_token_generator
 from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
+from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse_lazy, reverse
 from django.http import (
     Http404, HttpResponseRedirect, HttpResponse, JsonResponse
@@ -40,7 +42,6 @@ from datacenterlight.models import VMTemplate, VMPricing
 from datacenterlight.utils import (
     create_vm, get_cms_integration, check_otp, validate_vat_number
 )
-from dynamicweb.settings.base import DCL_ERROR_EMAILS_TO_LIST
 from hosting.models import UserCardDetail
 from membership.models import CustomUser, StripeCustomer
 from opennebula_api.models import OpenNebulaManager
@@ -57,11 +58,10 @@ from utils.hosting_utils import (
     get_vm_price_with_vat, get_vm_price_for_given_vat, HostingUtils,
     get_vat_rate_for_country
 )
+from utils.ldap_manager import LdapManager
 from utils.mailer import BaseEmail
 from utils.stripe_utils import StripeUtils
 from utils.tasks import send_plain_email_task
-from utils.ldap_manager import LdapManager
-
 from utils.views import (
     PasswordResetViewMixin, PasswordResetConfirmViewMixin, LoginViewMixin,
     ResendActivationLinkViewMixin
@@ -73,7 +73,7 @@ from .forms import (
 from .mixins import ProcessVMSelectionMixin, HostingContextMixin
 from .models import (
     HostingOrder, HostingBill, HostingPlan, UserHostingKey, VMDetail,
-    GenericProduct, MonthlyHostingBill, HostingBillLineItem
+    GenericProduct, MonthlyHostingBill
 )
 
 logger = logging.getLogger(__name__)
@@ -1240,7 +1240,7 @@ class OrdersHostingListView(LoginRequiredMixin, ListView):
         return super(OrdersHostingListView, self).get(request, *args, **kwargs)
 
 
-class InvoiceListView(LoginRequiredMixin, ListView):
+class InvoiceListView(LoginRequiredMixin, TemplateView):
     template_name = "hosting/invoices.html"
     login_url = reverse_lazy('hosting:login')
     context_object_name = "invoices"
@@ -1248,10 +1248,13 @@ class InvoiceListView(LoginRequiredMixin, ListView):
     ordering = '-created'
 
     def get_context_data(self, **kwargs):
+        page = self.request.GET.get('page', 1)
         context = super(InvoiceListView, self).get_context_data(**kwargs)
+        invs_page = None
         if ('user_email' in self.request.GET
             and self.request.user.email == settings.ADMIN_EMAIL):
             user_email = self.request.GET['user_email']
+            context['user_email'] = user_email
             logger.debug(
                 "user_email = {}".format(user_email)
             )
@@ -1260,53 +1263,33 @@ class InvoiceListView(LoginRequiredMixin, ListView):
             except CustomUser.DoesNotExist as dne:
                 logger.debug("User does not exist")
                 cu = self.request.user
-            mhbs = MonthlyHostingBill.objects.filter(customer__user=cu)
-        else:
-            mhbs = MonthlyHostingBill.objects.filter(
-                customer__user=self.request.user
-            )
-        ips_dict = {}
-        line_item_period_dict = {}
-        for mhb in mhbs:
+            invs = stripe.Invoice.list(customer=cu.stripecustomer.stripe_id,
+                                       count=100)
+            paginator = Paginator(invs.data, 10)
             try:
-                vm_detail = VMDetail.objects.get(vm_id=mhb.order.vm_id)
-                ips_dict[mhb.invoice_number] = [vm_detail.ipv6, vm_detail.ipv4]
-                all_line_items = HostingBillLineItem.objects.filter(monthly_hosting_bill=mhb)
-                for line_item in all_line_items:
-                    if line_item.get_item_detail_str() != "":
-                        line_item_period_dict[mhb.invoice_number] = {
-                            "period_start": line_item.period_start,
-                            "period_end": line_item.period_end
-                        }
-                        break
-            except VMDetail.DoesNotExist as dne:
-                ips_dict[mhb.invoice_number] = ['--']
-                logger.debug("VMDetail for {} doesn't exist".format(
-                    mhb.order.vm_id
-                ))
-        context['ips'] = ips_dict
-        context['period'] = line_item_period_dict
+                invs_page = paginator.page(page)
+            except PageNotAnInteger:
+                invs_page = paginator.page(1)
+            except EmptyPage:
+                invs_page = paginator.page(paginator.num_pages)
+        else:
+            try:
+                invs = stripe.Invoice.list(
+                    customer=self.request.user.stripecustomer.stripe_id,
+                    count=100
+                )
+                paginator = Paginator(invs.data, 10)
+                try:
+                    invs_page = paginator.page(page)
+                except PageNotAnInteger:
+                    invs_page = paginator.page(1)
+                except EmptyPage:
+                    invs_page = paginator.page(paginator.num_pages)
+            except Exception as ex:
+                logger.error(str(ex))
+                invs_page = None
+        context["invs"] = invs_page
         return context
-
-    def get_queryset(self):
-        user = self.request.user
-        if ('user_email' in self.request.GET
-            and self.request.user.email == settings.ADMIN_EMAIL):
-            user_email = self.request.GET['user_email']
-            logger.debug(
-                "user_email = {}".format(user_email)
-            )
-            try:
-                cu = CustomUser.objects.get(email=user_email)
-            except CustomUser.DoesNotExist as dne:
-                logger.debug("User does not exist")
-                cu = self.request.user
-            self.queryset = MonthlyHostingBill.objects.filter(customer__user=cu)
-        else:
-            self.queryset = MonthlyHostingBill.objects.filter(
-                customer__user=self.request.user
-            )
-        return super(InvoiceListView, self).get_queryset()
 
     @method_decorator(decorators)
     def get(self, request, *args, **kwargs):

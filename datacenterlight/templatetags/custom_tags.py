@@ -1,6 +1,11 @@
+import datetime
+
 from django import template
 from django.core.urlresolvers import resolve, reverse
-from django.utils.translation import activate, get_language
+from django.utils.safestring import mark_safe
+from django.utils.translation import activate, get_language, ugettext_lazy as _
+
+from utils.hosting_utils import get_ip_addresses
 
 register = template.Library()
 
@@ -52,3 +57,58 @@ def escaped_line_break(value):
     :return:
     """
     return value.replace("\\n", "\n")
+
+
+@register.filter('get_line_item_from_stripe_invoice')
+def get_line_item_from_stripe_invoice(invoice):
+    """
+    Returns ready-to-use "html" line item to be shown for an invoice in the
+    invoice list page
+
+    :param invoice: the stripe Invoice object
+    :return:
+    """
+    start_date = 0
+    end_date = 0
+    is_first = True
+    vm_id = -1
+    for line_data in invoice["lines"]["data"]:
+        if is_first:
+            start_date = line_data.period.start
+            end_date = line_data.period.end
+            is_first = False
+            if hasattr(line_data.metadata, "VM_ID"):
+                vm_id = line_data.metadata.VM_ID
+        else:
+            if line_data.period.start < start_date:
+                start_date = line_data.period.start
+            if line_data.period.end > end_date:
+                end_date = line_data.period.end
+            if hasattr(line_data.metadata, "VM_ID"):
+                vm_id = line_data.metadata.VM_ID
+
+    try:
+        vm_id = int(vm_id)
+    except ValueError as ve:
+        print(str(ve))
+    if invoice["lines"]["data"]:
+        return mark_safe("""
+                    <td class="xs-td-inline">{vm_id}</td>
+                    <td class="xs-td-inline">{ip_addresses}</td>
+                    <td class="xs-td-inline">{period}</td>
+                    <td class="xs-td-inline">{total}</td>
+                    <td class="text-right last-td">
+                        <a class="btn btn-order-detail" href="{stripe_invoice_url}" target="_blank">{see_invoice_text}</a>
+                    </td>
+        """.format(
+            vm_id=vm_id if vm_id > 0 else "",
+            ip_addresses=mark_safe(get_ip_addresses(vm_id)) if vm_id > 0 else "",
+            period = mark_safe("%s &mdash; %s" % (
+                datetime.datetime.fromtimestamp(start_date).strftime('%Y-%m-%d'),
+                datetime.datetime.fromtimestamp(end_date).strftime('%Y-%m-%d'))),
+            total=invoice.total/100,
+            stripe_invoice_url=invoice.hosted_invoice_url,
+            see_invoice_text=_("See Invoice")
+        ))
+    else:
+        return ""
