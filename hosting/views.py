@@ -42,7 +42,7 @@ from datacenterlight.models import VMTemplate, VMPricing
 from datacenterlight.utils import (
     create_vm, get_cms_integration, check_otp, validate_vat_number
 )
-from hosting.models import UserCardDetail
+from hosting.models import UserCardDetail, StripeTaxRate
 from membership.models import CustomUser, StripeCustomer
 from opennebula_api.models import OpenNebulaManager
 from opennebula_api.serializers import (
@@ -1135,7 +1135,8 @@ class OrdersHostingDetailView(LoginRequiredMixin, DetailView, FormView):
         cpu = specs.get('cpu')
         memory = specs.get('memory')
         disk_size = specs.get('disk_size')
-        amount_to_be_charged = specs.get('total_price')
+        amount_to_be_charged = specs.get('price')
+        discount = specs.get('discount')
         plan_name = StripeUtils.get_stripe_plan_name(
             cpu=cpu,
             memory=memory,
@@ -1154,10 +1155,39 @@ class OrdersHostingDetailView(LoginRequiredMixin, DetailView, FormView):
             amount=amount_to_be_charged,
             name=plan_name,
             stripe_plan_id=stripe_plan_id)
+        # Create StripeTaxRate if applicable to the user
+        stripe_tax_rate = None
+        if specs["vat_percent"] > 0:
+            try:
+                stripe_tax_rate = StripeTaxRate.objects.get(
+                    description="VAT for %s" % specs["vat_country"]
+                )
+                print("Stripe Tax Rate exists")
+            except StripeTaxRate.DoesNotExist as dne:
+                print("StripeTaxRate does not exist")
+                tax_rate_obj = stripe.TaxRate.create(
+                    display_name="VAT",
+                    description="VAT for %s" % specs["vat_country"],
+                    jurisdiction=specs["vat_country"],
+                    percentage=specs["vat_percent"] * 100,
+                    inclusive=False,
+                )
+                stripe_tax_rate = StripeTaxRate.objects.create(
+                    display_name=tax_rate_obj.display_name,
+                    description=tax_rate_obj.description,
+                    jurisdiction=tax_rate_obj.jurisdiction,
+                    percentage=tax_rate_obj.percentage,
+                    inclusive=False,
+                    tax_rate_id=tax_rate_obj.id
+                )
+                logger.debug("Created StripeTaxRate %s" %
+                             stripe_tax_rate.tax_rate_id)
         subscription_result = stripe_utils.subscribe_customer_to_plan(
             stripe_api_cus_id,
-            [{"plan": stripe_plan.get(
-                'response_object').stripe_plan_id}])
+            [{"plan": stripe_plan.get('response_object').stripe_plan_id}],
+            coupon='ipv6-discount-8chf' if 'name' in discount and 'ipv6' in discount['name'].lower() else "",
+            tax_rate=[stripe_tax_rate.tax_rate_id] if stripe_tax_rate else [],
+        )
         stripe_subscription_obj = subscription_result.get('response_object')
         # Check if the subscription was approved and is active
         if (stripe_subscription_obj is None or

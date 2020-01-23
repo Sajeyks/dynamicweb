@@ -297,7 +297,8 @@ class StripeUtils(object):
         return return_value
 
     @handleStripeError
-    def subscribe_customer_to_plan(self, customer, plans, trial_end=None):
+    def subscribe_customer_to_plan(self, customer, plans, trial_end=None,
+                                   coupon="", tax_rates=list()):
         """
         Subscribes the given customer to the list of given plans
 
@@ -316,7 +317,9 @@ class StripeUtils(object):
         """
 
         subscription_result = self.stripe.Subscription.create(
-            customer=customer, items=plans, trial_end=trial_end
+            customer=customer, items=plans, trial_end=trial_end,
+            coupon=coupon,
+            default_tax_rates=tax_rates,
         )
         return subscription_result
 
@@ -410,18 +413,27 @@ class StripeUtils(object):
 
 
     @staticmethod
-    def get_stripe_plan_name(cpu, memory, disk_size, price):
+    def get_stripe_plan_name(cpu, memory, disk_size, price, excl_vat=True):
         """
         Returns the Stripe plan name
         :return:
         """
-        return "{cpu} Cores, {memory} GB RAM, {disk_size} GB SSD, " \
-               "{price} CHF".format(
-                    cpu=cpu,
-                    memory=memory,
-                    disk_size=disk_size,
-                    price=round(price, 2)
-                )
+        if excl_vat:
+            return "{cpu} Cores, {memory} GB RAM, {disk_size} GB SSD, " \
+                   "{price} CHF Excl. VAT".format(
+                cpu=cpu,
+                memory=memory,
+                disk_size=disk_size,
+                price=round(price, 2)
+            )
+        else:
+            return "{cpu} Cores, {memory} GB RAM, {disk_size} GB SSD, " \
+                   "{price} CHF".format(
+                        cpu=cpu,
+                        memory=memory,
+                        disk_size=disk_size,
+                        price=round(price, 2)
+                    )
 
     @handleStripeError
     def set_subscription_meta_data(self, subscription_id, meta_data):
