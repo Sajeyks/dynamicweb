@@ -106,7 +106,7 @@ def get_vm_price_for_given_vat(cpu, memory, ssd_size, hdd_size=0,
 
     discount_name = pricing.discount_name
     discount_amount = round(float(pricing.discount_amount), 2)
-    vat = (price - discount_amount) * decimal.Decimal(vat_rate) * decimal.Decimal(0.01)
+    vat = (price - decimal.Decimal(discount_amount)) * decimal.Decimal(vat_rate) * decimal.Decimal(0.01)
     vat_percent = vat_rate
 
     cents = decimal.Decimal('.01')
