@@ -1,5 +1,6 @@
 import logging
 
+import stripe
 from django import forms
 from django.conf import settings
 from django.contrib import messages
@@ -17,8 +18,8 @@ from hosting.forms import (
     UserHostingKeyForm
 )
 from hosting.models import (
-    HostingBill, HostingOrder, UserCardDetail, GenericProduct, UserHostingKey
-)
+    HostingBill, HostingOrder, UserCardDetail, GenericProduct, UserHostingKey,
+    StripeTaxRate)
 from membership.models import CustomUser, StripeCustomer
 from opennebula_api.models import OpenNebulaManager
 from opennebula_api.serializers import VMTemplateSerializer
@@ -840,9 +841,15 @@ class OrderConfirmationView(DetailView, FormView):
                 (request.session['generic_payment_details']['recurring'])):
             recurring_interval = 'month'
             if 'generic_payment_details' in request.session:
+                vat_percent = request.session['generic_payment_details']['vat_rate']
+                vat_country = request.session['generic_payment_details']['vat_country']
+                if 'discount' in request.session['generic_payment_details']:
+                    discount = request.session['generic_payment_details']['discount']
+                else:
+                    discount = {'name': '', 'amount': 0, 'coupon_id': ''}
                 amount_to_be_charged = (
                     round(
-                        request.session['generic_payment_details']['amount'],
+                        request.session['generic_payment_details']['amount_before_vat'],
                         2
                     )
                 )
@@ -863,7 +870,10 @@ class OrderConfirmationView(DetailView, FormView):
                 cpu = specs.get('cpu')
                 memory = specs.get('memory')
                 disk_size = specs.get('disk_size')
-                amount_to_be_charged = specs.get('total_price')
+                amount_to_be_charged = specs.get('price')
+                vat_percent = specs.get('vat_percent')
+                vat_country = specs.get('vat_country')
+                discount = specs.get('discount')
                 plan_name = StripeUtils.get_stripe_plan_name(
                     cpu=cpu,
                     memory=memory,
@@ -884,10 +894,46 @@ class OrderConfirmationView(DetailView, FormView):
                 stripe_plan_id=stripe_plan_id,
                 interval=recurring_interval
             )
+            # Create StripeTaxRate if applicable to the user
+            logger.debug("vat_percent = %s, vat_country = %s" %
+                (vat_percent, vat_country)
+            )
+            stripe_tax_rate = None
+            if vat_percent > 0:
+                try:
+                    stripe_tax_rate = StripeTaxRate.objects.get(
+                        description="VAT for %s" % vat_country
+                    )
+                    print("Stripe Tax Rate exists")
+                except StripeTaxRate.DoesNotExist as dne:
+                    print("StripeTaxRate does not exist")
+                    tax_rate_obj = stripe.TaxRate.create(
+                        display_name="VAT",
+                        description="VAT for %s" % vat_country,
+                        jurisdiction=vat_country,
+                        percentage=vat_percent,
+                        inclusive=False,
+                    )
+                    stripe_tax_rate = StripeTaxRate.objects.create(
+                        display_name=tax_rate_obj.display_name,
+                        description=tax_rate_obj.description,
+                        jurisdiction=tax_rate_obj.jurisdiction,
+                        percentage=tax_rate_obj.percentage,
+                        inclusive=False,
+                        tax_rate_id=tax_rate_obj.id
+                    )
+                    logger.debug("Created StripeTaxRate %s" %
+                                 stripe_tax_rate.tax_rate_id)
             subscription_result = stripe_utils.subscribe_customer_to_plan(
                 stripe_api_cus_id,
-                [{"plan": stripe_plan.get(
-                    'response_object').stripe_plan_id}])
+                [{"plan": stripe_plan.get('response_object').stripe_plan_id}],
+                coupon='ipv6-discount-8chf' if (
+                    'name' in discount and
+                    discount['name'] is not None and
+                    'ipv6' in discount['name'].lower()
+                ) else "",
+                tax_rates=[stripe_tax_rate.tax_rate_id] if stripe_tax_rate else [],
+            )
             stripe_subscription_obj = subscription_result.get('response_object')
             # Check if the subscription was approved and is active
             if (stripe_subscription_obj is None
