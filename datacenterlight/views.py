@@ -642,7 +642,7 @@ class OrderConfirmationView(DetailView, FormView):
                 vat_rate=user_country_vat_rate * 100
             )
             vm_specs["price"] = price
-            vm_specs["price_after_discount"] = price - discount
+            vm_specs["price_after_discount"] = price - discount["amount"]
 
             vat_number = request.session.get('billing_address_data').get("vat_number")
             billing_address = BillingAddress.objects.get(id=request.session["billing_address_id"])
