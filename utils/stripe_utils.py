@@ -1,7 +1,9 @@
 import logging
 import re
+
 import stripe
 from django.conf import settings
+
 from datacenterlight.models import StripePlan
 
 stripe.api_key = settings.STRIPE_API_PRIVATE_KEY
@@ -351,7 +353,7 @@ class StripeUtils(object):
 
     @staticmethod
     def get_stripe_plan_id(cpu, ram, ssd, version, app='dcl', hdd=None,
-                           price=None):
+                           price=None, excl_vat=True):
         """
         Returns the Stripe plan id string of the form
         `dcl-v1-cpu-2-ram-5gb-ssd-10gb` based on the input parameters
@@ -378,13 +380,16 @@ class StripeUtils(object):
             plan=dcl_plan_string
         )
         if price is not None:
-            stripe_plan_id_string_with_price = '{}-{}chf'.format(
+            stripe_plan_id_string = '{}-{}chf'.format(
                 stripe_plan_id_string,
                 round(price, 2)
             )
-            return stripe_plan_id_string_with_price
-        else:
-            return stripe_plan_id_string
+        if excl_vat:
+            stripe_plan_id_string = '{}-{}'.format(
+                stripe_plan_id_string,
+                "excl_vat"
+            )
+        return stripe_plan_id_string
 
     @staticmethod
     def get_vm_config_from_stripe_id(stripe_id):
