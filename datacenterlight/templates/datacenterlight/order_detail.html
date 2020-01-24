@@ -126,19 +126,23 @@
                                     <div class="subtotal-price">
                                         {% if vm.vat > 0 %}
                                             <p>
-                                                <strong class="text-lg">{% trans "Subtotal" %} </strong>
+                                                <strong class="text-lg">{% trans "Price" %} </strong>
                                                 <strong class="pull-right">{{vm.price|floatformat:2|intcomma}} CHF</strong>
+                                            </p>
+                                            {% if vm.discount.amount > 0 %}
+                                                <p class="text-primary">
+                                                    {%trans "Discount" as discount_name %}
+                                                    <strong>{{ vm.discount.name|default:discount_name }} </strong>
+                                                    <strong class="pull-right">- {{ vm.discount.amount }} CHF</strong>
+                                                </p>
+                                            {% endif %}
+                                            <p>
+                                                <strong class="text-lg">{% trans "Subtotal" %} </strong>
+                                                <strong class="pull-right">{{vm.price - vm.discount.amount|floatformat:2|intcomma}} CHF</strong>
                                             </p>
                                             <p>
                                                 <small>{% trans "VAT for" %} {{vm.vat_country}} ({{vm.vat_percent}}%) : </small>
                                                 <strong class="pull-right">{{vm.vat|floatformat:2|intcomma}} CHF</strong>
-                                            </p>
-                                        {% endif %}
-                                        {% if vm.discount.amount > 0 %}
-                                            <p class="text-primary">
-                                                {%trans "Discount" as discount_name %}
-                                                <strong>{{ vm.discount.name|default:discount_name }} </strong>
-                                                <strong class="pull-right">- {{ vm.discount.amount }} CHF</strong>
                                             </p>
                                         {% endif %}
                                     </div>
