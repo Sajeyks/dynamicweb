@@ -309,6 +309,7 @@ class PaymentOrderView(FormView):
 
     @cache_control(no_cache=True, must_revalidate=True, no_store=True)
     def get(self, request, *args, **kwargs):
+        request.session.pop('vat_validation_status')
         if (('type' in request.GET and request.GET['type'] == 'generic')
                 or 'product_slug' in kwargs):
             request.session['generic_payment_type'] = 'generic'
