@@ -115,7 +115,7 @@ def get_vm_price_for_given_vat(cpu, memory, ssd_size, hdd_size=0,
     discount = {
         'name': discount_name,
         'amount': discount_amount,
-        'amount_with_vat': round(discount_amount * vat_rate * 0.01, 2)
+        'amount_with_vat': round(discount_amount * (1 + vat_rate * 0.01), 2)
     }
     return (round(float(price), 2), round(float(vat), 2),
             round(float(vat_percent), 2), discount)
