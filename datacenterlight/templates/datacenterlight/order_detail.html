@@ -121,40 +121,101 @@
                             <div class="col-sm-12">
                                 <hr class="thin-hr">
                             </div>
-                            {% if vm.vat > 0 or vm.discount.amount > 0 %}
-                                <div class="col-sm-6">
-                                    <div class="subtotal-price">
-                                        {% if vm.vat > 0 %}
-                                            <p>
-                                                <strong class="text-lg">{% trans "Price" %} </strong>
-                                                <strong class="pull-right">{{vm.price|floatformat:2|intcomma}} CHF</strong>
-                                            </p>
-                                            {% if vm.discount.amount > 0 %}
-                                                <p class="text-primary">
-                                                    {%trans "Discount" as discount_name %}
-                                                    <strong>{{ vm.discount.name|default:discount_name }} </strong>
-                                                    <strong class="pull-right">- {{ vm.discount.amount }} CHF</strong>
-                                                </p>
-                                            {% endif %}
-                                            <p>
-                                                <strong class="text-lg">{% trans "Subtotal" %} </strong>
-                                                <strong class="pull-right">{{vm.price_after_discount}} CHF</strong>
-                                            </p>
-                                            <p>
-                                                <small>{% trans "VAT for" %} {{vm.vat_country}} ({{vm.vat_percent}}%) : </small>
-                                                <strong class="pull-right">{{vm.vat|floatformat:2|intcomma}} CHF</strong>
-                                            </p>
-                                        {% endif %}
-                                    </div>
-                                </div>
-                                <div class="col-sm-12">
-                                    <hr class="thin-hr">
-                                </div>
-                            {% endif %}
                             <div class="col-sm-6">
-                                <p class="total-price">
-                                    <strong>{% trans "Total" %} </strong>
-                                    <strong class="pull-right">{{vm.total_price|floatformat:2|intcomma}} CHF</strong>
+                                <p>
+                                    <strong class="text-uppercase">{% trans "Price Before VAT" %}</strong>
+                                    <strong class="pull-right">{{vm.price|intcomma}} CHF</strong>
+                                </p>
+                            </div>
+                            <div class="col-sm-12">
+                                <hr class="thin-hr">
+                            </div>
+                            <div class="col-sm-6">
+                                <style>
+                                * {
+                                  box-sizing: border-box;
+                                }
+
+                                /* Create three unequal columns that floats next to each other */
+                                .column {
+                                  float: left;
+                                  padding: 0 10px 0 10px;
+                                }
+
+                                .middle, .right {
+                                  width: 33%;
+                                }
+
+                                .left {
+                                  width: 34%;
+                                }
+
+                                /* Clear floats after the columns */
+                                .row:after {
+                                  content: "";
+                                  display: table;
+                                  clear: both;
+                                }
+                                </style>
+                                <div class="row">
+                                  <div class="column left">
+                                    <p><span></span></p>
+                                  </div>
+                                  <div class="column middle">
+                                    <p class="text-center"><strong class="pull-right">Pre VAT</strong></p>
+                                  </div>
+                                  <div class="column right">
+                                    <p class="text-center"><strong class="pull-right">VAT for {{vm.vat_country}} ({{vm.vat_percent}}%)</strong></p>
+                                  </div>
+                                </div>
+                                <div class="row">
+                                  <div class="column left">
+                                    <p><span>Price</span></p>
+                                  </div>
+                                  <div class="column middle">
+                                    <p><span class="pull-right" >{{vm.price|intcomma}} CHF</span></p>
+                                  </div>
+                                  <div class="column right">
+                                    <p><span class="pull-right">{{vm.price_with_vat|intcomma}} CHF</span></p>
+                                  </div>
+                                </div>
+                                {% if vm.discount.amount > 0 %}
+                                <div class="row">
+                                  <div class="column left">
+                                    <p><span>{{vm.discount.name}}</span></p>
+                                  </div>
+                                  <div class="column middle">
+                                    <p><span class="pull-right">-{{vm.discount.amount|intcomma}} CHF</span></p>
+                                  </div>
+                                  <div class="column right">
+                                    <p><span class="pull-right">-{{vm.discount.amount_with_vat|intcomma}} CHF</span></p>
+                                  </div>
+                                </div>
+                                {% endif %}
+                            </div>
+                            <div class="col-sm-12">
+                                <hr class="thin-hr">
+                            </div>
+                            <div class="col-sm-6">
+                                <div class="row">
+                                  <div class="column left">
+                                    <p><strong>Total</strong></p>
+                                  </div>
+                                  <div class="column middle">
+                                    <p><strong class="pull-right">{{vm.price_after_discount|intcomma}} CHF</strong></p>
+                                  </div>
+                                  <div class="column right">
+                                    <p><strong class="pull-right">{{vm.price_after_discount_with_vat|intcomma}} CHF</strong></p>
+                                  </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-12">
+                                <hr class="thin-hr">
+                            </div>
+                            <div class="col-sm-6">
+                                <p>
+                                    <strong class="text-uppercase align-center">{% trans "Your Price in Total" %}</strong>
+                                    <strong class="total-price pull-right">{{vm.total_price|floatformat:2|intcomma}} CHF</strong>
                                 </p>
                             </div>
                         </div>
