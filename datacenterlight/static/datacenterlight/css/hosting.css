@@ -532,6 +532,7 @@
 
 .order-detail-container .total-price {
   font-size: 18px;
+  line-height: 20px;
 }
 
 @media (max-width: 767px) {
