@@ -103,8 +103,19 @@
                             <strong>{% trans "Product" %}:</strong>&nbsp;
                             {{ request.session.template.name }}
                         </p>
+                <style>
+                    @media screen and (max-width:767px){
+                         .cmf-ord-heading {
+                            font-size: 13px;
+                         }
+                         .order-detail-container .order-details {
+                            font-size: 13px;
+                         }
+                    }
+
+                </style>
                         <div class="row">
-                            <div class="col-sm-7">
+                            <div class="col-sm-8">
                                 <p>
                                     <span>{% trans "Cores" %}: </span>
                                     <strong class="pull-right">{{vm.cpu|floatformat}}</strong>
@@ -121,7 +132,7 @@
                             <div class="col-sm-12">
                                 <hr class="thin-hr">
                             </div>
-                            <div class="col-sm-7">
+                            <div class="col-sm-8">
                                 <p>
                                     <strong class="text-uppercase">{% trans "Price Before VAT" %}</strong>
                                     <strong class="pull-right">{{vm.price|intcomma}} CHF</strong>
@@ -130,64 +141,38 @@
                             <div class="col-sm-12">
                                 <hr class="thin-hr">
                             </div>
-                            <div class="col-sm-7">
-                                <style>
-                                * {
-                                  box-sizing: border-box;
-                                }
-
-                                /* Create three unequal columns that floats next to each other */
-                                .column {
-                                  float: left;
-                                  padding: 0 10px 0 10px;
-                                }
-
-                                .middle, .right {
-                                  width: 33%;
-                                }
-
-                                .left {
-                                  width: 34%;
-                                }
-
-                                /* Clear floats after the columns */
-                                .row:after {
-                                  content: "";
-                                  display: table;
-                                  clear: both;
-                                }
-                                </style>
+                            <div class="col-sm-8">
                                 <div class="row">
-                                  <div class="column left">
+                                  <div class="col-md-4 col-sm-4 col-xs-4">
                                     <p><span></span></p>
                                   </div>
-                                  <div class="column middle">
-                                    <p class="text-center"><strong class="pull-right">Pre VAT</strong></p>
+                                  <div class="col-md-3 col-sm-3 col-xs-3">
+                                    <p class="text-right"><strong class="cmf-ord-heading">{% trans "Pre VAT" %}</strong></p>
                                   </div>
-                                  <div class="column right">
-                                    <p class="text-right"><strong>VAT for {{vm.vat_country}} ({{vm.vat_percent}}%)</strong></p>
+                                  <div class="col-md-5">
+                                    <p class="text-right"><strong class="cmf-ord-heading">{% trans "VAT for" %} {{vm.vat_country}} ({{vm.vat_percent}}%)</strong></p>
                                   </div>
                                 </div>
                                 <div class="row">
-                                  <div class="column left">
+                                  <div class="col-md-4 col-sm-4 col-xs-4">
                                     <p><span>Price</span></p>
                                   </div>
-                                  <div class="column middle">
+                                  <div class="col-md-3 col-sm-3 col-xs-3">
                                     <p><span class="pull-right" >{{vm.price|intcomma}} CHF</span></p>
                                   </div>
-                                  <div class="column right">
+                                  <div class="col-md-5 col-sm-5 col-xs-5">
                                     <p><span class="pull-right">{{vm.price_with_vat|intcomma}} CHF</span></p>
                                   </div>
                                 </div>
                                 {% if vm.discount.amount > 0 %}
                                 <div class="row">
-                                  <div class="column left">
+                                  <div class="col-md-4 col-sm-4 col-xs-4">
                                     <p><span>{{vm.discount.name}}</span></p>
                                   </div>
-                                  <div class="column middle">
+                                  <div class="col-md-3 col-sm-3 col-xs-3">
                                     <p><span class="pull-right">-{{vm.discount.amount|intcomma}} CHF</span></p>
                                   </div>
-                                  <div class="column right">
+                                  <div class="col-md-5 col-sm-5 col-xs-5">
                                     <p><span class="pull-right">-{{vm.discount.amount_with_vat|intcomma}} CHF</span></p>
                                   </div>
                                 </div>
@@ -196,15 +181,15 @@
                             <div class="col-sm-12">
                                 <hr class="thin-hr">
                             </div>
-                            <div class="col-sm-7">
+                            <div class="col-sm-8">
                                 <div class="row">
-                                  <div class="column left">
+                                  <div class="col-md-4 col-sm-4 col-xs-4">
                                     <p><strong>Total</strong></p>
                                   </div>
-                                  <div class="column middle">
+                                  <div class="col-md-3 col-sm-3 col-xs-3">
                                     <p><strong class="pull-right">{{vm.price_after_discount|intcomma}} CHF</strong></p>
                                   </div>
-                                  <div class="column right">
+                                  <div class="col-md-5 col-sm-5 col-xs-5">
                                     <p><strong class="pull-right">{{vm.price_after_discount_with_vat|intcomma}} CHF</strong></p>
                                   </div>
                                 </div>
@@ -212,11 +197,9 @@
                             <div class="col-sm-12">
                                 <hr class="thin-hr">
                             </div>
-                            <div class="col-sm-7">
-                                <p>
+                            <div class="col-sm-8">
                                     <strong class="text-uppercase align-center">{% trans "Your Price in Total" %}</strong>
                                     <strong class="total-price pull-right">{{vm.total_price|floatformat:2|intcomma}} CHF</strong>
-                                </p>
                             </div>
                         </div>
                     {% endif %}
