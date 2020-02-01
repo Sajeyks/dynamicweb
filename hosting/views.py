@@ -1693,7 +1693,7 @@ class VirtualMachineView(LoginRequiredMixin, View):
             inv_url = None
             if hosting_order.subscription_id:
                 stripe_obj = stripe.Invoice.list(
-                    hosting_order.subscription_id
+                   subscription=hosting_order.subscription_id
                 )
                 inv_url = stripe_obj[0].data.hosted_invoice_url
             elif hosting_order.stripe_charge_id:
