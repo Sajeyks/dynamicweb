@@ -1,5 +1,6 @@
 import decimal
 import logging
+import math
 import subprocess
 
 from oca.pool import WrongIdError
@@ -212,6 +213,11 @@ def get_ip_addresses(vm_id):
         logger.error(str(dne))
         logger.error("VMDetail for %s does not exist" % vm_id)
         return "--"
+
+
+def round_up(n, decimals=0):
+    multiplier = 10 ** decimals
+    return math.ceil(n * multiplier) / multiplier
 
 
 class HostingUtils:
