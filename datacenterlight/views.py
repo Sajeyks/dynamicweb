@@ -1154,7 +1154,7 @@ class OrderConfirmationView(DetailView, FormView):
             response = {
                 'status': True,
                 'redirect': (
-                    reverse('hosting:orders')
+                    reverse('hosting:invoices')
                     if request.user.is_authenticated()
                     else reverse('datacenterlight:index')
                 ),

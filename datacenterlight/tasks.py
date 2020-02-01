@@ -173,8 +173,7 @@ def create_vm_task(self, vm_template_id, user, specs, template, order_id):
             context = {
                 'base_url': "{0}://{1}".format(user.get('request_scheme'),
                                                user.get('request_host')),
-                'order_url': reverse('hosting:orders',
-                                     kwargs={'pk': order_id}),
+                'order_url': reverse('hosting:invoices'),
                 'page_header': _(
                     'Your New VM %(vm_name)s at Data Center Light') % {
                     'vm_name': vm.get('name')},
