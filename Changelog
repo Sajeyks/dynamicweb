@@ -1,3 +1,8 @@
+2.10: 2020-02-01
+   * Feature: Introduce new design to show VAT exclusive/VAT inclusive pricing together
+   * Feature: Separate VAT and discount in Stripe
+   * Feature: Show Stripe invoices until we have a better way of showing them elegantly
+   * Bugfix:  Fix bug where VAT is set to 0 because user set a valid VAT number before but later chose not to use any VAT number
 2.9.5: 2020-01-20
    * Feature: Show invoices directly from stripe (MR!727)
 2.9.4: 2020-01-10
