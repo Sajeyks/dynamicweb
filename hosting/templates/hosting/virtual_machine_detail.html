@@ -46,7 +46,7 @@
 				<div class="vm-vmid">
 					<div class="vm-item-subtitle">{% trans "Current Pricing" %}</div>
 					<div class="vm-item-lg">{{order.price|floatformat:2|intcomma}} CHF/{% if order.generic_product %}{% trans order.generic_product.product_subscription_interval %}{% else %}{% trans "Month" %}{% endif %}</div>
-					<a class="btn btn-vm-invoice" href="{% url 'hosting:orders' order.pk %}">{% trans "See Invoice" %}</a>
+					<a class="btn btn-vm-invoice" href="{{inv_url}}">{% trans "See Invoice" %}</a>
 				</div>
 			</div>
 			<div class="vm-detail-item">

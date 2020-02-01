@@ -1687,13 +1687,27 @@ class VirtualMachineView(LoginRequiredMixin, View):
         context = None
         try:
             serializer = VirtualMachineSerializer(vm)
+            hosting_order = HostingOrder.objects.get(
+                vm_id=serializer.data['vm_id']
+            )
+            inv_url = None
+            if hosting_order.subscription_id:
+                stripe_obj = stripe.Invoice.list(
+                    hosting_order.subscription_id
+                )
+                inv_url = stripe_obj[0].data.hosted_invoice_url
+            elif hosting_order.stripe_charge_id:
+                stripe_obj = stripe.Charge.retrieve(
+                    hosting_order.stripe_charge_id
+                )
+                inv_url = stripe_obj.receipt_url
             context = {
                 'virtual_machine': serializer.data,
-                'order': HostingOrder.objects.get(
-                    vm_id=serializer.data['vm_id']
-                ),
-                'keys': UserHostingKey.objects.filter(user=request.user)
+                'order': hosting_order,
+                'keys': UserHostingKey.objects.filter(user=request.user),
+                'inv_url': inv_url
             }
+
         except Exception as ex:
             logger.debug("Exception generated {}".format(str(ex)))
             messages.error(self.request,
