@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-12-09 12:13+0000\n"
+"POT-Creation-Date: 2020-02-01 09:42+0000\n"
 "PO-Revision-Date: 2018-03-30 23:22+0000\n"
 "Last-Translator: b'Anonymous User <coder.purple+25@gmail.com>'\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -143,7 +143,6 @@ msgid ""
 "Thanks for joining us! We provide the most affordable virtual machines from "
 "the heart of Switzerland."
 msgstr "Bei uns findest Du die günstiges VMs aus der Schweiz."
-
 
 msgid "Try now, order a VM. VM price starts from only 10.5 CHF per month."
 msgstr "Unser Angebot beginnt bei 10.5 CHF pro Monat. Probier's jetzt aus!"
@@ -407,6 +406,17 @@ msgstr "Datum"
 msgid "Billed to"
 msgstr "Rechnungsadresse"
 
+msgid "VAT Number"
+msgstr "Mehrwertsteuernummer"
+
+msgid "Your VAT number has been verified"
+msgstr "Deine Mehrwertsteuernummer wurde überprüft"
+
+msgid ""
+"Your VAT number is under validation. VAT will be adjusted, once the "
+"validation is complete."
+msgstr ""
+
 msgid "Payment method"
 msgstr "Bezahlmethode"
 
@@ -437,8 +447,14 @@ msgstr "Beschreibung"
 msgid "Recurring"
 msgstr "Wiederholend"
 
-msgid "Subtotal"
-msgstr "Zwischensumme"
+msgid "Price Before VAT"
+msgstr ""
+
+msgid "Pre VAT"
+msgstr ""
+
+msgid "Your Price in Total"
+msgstr ""
 
 #, fuzzy, python-format
 #| msgid ""
@@ -575,6 +591,9 @@ msgstr "Unser Angebot beginnt bei 15 CHF pro Monat. Probier's jetzt aus!"
 msgid "Actions speak louder than words. Let's do it, try our VM now."
 msgstr "Taten sagen mehr als Worte – Teste jetzt unsere VM!"
 
+msgid "See Invoice"
+msgstr ""
+
 msgid "Invalid number of cores"
 msgstr "Ungültige Anzahle CPU-Kerne"
 
@@ -665,6 +684,9 @@ msgstr ""
 "Deine VM ist gleich bereit. Wir senden Dir eine Bestätigungsemail, sobald Du "
 "auf sie zugreifen kannst."
 
+#~ msgid "Subtotal"
+#~ msgstr "Zwischensumme"
+
 #~ msgid "VAT"
 #~ msgstr "Mehrwertsteuer"
 
@@ -675,9 +697,6 @@ msgstr ""
 #~ "Es wird noch keine Bezahlung vorgenommen. Die Bezahlung wird erst "
 #~ "ausgelöst, nachdem Du die Bestellung auf der nächsten Seite bestätigt "
 #~ "hast."
-
-#~ msgid "Card Number"
-#~ msgstr "Kreditkartennummer"
 
 #~ msgid ""
 #~ "You are not making any payment yet. After placing your order, you will be "
