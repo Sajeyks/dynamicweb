@@ -680,10 +680,10 @@ class OrderConfirmationView(DetailView, FormView):
             vm_specs["total_price"] = round(price + vm_specs["vat"] - discount['amount_with_vat'],
                                             2)
             vm_specs["vat_country"] = user_vat_country
-            vm_specs["price_with_vat"] = round(price * (1 + vm_specs["vat_percent"]), 2)
+            vm_specs["price_with_vat"] = round(price * (1 + vm_specs["vat_percent"] * 0.01), 2)
             vm_specs["price_after_discount"] = round(price - discount['amount'], 2)
-            vm_specs["price_after_discount_with_vat"] = round((price - discount['amount']) * (1 + vm_specs["vat_percent"]), 2)
-            discount["amount_with_vat"] = vm_specs["price_with_vat"] - vm_specs["price_after_discount_with_vat"]
+            vm_specs["price_after_discount_with_vat"] = round((price - discount['amount']) * (1 + vm_specs["vat_percent"] * 0.01), 2)
+            discount["amount_with_vat"] = round(vm_specs["price_with_vat"] - vm_specs["price_after_discount_with_vat"], 2)
             vm_specs["discount"] = discount
             request.session['specs'] = vm_specs
 
