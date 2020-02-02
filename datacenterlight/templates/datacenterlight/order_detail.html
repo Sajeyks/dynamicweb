@@ -92,8 +92,8 @@
                         </p>
                         {% if generic_payment_details.description %}
                             <p>
-                                <span>{% trans "Description" %}: </span>
-                                <strong class="pull-right">{{generic_payment_details.description}}</strong>
+                                <strong>{% trans "Description" %}: </strong>
+                                <span class="pull-right">{{generic_payment_details.description}}</span>
                             </p>
                         {% endif %}
                         {% if generic_payment_details.recurring %}
