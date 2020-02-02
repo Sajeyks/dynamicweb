@@ -58,52 +58,7 @@
             <hr>
             <div>
                 <h4>{% trans "Order summary" %}</h4>
-                    {% if generic_payment_details %}
-                        <p>
-                            <strong>{% trans "Product" %}:</strong>&nbsp;
-                            {{ generic_payment_details.product_name }}
-                        </p>
-                        <div class="row">
-                            <div class="col-sm-6">
-                                {% if generic_payment_details.vat_rate > 0 %}
-                                <p>
-                                    <span>{% trans "Price" %}: </span>
-                                    <strong class="pull-right">CHF {{generic_payment_details.amount_before_vat|floatformat:2|intcomma}}</strong>
-                                </p>
-                                <p>
-                                    <span>{% trans "VAT for" %} {{generic_payment_details.vat_country}} ({{generic_payment_details.vat_rate}}%) : </span>
-                                    <strong class="pull-right">CHF {{generic_payment_details.vat_amount|floatformat:2|intcomma}}</strong>
-                                </p>
-                                <p>
-                                    <span>{% trans "Total Amount" %} : </span>
-                                    <strong class="pull-right">CHF {{generic_payment_details.amount|floatformat:2|intcomma}}</strong>
-                                </p>
-                                {% else %}
-                                <p>
-                                    <span>{% trans "Amount" %}: </span>
-                                    <strong class="pull-right">CHF {{generic_payment_details.amount|floatformat:2|intcomma}}</strong>
-                                </p>
-                                {% endif %}
-                                {% if generic_payment_details.description %}
-                                    <p>
-                                        <span>{% trans "Description" %}: </span>
-                                        <strong class="pull-right">{{generic_payment_details.description}}</strong>
-                                    </p>
-                                {% endif %}
-                                {% if generic_payment_details.recurring %}
-                                    <p>
-                                        <span>{% trans "Recurring" %}: </span>
-                                        <strong class="pull-right">Yes</strong>
-                                    </p>
-                                {% endif %}
-                            </div>
-                        </div>
-                    {% else %}
-                        <p>
-                            <strong>{% trans "Product" %}:</strong>&nbsp;
-                            {{ request.session.template.name }}
-                        </p>
-                        <style>
+                <style>
                             @media screen and (max-width:767px){
                                  .cmf-ord-heading {
                                     font-size: 13px;
@@ -122,7 +77,91 @@
                                  }
                             }
 
-                        </style>
+                </style>
+                    {% if generic_payment_details %}
+                        <p>
+                            <strong>{% trans "Product" %}:</strong>&nbsp;
+                            {{ generic_payment_details.product_name }}
+                        </p>
+                        {% if generic_payment_details.description %}
+                            <p>
+                                <span>{% trans "Description" %}: </span>
+                                <strong class="pull-right">{{generic_payment_details.description}}</strong>
+                            </p>
+                        {% endif %}
+                        {% if generic_payment_details.recurring %}
+                            <p>
+                                <span>{% trans "Recurring" %}: </span>
+                                <strong class="pull-right">Yes</strong>
+                            </p>
+                        {% endif %}
+                        <div class="row">
+                            <div class="col-sm-8">
+                            <div class="col-sm-12">
+                                <hr class="thin-hr">
+                            </div>
+                            <div class="col-sm-8">
+                                <p>
+                                    <strong class="text-uppercase">{% trans "Price Before VAT" %}</strong>
+                                    <strong class="pull-right">{{generic_payment_details.amount_before_vat|floatformat:2|intcomma}} CHF</strong>
+                                </p>
+                            </div>
+                            <div class="col-sm-12">
+                                <hr class="thin-hr">
+                            </div>
+                            <div class="col-sm-8">
+                                <div class="row">
+                                  <div class="col-md-4 col-sm-4 col-xs-4">
+                                    <p><span></span></p>
+                                  </div>
+                                  <div class="col-md-3 col-sm-3 col-xs-3">
+                                    <p class="text-right"><strong class="cmf-ord-heading">{% trans "Pre VAT" %}</strong></p>
+                                  </div>
+                                  <div class="col-md-5">
+                                    <p class="text-right"><strong class="cmf-ord-heading">{% trans "VAT for" %} {{generic_payment_details.vat_country}} ({{generic_payment_details.vat_percent}}%)</strong></p>
+                                  </div>
+                                </div>
+                                <div class="row">
+                                  <div class="col-md-4 col-sm-4 col-xs-4">
+                                    <p><span>Price</span></p>
+                                  </div>
+                                  <div class="col-md-3 col-sm-3 col-xs-3">
+                                    <p><span class="pull-right" >{{generic_payment_details.amount_before_vat|floatformat:2|intcomma}} CHF</span></p>
+                                  </div>
+                                  <div class="col-md-5 col-sm-5 col-xs-5">
+                                    <p><span class="pull-right">{{generic_payment_details.amount|floatformat:2|intcomma}} CHF</span></p>
+                                  </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-12">
+                                <hr class="thin-hr">
+                            </div>
+                            <div class="col-sm-8">
+                                <div class="row">
+                                  <div class="col-md-4 col-sm-4 col-xs-4">
+                                    <p><strong>Total</strong></p>
+                                  </div>
+                                  <div class="col-md-3 col-sm-3 col-xs-3">
+                                    <p><strong class="pull-right">{{generic_payment_details.amount_before_vat|floatformat:2|intcomma}} CHF</strong></p>
+                                  </div>
+                                  <div class="col-md-5 col-sm-5 col-xs-5">
+                                    <p><strong class="pull-right">{{generic_payment_details.amount|floatformat:2|intcomma}} CHF</strong></p>
+                                  </div>
+                                </div>
+                            </div>
+                            <div class="col-sm-12">
+                                <hr class="thin-hr">
+                            </div>
+                            <div class="col-sm-8">
+                                    <strong class="text-uppercase align-center">{% trans "Your Price in Total" %}</strong>
+                                    <strong class="total-price pull-right">{{generic_payment_details.amount|floatformat:2|intcomma}} CHF</strong>
+                            </div>
+                        </div>
+                    {% else %}
+                        <p>
+                            <strong>{% trans "Product" %}:</strong>&nbsp;
+                            {{ request.session.template.name }}
+                        </p>
                         <div class="row">
                             <div class="col-sm-8">
                                 <p>
