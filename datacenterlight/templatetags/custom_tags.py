@@ -106,7 +106,7 @@ def get_line_item_from_stripe_invoice(invoice):
             period = mark_safe("%s &mdash; %s" % (
                 datetime.datetime.fromtimestamp(start_date).strftime('%Y-%m-%d'),
                 datetime.datetime.fromtimestamp(end_date).strftime('%Y-%m-%d'))),
-            total=invoice.total/100,
+            total='%.2f' % (invoice.total/100),
             stripe_invoice_url=invoice.hosted_invoice_url,
             see_invoice_text=_("See Invoice")
         ))
