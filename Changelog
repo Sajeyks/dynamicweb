@@ -1,3 +1,7 @@
+2.10.1: 2020-02-02:
+   * Changes the pricing structure of generic products into the pre vat and with vat (like that for VM)
+   * Shows product name (if exists) in the invoices list if it belongs to a generic product
+   * Small bugfixes (right alignment of price in the invoice list, show prices with 2 decimal places etc)
 2.10: 2020-02-01
    * Feature: Introduce new design to show VAT exclusive/VAT inclusive pricing together
    * Feature: Separate VAT and discount in Stripe
