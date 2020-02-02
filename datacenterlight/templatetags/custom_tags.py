@@ -124,13 +124,15 @@ def get_line_item_from_stripe_invoice(invoice):
 def get_product_name(plan_name):
     product_name = ""
     if plan_name and plan_name.startswith("generic-"):
-        product_id = plan_name[plan_name.index("-") + 1:plan_name.rindex("-")]
+        first_index_hyphen = plan_name.index("-") + 1
+        product_id = plan_name[first_index_hyphen:
+        (plan_name[first_index_hyphen:].index("-")) + first_index_hyphen]
         try:
             product = GenericProduct.objects.get(id=product_id)
             product_name = product.product_name
         except GenericProduct.DoesNotExist as dne:
             logger.error("Generic product id=%s does not exist" % product_id)
-            product_name = "Unknown"
+            product_name = plan_name
         except GenericProduct.MultipleObjectsReturned as mor:
             logger.error("Multiple products with id=%s exist" % product_id)
             product_name = "Unknown"
