@@ -79,6 +79,8 @@
 
                 </style>
                     {% if generic_payment_details %}
+                    <div class="row">
+                        <div class="col-sm-8">
                         <p>
                             <strong>{% trans "Product" %}:</strong>&nbsp;
                             {{ generic_payment_details.product_name }}
@@ -95,6 +97,7 @@
                                 <strong class="pull-right">Yes</strong>
                             </p>
                         {% endif %}
+                        </div>
                         <div class="col-sm-12">
                             <hr class="thin-hr">
                         </div>
@@ -154,6 +157,7 @@
                                 <strong class="text-uppercase align-center">{% trans "Your Price in Total" %}</strong>
                                 <strong class="total-price pull-right">{{generic_payment_details.amount|floatformat:2|intcomma}} CHF</strong>
                         </div>
+                    </div>
                     {% else %}
                         <p>
                             <strong>{% trans "Product" %}:</strong>&nbsp;
