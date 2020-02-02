@@ -415,7 +415,8 @@ msgstr "Deine MwSt-Nummer wurde überprüft"
 msgid ""
 "Your VAT number is under validation. VAT will be adjusted, once the "
 "validation is complete."
-msgstr ""
+msgstr "Deine MwSt-Nummer wird derzeit validiert. Die MwSt. wird angepasst, "
+"sobald die Validierung abgeschlossen ist."
 
 msgid "Payment method"
 msgstr "Bezahlmethode"
@@ -448,18 +449,14 @@ msgid "Recurring"
 msgstr "Wiederholend"
 
 msgid "Price Before VAT"
-msgstr ""
+msgstr "Preis ohne MwSt."
 
 msgid "Pre VAT"
 msgstr "Exkl. MwSt."
 
 msgid "Your Price in Total"
-msgstr ""
+msgstr "Dein Gesamtpreis"
 
-#, fuzzy, python-format
-#| msgid ""
-#| "By clicking \"Place order\" this plan will charge your credit card "
-#| "account with %(total_price)s CHF/month"
 msgid ""
 "By clicking \"Place order\" this plan will charge your credit card account "
 "with %(total_price)s CHF/year"
@@ -592,7 +589,7 @@ msgid "Actions speak louder than words. Let's do it, try our VM now."
 msgstr "Taten sagen mehr als Worte – Teste jetzt unsere VM!"
 
 msgid "See Invoice"
-msgstr ""
+msgstr "Siehe Rechnung"
 
 msgid "Invalid number of cores"
 msgstr "Ungültige Anzahle CPU-Kerne"
