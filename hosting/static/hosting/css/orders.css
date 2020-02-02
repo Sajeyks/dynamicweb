@@ -3,3 +3,9 @@
 .orders-container .table > tbody > tr > td {
      vertical-align: middle;
 }
+
+@media screen and (min-width:767px){
+     .dcl-text-right {
+          padding-right: 20px;
+     }
+}

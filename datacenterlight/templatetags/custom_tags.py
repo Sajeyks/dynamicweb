@@ -102,7 +102,7 @@ def get_line_item_from_stripe_invoice(invoice):
                     <td class="xs-td-inline">{vm_id}</td>
                     <td class="xs-td-inline">{ip_addresses}</td>
                     <td class="xs-td-inline">{period}</td>
-                    <td class="xs-td-inline">{total}</td>
+                    <td class="xs-td-inline text-right dcl-text-right-padding">{total}</td>
                     <td class="text-right last-td">
                         <a class="btn btn-order-detail" href="{stripe_invoice_url}" target="_blank">{see_invoice_text}</a>
                     </td>
