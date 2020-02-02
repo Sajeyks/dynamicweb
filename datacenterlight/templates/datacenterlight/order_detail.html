@@ -184,7 +184,7 @@
                             <div class="col-sm-8">
                                 <p>
                                     <strong class="text-uppercase">{% trans "Price Before VAT" %}</strong>
-                                    <strong class="pull-right">{{vm.price|intcomma}} CHF</strong>
+                                    <strong class="pull-right">{{vm.price|floatformat:2|intcomma}} CHF</strong>
                                 </p>
                             </div>
                             <div class="col-sm-12">
@@ -207,10 +207,10 @@
                                     <p><span>Price</span></p>
                                   </div>
                                   <div class="col-md-3 col-sm-3 col-xs-3">
-                                    <p><span class="pull-right" >{{vm.price|intcomma}} CHF</span></p>
+                                    <p><span class="pull-right" >{{vm.price|floatformat:2|intcomma}} CHF</span></p>
                                   </div>
                                   <div class="col-md-5 col-sm-5 col-xs-5">
-                                    <p><span class="pull-right">{{vm.price_with_vat|intcomma}} CHF</span></p>
+                                    <p><span class="pull-right">{{vm.price_with_vat|floatformat:2|intcomma}} CHF</span></p>
                                   </div>
                                 </div>
                                 {% if vm.discount.amount > 0 %}
@@ -219,10 +219,10 @@
                                     <p><span>{{vm.discount.name}}</span></p>
                                   </div>
                                   <div class="col-md-3 col-sm-3 col-xs-3">
-                                    <p><span class="pull-right">-{{vm.discount.amount|intcomma}} CHF</span></p>
+                                    <p><span class="pull-right">-{{vm.discount.amount|floatformat:2|intcomma}} CHF</span></p>
                                   </div>
                                   <div class="col-md-5 col-sm-5 col-xs-5">
-                                    <p><span class="pull-right">-{{vm.discount.amount_with_vat|intcomma}} CHF</span></p>
+                                    <p><span class="pull-right">-{{vm.discount.amount_with_vat|floatformat:2|intcomma}} CHF</span></p>
                                   </div>
                                 </div>
                                 {% endif %}
@@ -236,10 +236,10 @@
                                     <p><strong>Total</strong></p>
                                   </div>
                                   <div class="col-md-3 col-sm-3 col-xs-3">
-                                    <p><strong class="pull-right">{{vm.price_after_discount|intcomma}} CHF</strong></p>
+                                    <p><strong class="pull-right">{{vm.price_after_discount|floatformat:2|intcomma}} CHF</strong></p>
                                   </div>
                                   <div class="col-md-5 col-sm-5 col-xs-5">
-                                    <p><strong class="pull-right">{{vm.price_after_discount_with_vat|intcomma}} CHF</strong></p>
+                                    <p><strong class="pull-right">{{vm.price_after_discount_with_vat|floatformat:2|intcomma}} CHF</strong></p>
                                   </div>
                                 </div>
                             </div>
