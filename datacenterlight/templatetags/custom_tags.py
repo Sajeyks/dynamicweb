@@ -1,11 +1,15 @@
 import datetime
+import logging
 
 from django import template
 from django.core.urlresolvers import resolve, reverse
 from django.utils.safestring import mark_safe
 from django.utils.translation import activate, get_language, ugettext_lazy as _
 
+from hosting.models import GenericProduct
 from utils.hosting_utils import get_ip_addresses
+
+logger = logging.getLogger(__name__)
 
 register = template.Library()
 
@@ -72,8 +76,10 @@ def get_line_item_from_stripe_invoice(invoice):
     end_date = 0
     is_first = True
     vm_id = -1
+    plan_name = ""
     for line_data in invoice["lines"]["data"]:
         if is_first:
+            plan_name = line_data.plan.name
             start_date = line_data.period.start
             end_date = line_data.period.end
             is_first = False
@@ -102,8 +108,9 @@ def get_line_item_from_stripe_invoice(invoice):
                     </td>
         """.format(
             vm_id=vm_id if vm_id > 0 else "",
-            ip_addresses=mark_safe(get_ip_addresses(vm_id)) if vm_id > 0 else "",
-            period = mark_safe("%s &mdash; %s" % (
+            ip_addresses=mark_safe(get_ip_addresses(vm_id)) if vm_id > 0 else
+            mark_safe(plan_name),
+            period=mark_safe("%s &mdash; %s" % (
                 datetime.datetime.fromtimestamp(start_date).strftime('%Y-%m-%d'),
                 datetime.datetime.fromtimestamp(end_date).strftime('%Y-%m-%d'))),
             total='%.2f' % (invoice.total/100),
@@ -112,3 +119,21 @@ def get_line_item_from_stripe_invoice(invoice):
         ))
     else:
         return ""
+
+
+def get_product_name(plan_name):
+    product_name = ""
+    if plan_name and plan_name.startswith("generic-"):
+        product_id = plan_name[plan_name.index("-") + 1:plan_name.rindex("-")]
+        try:
+            product = GenericProduct.objects.get(id=product_id)
+            product_name = product.product_name
+        except GenericProduct.DoesNotExist as dne:
+            logger.error("Generic product id=%s does not exist" % product_id)
+            product_name = "Unknown"
+        except GenericProduct.MultipleObjectsReturned as mor:
+            logger.error("Multiple products with id=%s exist" % product_id)
+            product_name = "Unknown"
+    else:
+        logger.debug("Product name for plan %s does not exist" % plan_name)
+    return product_name
