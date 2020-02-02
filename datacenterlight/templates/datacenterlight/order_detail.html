@@ -115,10 +115,10 @@
                               <div class="col-md-4 col-sm-4 col-xs-4">
                                 <p><span></span></p>
                               </div>
-                              <div class="col-md-3 col-sm-3 col-xs-3">
+                              <div class="col-md-3 col-sm-3 col-xs-4">
                                 <p class="text-right"><strong class="cmf-ord-heading">{% trans "Pre VAT" %}</strong></p>
                               </div>
-                              <div class="col-md-5">
+                              <div class="col-md-5 col-sm-5 col-xs-4">
                                 <p class="text-right"><strong class="cmf-ord-heading">{% trans "VAT for" %} {{generic_payment_details.vat_country}} ({{generic_payment_details.vat_rate}}%)</strong></p>
                               </div>
                             </div>
@@ -126,10 +126,10 @@
                               <div class="col-md-4 col-sm-4 col-xs-4">
                                 <p><span>Price</span></p>
                               </div>
-                              <div class="col-md-3 col-sm-3 col-xs-3">
+                              <div class="col-md-3 col-sm-3 col-xs-4">
                                 <p><span class="pull-right" >{{generic_payment_details.amount_before_vat|floatformat:2|intcomma}} CHF</span></p>
                               </div>
-                              <div class="col-md-5 col-sm-5 col-xs-5">
+                              <div class="col-md-5 col-sm-5 col-xs-4">
                                 <p><span class="pull-right">{{generic_payment_details.amount|floatformat:2|intcomma}} CHF</span></p>
                               </div>
                             </div>
@@ -142,10 +142,10 @@
                               <div class="col-md-4 col-sm-4 col-xs-4">
                                 <p><strong>Total</strong></p>
                               </div>
-                              <div class="col-md-3 col-sm-3 col-xs-3">
+                              <div class="col-md-3 col-sm-3 col-xs-4">
                                 <p><strong class="pull-right">{{generic_payment_details.amount_before_vat|floatformat:2|intcomma}} CHF</strong></p>
                               </div>
-                              <div class="col-md-5 col-sm-5 col-xs-5">
+                              <div class="col-md-5 col-sm-5 col-xs-4">
                                 <p><strong class="pull-right">{{generic_payment_details.amount|floatformat:2|intcomma}} CHF</strong></p>
                               </div>
                             </div>
@@ -195,10 +195,10 @@
                                   <div class="col-md-4 col-sm-4 col-xs-4">
                                     <p><span></span></p>
                                   </div>
-                                  <div class="col-md-3 col-sm-3 col-xs-3">
+                                  <div class="col-md-3 col-sm-3 col-xs-4">
                                     <p class="text-right"><strong class="cmf-ord-heading">{% trans "Pre VAT" %}</strong></p>
                                   </div>
-                                  <div class="col-md-5">
+                                  <div class="col-md-5 col-sm-5 col-xs-4">
                                     <p class="text-right"><strong class="cmf-ord-heading">{% trans "VAT for" %} {{vm.vat_country}} ({{vm.vat_percent}}%)</strong></p>
                                   </div>
                                 </div>
@@ -206,10 +206,10 @@
                                   <div class="col-md-4 col-sm-4 col-xs-4">
                                     <p><span>Price</span></p>
                                   </div>
-                                  <div class="col-md-3 col-sm-3 col-xs-3">
+                                  <div class="col-md-3 col-sm-3 col-xs-4">
                                     <p><span class="pull-right" >{{vm.price|floatformat:2|intcomma}} CHF</span></p>
                                   </div>
-                                  <div class="col-md-5 col-sm-5 col-xs-5">
+                                  <div class="col-md-5 col-sm-5 col-xs-4">
                                     <p><span class="pull-right">{{vm.price_with_vat|floatformat:2|intcomma}} CHF</span></p>
                                   </div>
                                 </div>
@@ -218,10 +218,10 @@
                                   <div class="col-md-4 col-sm-4 col-xs-4">
                                     <p><span>{{vm.discount.name}}</span></p>
                                   </div>
-                                  <div class="col-md-3 col-sm-3 col-xs-3">
+                                  <div class="col-md-3 col-sm-3 col-xs-4">
                                     <p><span class="pull-right">-{{vm.discount.amount|floatformat:2|intcomma}} CHF</span></p>
                                   </div>
-                                  <div class="col-md-5 col-sm-5 col-xs-5">
+                                  <div class="col-md-5 col-sm-5 col-xs-4">
                                     <p><span class="pull-right">-{{vm.discount.amount_with_vat|floatformat:2|intcomma}} CHF</span></p>
                                   </div>
                                 </div>
@@ -235,10 +235,10 @@
                                   <div class="col-md-4 col-sm-4 col-xs-4">
                                     <p><strong>Total</strong></p>
                                   </div>
-                                  <div class="col-md-3 col-sm-3 col-xs-3">
+                                  <div class="col-md-3 col-sm-3 col-xs-4">
                                     <p><strong class="pull-right">{{vm.price_after_discount|floatformat:2|intcomma}} CHF</strong></p>
                                   </div>
-                                  <div class="col-md-5 col-sm-5 col-xs-5">
+                                  <div class="col-md-5 col-sm-5 col-xs-4">
                                     <p><strong class="pull-right">{{vm.price_after_discount_with_vat|floatformat:2|intcomma}} CHF</strong></p>
                                   </div>
                                 </div>
