@@ -81,7 +81,8 @@ def get_vm_price(cpu, memory, disk_size, hdd_size=0, pricing_name='default'):
     price = ((decimal.Decimal(cpu) * pricing.cores_unit_price) +
              (decimal.Decimal(memory) * pricing.ram_unit_price) +
              (decimal.Decimal(disk_size) * pricing.ssd_unit_price) +
-             (decimal.Decimal(hdd_size) * pricing.hdd_unit_price))
+             (decimal.Decimal(hdd_size) * pricing.hdd_unit_price) +
+             decimal.Decimal(settings.VM_BASE_PRICE))
     cents = decimal.Decimal('.01')
     price = price.quantize(cents, decimal.ROUND_HALF_UP)
     return round(float(price), 2)
@@ -104,7 +105,8 @@ def get_vm_price_for_given_vat(cpu, memory, ssd_size, hdd_size=0,
         (decimal.Decimal(cpu) * pricing.cores_unit_price) +
         (decimal.Decimal(memory) * pricing.ram_unit_price) +
         (decimal.Decimal(ssd_size) * pricing.ssd_unit_price) +
-        (decimal.Decimal(hdd_size) * pricing.hdd_unit_price)
+        (decimal.Decimal(hdd_size) * pricing.hdd_unit_price) +
+        decimal.Decimal(settings.VM_BASE_PRICE)
     )
 
     discount_name = pricing.discount_name
