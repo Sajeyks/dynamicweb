@@ -3,6 +3,8 @@ import logging
 import math
 import subprocess
 
+from django.conf import settings
+
 from oca.pool import WrongIdError
 
 from datacenterlight.models import VMPricing
@@ -154,7 +156,8 @@ def get_vm_price_with_vat(cpu, memory, ssd_size, hdd_size=0,
         (decimal.Decimal(cpu) * pricing.cores_unit_price) +
         (decimal.Decimal(memory) * pricing.ram_unit_price) +
         (decimal.Decimal(ssd_size) * pricing.ssd_unit_price) +
-        (decimal.Decimal(hdd_size) * pricing.hdd_unit_price)
+        (decimal.Decimal(hdd_size) * pricing.hdd_unit_price) +
+        decimal.Decimal(settings.VM_BASE_PRICE)
     )
     if pricing.vat_inclusive:
         vat = decimal.Decimal(0)
