@@ -1,4 +1,11 @@
-2.10.1: 2020-02-02:
+2.10.2: 2020-02-04
+   * Introduce base price for VMs and let admins add stripe_coupon_id (MR!730)
+   Notes for deployment:
+   1. Add env variable `VM_BASE_PRICE`
+   2. Migrate datacenterlight app. This introduces the stripe_coupon_code field in the VMPricing.
+   3. Create a coupon in stripe with the desired value and note down the stripe's coupon id
+   4. Update the discount amount and set the corresponding coupon id in the admin
+2.10.1: 2020-02-02
    * Changes the pricing structure of generic products into the pre vat and with vat (like that for VM)
    * Shows product name (if exists) in the invoices list if it belongs to a generic product
    * Small bugfixes (right alignment of price in the invoice list, show prices with 2 decimal places etc)
