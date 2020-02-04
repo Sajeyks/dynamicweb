@@ -222,11 +222,6 @@ def get_ip_addresses(vm_id):
         return "--"
 
 
-def round_up(n, decimals=0):
-    multiplier = 10 ** decimals
-    return math.ceil(n * multiplier) / multiplier
-
-
 class HostingUtils:
     @staticmethod
     def clear_items_from_list(from_list, items_list):
