@@ -678,9 +678,9 @@ class OrderConfirmationView(DetailView, FormView):
                 vm_specs["vat_percent"] = vat_percent
                 vm_specs["vat_validation_status"] = request.session["vat_validation_status"] if "vat_validation_status" in request.session else ""
             vm_specs["vat_country"] = user_vat_country
-            vm_specs["price_with_vat"] = round_up(price * (1 + vm_specs["vat_percent"] * 0.01), 2)
-            vm_specs["price_after_discount"] = round_up(price - discount['amount'], 2)
-            vm_specs["price_after_discount_with_vat"] = round_up((price - discount['amount']) * (1 + vm_specs["vat_percent"] * 0.01), 2)
+            vm_specs["price_with_vat"] = round(price * (1 + vm_specs["vat_percent"] * 0.01), 2)
+            vm_specs["price_after_discount"] = round(price - discount['amount'], 2)
+            vm_specs["price_after_discount_with_vat"] = round((price - discount['amount']) * (1 + vm_specs["vat_percent"] * 0.01), 2)
             discount["amount_with_vat"] = round(vm_specs["price_with_vat"] - vm_specs["price_after_discount_with_vat"], 2)
             vm_specs["total_price"] = vm_specs["price_after_discount_with_vat"]
             vm_specs["discount"] = discount
