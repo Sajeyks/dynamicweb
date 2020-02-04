@@ -1185,7 +1185,11 @@ class OrdersHostingDetailView(LoginRequiredMixin, DetailView, FormView):
         subscription_result = stripe_utils.subscribe_customer_to_plan(
             stripe_api_cus_id,
             [{"plan": stripe_plan.get('response_object').stripe_plan_id}],
-            coupon='ipv6-discount-8chf' if 'name' in discount and 'ipv6' in discount['name'].lower() else "",
+            coupon=(discount['stripe_coupon_id']
+                    if 'name' in discount and
+                       'ipv6' in discount['name'].lower() and
+                       discount['stripe_coupon_id']
+                    else ""),
             tax_rates=[stripe_tax_rate.tax_rate_id] if stripe_tax_rate else [],
         )
         stripe_subscription_obj = subscription_result.get('response_object')
