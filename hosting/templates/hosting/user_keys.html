@@ -81,12 +81,10 @@
                     </td>
                     <td>
                         {% if user_key.private_key %}
-                        <form action="{{ user_key.private_key.url }}">
-                            <button style="color: #717274" type="submit" class="btn btn-default">
+                        <a class="btn btn-default" style='color: #717274;' href="{{ user_key.private_key.url }}" download="{{user_key.private_key.name}}">
                                 <span class="pc-only">{% trans "Download" %}</span>
                                 <span class="mob-only"><i class="fa fa-download"></i></span>
-                            </button>
-                        </form>
+                        </a>
                         {% endif %}
                     </td>
                 </tr>
