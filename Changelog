@@ -1,3 +1,6 @@
+2.10.2b: 2020-02-25
+   * #7764: Fix uid represented as bytestring
+   * #7769: [hosting] ssh private key download feature does not work well on Firefox
 2.10.1: 2020-02-02:
    * Changes the pricing structure of generic products into the pre vat and with vat (like that for VM)
    * Shows product name (if exists) in the invoices list if it belongs to a generic product
