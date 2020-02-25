@@ -87,7 +87,7 @@ class LdapManager:
         logger.debug("{uid} does not exist. Using it".format(uid=uidNumber))
         self._set_max_uid(uidNumber)
         try:
-            uid = user.encode("utf-8")
+            uid = user
             conn.add("uid={uid},{customer_dn}".format(
                     uid=uid, customer_dn=settings.LDAP_CUSTOMER_DN
                 ),
