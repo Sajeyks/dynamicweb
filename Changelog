@@ -1,3 +1,5 @@
+2.10.3b: 2020-03-05
+   * #7773: Use username for communicating with opennebula all the time
 2.10.2b: 2020-02-25
    * #7764: Fix uid represented as bytestring
    * #7769: [hosting] ssh private key download feature does not work well on Firefox
