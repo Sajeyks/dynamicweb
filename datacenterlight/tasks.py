@@ -62,7 +62,7 @@ def create_vm_task(self, vm_template_id, user, specs, template, order_id):
         )
 
         if 'pass' in user:
-            on_user = user.get('email')
+            on_user = user.get('username')
             on_pass = user.get('pass')
             logger.debug("Using user {user} to create VM".format(user=on_user))
             vm_name = None

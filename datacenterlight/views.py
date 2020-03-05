@@ -1173,6 +1173,7 @@ class OrderConfirmationView(DetailView, FormView):
         user = {
             'name': custom_user.name,
             'email': custom_user.email,
+            'username': custom_user.username,
             'pass': custom_user.password,
             'request_scheme': request.scheme,
             'request_host': request.get_host(),

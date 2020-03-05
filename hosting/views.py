@@ -1227,6 +1227,7 @@ class OrdersHostingDetailView(LoginRequiredMixin, DetailView, FormView):
         user = {
             'name': self.request.user.name,
             'email': self.request.user.email,
+            'username': self.request.user.username,
             'pass': self.request.user.password,
             'request_scheme': request.scheme,
             'request_host': request.get_host(),
