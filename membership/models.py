@@ -233,8 +233,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
                 ldap_manager.create_user(self.username, password=password,
                                          firstname=first_name, lastname=last_name,
                                          email=self.email)
-                self.in_ldap = True
-                self.save()
             else:
                 # User exists already in LDAP, but with a dummy credential
                 # We are here implies that the user has successfully
@@ -244,6 +242,8 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
                 # was set to a dummy value while migrating users from Django to
                 # LDAP
                 ldap_manager.change_password(self.username, password)
+            self.in_ldap = True
+            self.save()
 
     def __str__(self):  # __unicode__ on Python 2
         return self.email
