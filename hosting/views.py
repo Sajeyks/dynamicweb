@@ -386,7 +386,7 @@ class PasswordResetConfirmView(HostingContextMixin,
             user = CustomUser.objects.get(pk=uid)
 
             opennebula_client = OpenNebulaManager(
-                email=user.email,
+                email=user.username,
                 password=user.password,
             )
 
@@ -1400,7 +1400,7 @@ class InvoiceDetailView(LoginRequiredMixin, DetailView):
                 # fallback to get it from the infrastructure
                 try:
                     manager = OpenNebulaManager(
-                        email=self.request.user.email,
+                        email=self.request.user.username,
                         password=self.request.user.password
                     )
                     vm = manager.get_vm(vm_id)
