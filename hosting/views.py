@@ -478,7 +478,7 @@ class SSHKeyDeleteView(LoginRequiredMixin, DeleteView):
     def delete(self, request, *args, **kwargs):
         owner = self.request.user
         manager = OpenNebulaManager(
-            email=owner.email,
+            email=owner.username,
             password=owner.password
         )
         pk = self.kwargs.get('pk')
@@ -532,7 +532,7 @@ class SSHKeyChoiceView(LoginRequiredMixin, View):
         ssh_key.private_key.save(filename, content)
         owner = self.request.user
         manager = OpenNebulaManager(
-            email=owner.email,
+            email=owner.username,
             password=owner.password
         )
         keys = get_all_public_keys(request.user)
@@ -952,7 +952,7 @@ class OrdersHostingDetailView(LoginRequiredMixin, DetailView, FormView):
                 except VMDetail.DoesNotExist:
                     try:
                         manager = OpenNebulaManager(
-                            email=owner.email, password=owner.password
+                            email=owner.username, password=owner.password
                         )
                         vm = manager.get_vm(obj.vm_id)
                         context['vm'] = VirtualMachineSerializer(vm).data
@@ -1482,7 +1482,7 @@ class VirtualMachinesPlanListView(LoginRequiredMixin, ListView):
 
     def get_queryset(self):
         owner = self.request.user
-        manager = OpenNebulaManager(email=owner.email,
+        manager = OpenNebulaManager(email=owner.username,
                                     password=owner.password)
         try:
             queryset = manager.get_vms()
@@ -1643,7 +1643,7 @@ class VirtualMachineView(LoginRequiredMixin, View):
         owner = self.request.user
         vm = None
         manager = OpenNebulaManager(
-            email=owner.email,
+            email=owner.username,
             password=owner.password
         )
         vm_id = self.kwargs.get('pk')
@@ -1727,7 +1727,7 @@ class VirtualMachineView(LoginRequiredMixin, View):
         vm = self.get_object()
 
         manager = OpenNebulaManager(
-            email=owner.email,
+            email=owner.username,
             password=owner.password
         )
         try:
@@ -1755,7 +1755,7 @@ class VirtualMachineView(LoginRequiredMixin, View):
                 error_msg = result.get('error')
                 logger.error(
                     'Error canceling subscription for {user} and vm id '
-                    '{vm_id}'.format(user=owner.email, vm_id=vm.id)
+                    '{vm_id}'.format(user=owner.username, vm_id=vm.id)
                 )
                 logger.error(error_msg)
                 admin_email_body['stripe_error_msg'] = error_msg
@@ -1827,6 +1827,7 @@ class VirtualMachineView(LoginRequiredMixin, View):
             email.send()
         admin_email_body.update(response)
         admin_email_body["customer_email"] = owner.email
+        admin_email_body["customer_username"] = owner.username
         admin_email_body["VM_ID"] = vm.id
         admin_email_body["VM_created_at"] = (str(hosting_order.created_at) if
                                              hosting_order is not None
@@ -1844,9 +1845,9 @@ class VirtualMachineView(LoginRequiredMixin, View):
                 )
         admin_email_body["subscription_amount"] = total_amount/100
         admin_email_body["subscription_detail"] = content
-        admin_msg_sub = "VM and Subscription for VM {} and user: {}".format(
+        admin_msg_sub = "VM and Subscription for VM {} and user: {}, {}".format(
             vm.id,
-            owner.email
+            owner.email, owner.username
         )
         email_to_admin_data = {
             'subject': ("Deleted " if response['status']
@@ -1892,7 +1893,7 @@ class HostingBillDetailView(PermissionRequiredMixin, LoginRequiredMixin,
         context = super(DetailView, self).get_context_data(**kwargs)
 
         owner = self.request.user
-        manager = OpenNebulaManager(email=owner.email,
+        manager = OpenNebulaManager(email=owner.username,
                                     password=owner.password)
         # Get vms
         queryset = manager.get_vms()

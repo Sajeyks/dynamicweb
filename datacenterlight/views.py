@@ -1013,7 +1013,7 @@ class OrderConfirmationView(DetailView, FormView):
 
                 owner = new_user
                 manager = OpenNebulaManager(
-                    email=owner.email,
+                    email=owner.username,
                     password=owner.password
                 )
                 keys_to_save = get_all_public_keys(new_user)

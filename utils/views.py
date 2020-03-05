@@ -228,7 +228,7 @@ class SSHKeyCreateView(FormView):
         if self.request.user.is_authenticated():
             owner = self.request.user
             manager = OpenNebulaManager(
-                email=owner.email,
+                email=owner.username,
                 password=owner.password
             )
             keys_to_save = get_all_public_keys(self.request.user)

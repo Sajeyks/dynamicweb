@@ -86,7 +86,7 @@ class VirtualMachineSerializer(serializers.Serializer):
         }
 
         try:
-            manager = OpenNebulaManager(email=owner.email,
+            manager = OpenNebulaManager(email=owner.username,
                                         password=owner.password,
                                         )
             opennebula_id = manager.create_vm(template_id=template_id,

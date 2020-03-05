@@ -19,7 +19,7 @@ class VmCreateView(generics.ListCreateAPIView):
 
     def get_queryset(self):
         owner = self.request.user
-        manager = OpenNebulaManager(email=owner.email,
+        manager = OpenNebulaManager(email=owner.username,
                                     password=owner.password)
         # We may have ConnectionRefusedError if we don't have a
         # connection to OpenNebula. For now, we raise ServiceUnavailable
@@ -42,7 +42,7 @@ class VmDetailsView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         owner = self.request.user
-        manager = OpenNebulaManager(email=owner.email,
+        manager = OpenNebulaManager(email=owner.username,
                                     password=owner.password)
         # We may have ConnectionRefusedError if we don't have a
         # connection to OpenNebula. For now, we raise ServiceUnavailable
@@ -54,7 +54,7 @@ class VmDetailsView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_object(self):
         owner = self.request.user
-        manager = OpenNebulaManager(email=owner.email,
+        manager = OpenNebulaManager(email=owner.username,
                                     password=owner.password)
         # We may have ConnectionRefusedError if we don't have a
         # connection to OpenNebula. For now, we raise ServiceUnavailable
@@ -66,7 +66,7 @@ class VmDetailsView(generics.RetrieveUpdateDestroyAPIView):
 
     def perform_destroy(self, instance):
         owner = self.request.user
-        manager = OpenNebulaManager(email=owner.email,
+        manager = OpenNebulaManager(email=owner.username,
                                     password=owner.password)
         # We may have ConnectionRefusedError if we don't have a
         # connection to OpenNebula. For now, we raise ServiceUnavailable
