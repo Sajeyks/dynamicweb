@@ -29,7 +29,7 @@ from utils.forms import (
 )
 from utils.hosting_utils import (
     get_vm_price_with_vat, get_all_public_keys, get_vat_rate_for_country,
-    get_vm_price_for_given_vat, round_up
+    get_vm_price_for_given_vat
 )
 from utils.stripe_utils import StripeUtils
 from utils.tasks import send_plain_email_task
