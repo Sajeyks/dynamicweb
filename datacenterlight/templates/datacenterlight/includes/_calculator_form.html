@@ -9,6 +9,7 @@
         window.ssdUnitPrice = {{vm_pricing.ssd_unit_price|default:0}};
         window.hddUnitPrice = {{vm_pricing.hdd_unit_price|default:0}};
         window.discountAmount = {{vm_pricing.discount_amount|default:0}};
+        window.vmBasePrice = {{vm_base_price|default:0}};
         window.minRam = {{min_ram}};
         window.minRamErr = '{% blocktrans with min_ram=min_ram %}Please enter a value in range {{min_ram}} - 200.{% endblocktrans %}';
     </script>

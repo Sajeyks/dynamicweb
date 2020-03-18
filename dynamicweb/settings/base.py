@@ -761,6 +761,7 @@ OTP_VERIFY_ENDPOINT = env('OTP_VERIFY_ENDPOINT')
 FIRST_VM_ID_AFTER_EU_VAT = int_env('FIRST_VM_ID_AFTER_EU_VAT')
 PRE_EU_VAT_RATE = float(env('PRE_EU_VAT_RATE'))
 
+VM_BASE_PRICE = float(env('VM_BASE_PRICE'))
 
 if DEBUG:
     from .local import *  # flake8: noqa

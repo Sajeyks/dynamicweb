@@ -225,8 +225,8 @@
         }
         var total = (cardPricing['cpu'].value * window.coresUnitPrice) +
                     (cardPricing['ram'].value * window.ramUnitPrice) +
-                    (cardPricing['storage'].value * window.ssdUnitPrice) -
-                    window.discountAmount;
+                    (cardPricing['storage'].value * window.ssdUnitPrice) +
+                    window.vmBasePrice - window.discountAmount;
         total = parseFloat(total.toFixed(2));
         $("#total").text(total);
     }

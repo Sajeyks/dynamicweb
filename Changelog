@@ -1,3 +1,10 @@
+2.10.5: 2020-03-17
+   * Introduce base price for VMs and let admins add stripe_coupon_id (MR!730)
+   Notes for deployment:
+   1. Add env variable `VM_BASE_PRICE`
+   2. Migrate datacenterlight app. This introduces the stripe_coupon_code field in the VMPricing.
+   3. Create a coupon in stripe with the desired value and note down the stripe's coupon id
+   4. Update the discount amount and set the corresponding coupon id in the admin
 2.10.3b: 2020-03-05
    * #7773: Use username for communicating with opennebula all the time
 2.10.2b: 2020-02-25
