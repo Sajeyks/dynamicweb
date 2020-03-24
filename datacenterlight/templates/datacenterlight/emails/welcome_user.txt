@@ -3,7 +3,7 @@
 {% trans "Welcome to Data Center Light!" %}
 
 {% blocktrans %}Thanks for joining us! We provide the most affordable virtual machines from the heart of Switzerland.{% endblocktrans %}
-{% blocktrans %}Try now, order a VM. VM price starts from only 10.5 CHF per month.{% endblocktrans %}
+{% blocktrans %}Try now, order a VM. VM price starts from only 11.5 CHF per month.{% endblocktrans %}
 
 {{ base_url }}{% url 'hosting:create_virtual_machine' %}
 

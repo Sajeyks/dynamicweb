@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-02-01 09:42+0000\n"
+"POT-Creation-Date: 2020-03-24 07:02+0000\n"
 "PO-Revision-Date: 2018-03-30 23:22+0000\n"
 "Last-Translator: b'Anonymous User <coder.purple+25@gmail.com>'\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -144,8 +144,8 @@ msgid ""
 "the heart of Switzerland."
 msgstr "Bei uns findest Du die günstiges VMs aus der Schweiz."
 
-msgid "Try now, order a VM. VM price starts from only 10.5 CHF per month."
-msgstr "Unser Angebot beginnt bei 10.5 CHF pro Monat. Probier's jetzt aus!"
+msgid "Try now, order a VM. VM price starts from only 11.5 CHF per month."
+msgstr "Unser Angebot beginnt bei 11.5 CHF pro Monat. Probier's jetzt aus!"
 
 msgid "ORDER VM"
 msgstr "VM BESTELLEN"
@@ -415,8 +415,9 @@ msgstr "Deine MwSt-Nummer wurde überprüft"
 msgid ""
 "Your VAT number is under validation. VAT will be adjusted, once the "
 "validation is complete."
-msgstr "Deine MwSt-Nummer wird derzeit validiert. Die MwSt. wird angepasst, "
-"sobald die Validierung abgeschlossen ist."
+msgstr ""
+"Deine MwSt-Nummer wird derzeit validiert. Die MwSt. wird angepasst, sobald "
+"die Validierung abgeschlossen ist."
 
 msgid "Payment method"
 msgstr "Bezahlmethode"
@@ -430,18 +431,6 @@ msgstr "Bestellungsübersicht"
 msgid "Product"
 msgstr "Produkt"
 
-msgid "Price"
-msgstr "Preise"
-
-msgid "VAT for"
-msgstr "MwSt für"
-
-msgid "Total Amount"
-msgstr "Gesamtsumme"
-
-msgid "Amount"
-msgstr "Betrag"
-
 msgid "Description"
 msgstr "Beschreibung"
 
@@ -454,9 +443,13 @@ msgstr "Preis ohne MwSt."
 msgid "Pre VAT"
 msgstr "Exkl. MwSt."
 
+msgid "VAT for"
+msgstr "MwSt für"
+
 msgid "Your Price in Total"
 msgstr "Dein Gesamtpreis"
 
+#, python-format
 msgid ""
 "By clicking \"Place order\" this plan will charge your credit card account "
 "with %(total_price)s CHF/year"
@@ -680,6 +673,15 @@ msgid ""
 msgstr ""
 "Deine VM ist gleich bereit. Wir senden Dir eine Bestätigungsemail, sobald Du "
 "auf sie zugreifen kannst."
+
+#~ msgid "Price"
+#~ msgstr "Preise"
+
+#~ msgid "Total Amount"
+#~ msgstr "Gesamtsumme"
+
+#~ msgid "Amount"
+#~ msgstr "Betrag"
 
 #~ msgid "Subtotal"
 #~ msgstr "Zwischensumme"
