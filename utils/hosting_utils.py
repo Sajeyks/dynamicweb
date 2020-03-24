@@ -3,6 +3,8 @@ import logging
 import math
 import subprocess
 
+from django.conf import settings
+
 from oca.pool import WrongIdError
 
 from datacenterlight.models import VMPricing
@@ -79,7 +81,8 @@ def get_vm_price(cpu, memory, disk_size, hdd_size=0, pricing_name='default'):
     price = ((decimal.Decimal(cpu) * pricing.cores_unit_price) +
              (decimal.Decimal(memory) * pricing.ram_unit_price) +
              (decimal.Decimal(disk_size) * pricing.ssd_unit_price) +
-             (decimal.Decimal(hdd_size) * pricing.hdd_unit_price))
+             (decimal.Decimal(hdd_size) * pricing.hdd_unit_price) +
+             decimal.Decimal(settings.VM_BASE_PRICE))
     cents = decimal.Decimal('.01')
     price = price.quantize(cents, decimal.ROUND_HALF_UP)
     return round(float(price), 2)
@@ -102,7 +105,8 @@ def get_vm_price_for_given_vat(cpu, memory, ssd_size, hdd_size=0,
         (decimal.Decimal(cpu) * pricing.cores_unit_price) +
         (decimal.Decimal(memory) * pricing.ram_unit_price) +
         (decimal.Decimal(ssd_size) * pricing.ssd_unit_price) +
-        (decimal.Decimal(hdd_size) * pricing.hdd_unit_price)
+        (decimal.Decimal(hdd_size) * pricing.hdd_unit_price) +
+        decimal.Decimal(settings.VM_BASE_PRICE)
     )
 
     discount_name = pricing.discount_name
@@ -118,7 +122,8 @@ def get_vm_price_for_given_vat(cpu, memory, ssd_size, hdd_size=0,
     discount = {
         'name': discount_name,
         'amount': discount_amount,
-        'amount_with_vat': round(float(discount_amount_with_vat), 2)
+        'amount_with_vat': round(float(discount_amount_with_vat), 2),
+        'stripe_coupon_id': pricing.stripe_coupon_id
     }
     return (round(float(price), 2), round(float(vat), 2),
             round(float(vat_percent), 2), discount)
@@ -154,7 +159,8 @@ def get_vm_price_with_vat(cpu, memory, ssd_size, hdd_size=0,
         (decimal.Decimal(cpu) * pricing.cores_unit_price) +
         (decimal.Decimal(memory) * pricing.ram_unit_price) +
         (decimal.Decimal(ssd_size) * pricing.ssd_unit_price) +
-        (decimal.Decimal(hdd_size) * pricing.hdd_unit_price)
+        (decimal.Decimal(hdd_size) * pricing.hdd_unit_price) +
+        decimal.Decimal(settings.VM_BASE_PRICE)
     )
     if pricing.vat_inclusive:
         vat = decimal.Decimal(0)
@@ -168,7 +174,8 @@ def get_vm_price_with_vat(cpu, memory, ssd_size, hdd_size=0,
     vat = vat.quantize(cents, decimal.ROUND_HALF_UP)
     discount = {
         'name': pricing.discount_name,
-        'amount': round(float(pricing.discount_amount), 2)
+        'amount': round(float(pricing.discount_amount), 2),
+        'stripe_coupon_id': pricing.stripe_coupon_id
     }
     return (round(float(price), 2), round(float(vat), 2),
             round(float(vat_percent), 2), discount)
@@ -213,11 +220,6 @@ def get_ip_addresses(vm_id):
         logger.error(str(dne))
         logger.error("VMDetail for %s does not exist" % vm_id)
         return "--"
-
-
-def round_up(n, decimals=0):
-    multiplier = 10 ** decimals
-    return math.ceil(n * multiplier) / multiplier
 
 
 class HostingUtils:

@@ -54,6 +54,7 @@ class VMPricing(models.Model):
     discount_amount = models.DecimalField(
         max_digits=6, decimal_places=2, default=0
     )
+    stripe_coupon_id = models.CharField(max_length=255, null=True, blank=True)
 
     def __str__(self):
         display_str = self.name + ' => ' + ' - '.join([

@@ -1,5 +1,6 @@
 from cms.plugin_base import CMSPluginBase
 from cms.plugin_pool import plugin_pool
+from django.conf import settings
 
 from .cms_models import (
     DCLBannerItemPluginModel, DCLBannerListPluginModel, DCLContactPluginModel,
@@ -100,6 +101,7 @@ class DCLCalculatorPlugin(CMSPluginBase):
                 vm_type=instance.vm_type
             ).order_by('name')
         context['instance'] = instance
+        context['vm_base_price'] = settings.VM_BASE_PRICE
         context['min_ram'] = 0.5 if instance.enable_512mb_ram else 1
         return context
 
