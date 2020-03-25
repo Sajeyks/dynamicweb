@@ -1187,6 +1187,7 @@ class OrdersHostingDetailView(LoginRequiredMixin, DetailView, FormView):
             [{"plan": stripe_plan.get('response_object').stripe_plan_id}],
             coupon=(discount['stripe_coupon_id']
                     if 'name' in discount and
+                       discount['name'] is not None and
                        'ipv6' in discount['name'].lower() and
                        discount['stripe_coupon_id']
                     else ""),
