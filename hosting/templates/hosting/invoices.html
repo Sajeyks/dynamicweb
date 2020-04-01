@@ -73,5 +73,57 @@
 {% endif %}
         </div>
 
+        <div class="one-time-charges">
+    <table class="table table-switch">
+        <thead>
+            <tr>
+                <th>{% trans "Product" %}</th>
+                <th>{% trans "Date" %}</th>
+                <th>{% trans "Amount" %}</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for ho_id, stripe_charge_data in invs_charge %}
+                <tr>
+                    {{ ho_id | get_line_item_from_hosting_order_charge: stripe_charge_data.receipt_url }}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% if invs_charge.has_other_pages %}
+  <ul class="pagination">
+    {% if invs_charge.has_previous %}
+      {% if user_email %}
+        <li><a href="?page={{ invs_charge.previous_page_number }}&user_email={{user_email}}">&laquo;</a></li>
+      {% else %}
+        <li><a href="?page={{ invs_charge.previous_page_number }}">&laquo;</a></li>
+      {% endif %}
+    {% else %}
+      <li class="disabled"><span>&laquo;</span></li>
+    {% endif %}
+    {% for i in invs_charge.paginator.page_range %}
+      {% if invs_charge.number == i %}
+        <li class="active"><span>{{ i }} <span class="sr-only">(current)</span></span></li>
+      {% else %}
+          {% if user_email %}
+              <li><a href="?page={{ i }}&user_email={{user_email}}">{{ i }}</a></li>
+          {% else %}
+              <li><a href="?page={{ i }}">{{ i }}</a></li>
+          {% endif %}
+      {% endif %}
+    {% endfor %}
+    {% if invs_charge.has_next %}
+      {% if user_email %}
+        <li><a href="?page={{ invs_charge.next_page_number }}&user_email={{user_email}}">&raquo;</a></li>
+      {% else %}
+        <li><a href="?page={{ invs_charge.next_page_number }}">&raquo;</a></li>
+      {% endif %}
+    {% else %}
+      <li class="disabled"><span>&raquo;</span></li>
+    {% endif %}
+  </ul>
+{% endif %}
+        </div>
 </div>
 {% endblock %}
