@@ -63,7 +63,7 @@ def escaped_line_break(value):
     return value.replace("\\n", "\n")
 
 
-@register.filter('get_line_item_from_hosting_order_charge')
+@register.simple_tag
 def get_line_item_from_hosting_order_charge(hosting_order_id, receipt_url):
     """
     Returns ready-to-use "html" line item to be shown for a charge in the
