@@ -13,6 +13,7 @@ from django.core.exceptions import ValidationError
 from django.core.files.base import ContentFile
 from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
 from django.core.urlresolvers import reverse_lazy, reverse
+from django.db.models import Q
 from django.http import (
     Http404, HttpResponseRedirect, HttpResponse, JsonResponse
 )
@@ -1287,6 +1288,7 @@ class InvoiceListView(LoginRequiredMixin, TemplateView):
         page = self.request.GET.get('page', 1)
         context = super(InvoiceListView, self).get_context_data(**kwargs)
         invs_page = None
+        invs_page_charges = None
         if ('user_email' in self.request.GET
             and self.request.user.email == settings.ADMIN_EMAIL):
             user_email = self.request.GET['user_email']
@@ -1308,6 +1310,21 @@ class InvoiceListView(LoginRequiredMixin, TemplateView):
                 invs_page = paginator.page(1)
             except EmptyPage:
                 invs_page = paginator.page(paginator.num_pages)
+            hosting_orders = HostingOrder.objects.filter(
+                customer=cu.stripecustomer).filter(
+                Q(subscription_id=None) | Q(subscription_id='')
+            )
+            stripe_chgs = []
+            for ho in hosting_orders:
+                stripe_chgs.append({ho.id: stripe.Charge.retrieve(ho.stripe_charge_id)})
+
+            paginator_charges = Paginator(stripe_chgs, 10)
+            try:
+                invs_page_charges = paginator_charges.page(page)
+            except PageNotAnInteger:
+                invs_page_charges = paginator_charges.page(1)
+            except EmptyPage:
+                invs_page_charges = paginator_charges.page(paginator_charges.num_pages)
         else:
             try:
                 invs = stripe.Invoice.list(
@@ -1321,10 +1338,27 @@ class InvoiceListView(LoginRequiredMixin, TemplateView):
                     invs_page = paginator.page(1)
                 except EmptyPage:
                     invs_page = paginator.page(paginator.num_pages)
+                hosting_orders = HostingOrder.objects.filter(
+                    customer=self.request.user.stripecustomer).filter(
+                    Q(subscription_id=None) | Q(subscription_id='')
+                )
+                stripe_chgs = []
+                for ho in hosting_orders:
+                    stripe_chgs.append(
+                        {ho.id: stripe.Charge.retrieve(ho.stripe_charge_id)})
+                paginator_charges = Paginator(stripe_chgs, 10)
+                try:
+                    invs_page_charges = paginator_charges.page(page)
+                except PageNotAnInteger:
+                    invs_page_charges = paginator_charges.page(1)
+                except EmptyPage:
+                    invs_page_charges = paginator_charges.page(
+                        paginator_charges.num_pages)
             except Exception as ex:
                 logger.error(str(ex))
                 invs_page = None
         context["invs"] = invs_page
+        context["invs_charge"] = invs_page_charges
         return context
 
     @method_decorator(decorators)
