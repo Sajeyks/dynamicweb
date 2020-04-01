@@ -6,7 +6,7 @@ from django.core.urlresolvers import resolve, reverse
 from django.utils.safestring import mark_safe
 from django.utils.translation import activate, get_language, ugettext_lazy as _
 
-from hosting.models import GenericProduct
+from hosting.models import GenericProduct, HostingOrder
 from utils.hosting_utils import get_ip_addresses
 
 logger = logging.getLogger(__name__)
@@ -61,6 +61,35 @@ def escaped_line_break(value):
     :return:
     """
     return value.replace("\\n", "\n")
+
+
+@register.filter('get_line_item_from_hosting_order_charge')
+def get_line_item_from_hosting_order_charge(hosting_order_id, receipt_url):
+    """
+    Returns ready-to-use "html" line item to be shown for a charge in the
+    invoice list page
+
+    :param hosting_order_id: the HostingOrder id
+    :return:
+    """
+    hosting_order = HostingOrder.objects.get(id = hosting_order_id)
+    if hosting_order.stripe_charge_id:
+        return mark_safe("""
+                    <td class="xs-td-inline">{product_name}</td>
+                    <td class="xs-td-inline">{created_at}</td>
+                    <td class="xs-td-inline">{total}</td>
+                    <td class="text-right last-td">
+                        <a class="btn btn-order-detail" href="{receipt_url}" target="_blank">{see_invoice_text}</a>
+                    </td>
+        """.format(
+            product_name=hosting_order.generic_product.product_name.capitalize(),
+            created_at=hosting_order.created_at.strftime('%Y-%m-%d'),
+            total='%.2f' % (hosting_order.price),
+            receipt_url=receipt_url,
+            see_invoice_text=_("See Invoice")
+        ))
+    else:
+        return ""
 
 
 @register.filter('get_line_item_from_stripe_invoice')
