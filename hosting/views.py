@@ -1345,7 +1345,7 @@ class InvoiceListView(LoginRequiredMixin, TemplateView):
                 stripe_chgs = []
                 for ho in hosting_orders:
                     stripe_chgs.append(
-                        {ho.id: stripe.Charge.retrieve(ho.stripe_charge_id)})
+                        {ho: stripe.Charge.retrieve(ho.stripe_charge_id)})
                 paginator_charges = Paginator(stripe_chgs, 10)
                 try:
                     invs_page_charges = paginator_charges.page(page)
