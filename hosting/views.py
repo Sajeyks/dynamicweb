@@ -1344,6 +1344,8 @@ class InvoiceListView(LoginRequiredMixin, TemplateView):
                 )
                 stripe_chgs = []
                 for ho in hosting_orders:
+                    ho.generic_product.product_name = ho.generic_product.product_name.capitalize()
+                    ho.created = ho.created.strftime('%Y-%m-%d')
                     stripe_chgs.append(
                         {ho: stripe.Charge.retrieve(ho.stripe_charge_id)})
                 paginator_charges = Paginator(stripe_chgs, 10)

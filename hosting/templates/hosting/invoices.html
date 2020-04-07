@@ -86,8 +86,8 @@
         <tbody>
             {% for ho, stripe_charge_data in invs_charge %}
                 <tr>
-                    <td class="xs-td-inline">{{ho.generic_product.product_name.capitalize()}}</td>
-                    <td class="xs-td-inline">{{ho.created_at.strftime('%Y-%m-%d')}}</td>
+                    <td class="xs-td-inline">{{ho.generic_product.product_name}}</td>
+                    <td class="xs-td-inline">{{ho.created_at}}</td>
                     <td class="xs-td-inline">{{ho.price}}</td>
                     <td class="text-right last-td">
                         <a class="btn btn-order-detail" href="{stripe_charge_data.receipt_url}" target="_blank">{% trans "See Invoice" %}</a>
