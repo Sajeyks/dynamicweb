@@ -63,8 +63,8 @@ def escaped_line_break(value):
     return value.replace("\\n", "\n")
 
 
-@register.simple_tag
-def get_line_item_from_hosting_order_charge(hosting_order_id, receipt_url):
+@register.filter('get_line_item_from_hosting_order_charge')
+def get_line_item_from_hosting_order_charge(hosting_order_id):
     """
     Returns ready-to-use "html" line item to be shown for a charge in the
     invoice list page
@@ -85,7 +85,7 @@ def get_line_item_from_hosting_order_charge(hosting_order_id, receipt_url):
             product_name=hosting_order.generic_product.product_name.capitalize(),
             created_at=hosting_order.created_at.strftime('%Y-%m-%d'),
             total='%.2f' % (hosting_order.price),
-            receipt_url=receipt_url,
+            receipt_url="test",
             see_invoice_text=_("See Invoice")
         ))
     else:

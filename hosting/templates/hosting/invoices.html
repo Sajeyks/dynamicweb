@@ -1,5 +1,5 @@
 {% extends "hosting/base_short.html" %}
-{% load staticfiles bootstrap3 humanize i18n custom_tags get_line_item_from_hosting_order_charge %}
+{% load staticfiles bootstrap3 humanize i18n custom_tags %}
 
 {% block content %}
 <div class="dashboard-container">
@@ -84,9 +84,15 @@
             </tr>
         </thead>
         <tbody>
-            {% for ho_id, stripe_charge_data in invs_charge %}
+            {% for ho, stripe_charge_data in invs_charge %}
                 <tr>
-                    {{ get_line_item_from_hosting_order_charge ho_id stripe_charge_data.receipt_url }}
+                    <td class="xs-td-inline">{ho.generic_product.product_name.capitalize()}</td>
+                    <td class="xs-td-inline">{ho.created_at.strftime('%Y-%m-%d')}</td>
+                    <td class="xs-td-inline">{ho.price}</td>
+                    <td class="text-right last-td">
+                        <a class="btn btn-order-detail" href="{stripe_charge_data.receipt_url}" target="_blank">{% trans "See Invoice" %}</a>
+                    </td>
+                    {{ get_line_item_from_hosting_order_charge ho_id }}
                 </tr>
             {% endfor %}
         </tbody>
