@@ -92,7 +92,7 @@
                     <td class="text-right last-td">
                         <a class="btn btn-order-detail" href="{stripe_charge_data.receipt_url}" target="_blank">{% trans "See Invoice" %}</a>
                     </td>
-                    {{ get_line_item_from_hosting_order_charge ho_id }}
+                    {{ ho_id | get_line_item_from_hosting_order_charge }}
                 </tr>
             {% endfor %}
         </tbody>
