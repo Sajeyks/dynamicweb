@@ -2,7 +2,7 @@ import datetime
 import logging
 
 from django import template
-from django.core.urlresolvers import resolve, reverse
+from django.core.urlresolvers import resolve, reverse, reverse_lazy
 from django.utils.safestring import mark_safe
 from django.utils.translation import activate, get_language, ugettext_lazy as _
 
@@ -85,7 +85,7 @@ def get_line_item_from_hosting_order_charge(hosting_order_id):
             product_name=hosting_order.generic_product.product_name.capitalize(),
             created_at=hosting_order.created_at.strftime('%Y-%m-%d'),
             total='%.2f' % (hosting_order.price),
-            receipt_url="test",
+            receipt_url=reverse_lazy('hosting:login', hosting_order.id),
             see_invoice_text=_("See Invoice")
         ))
     else:
