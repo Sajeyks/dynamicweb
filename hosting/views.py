@@ -1783,11 +1783,11 @@ class VirtualMachineView(LoginRequiredMixin, View):
             )
             response['text'] = str(_('Error terminating VM')) + str(vm.id)
         else:
-            for t in range(15):
+            for t in range(settings.MAX_TIME_TO_WAIT_FOR_VM_TERMINATE):
                 try:
                     manager.get_vm(vm.id)
                 except WrongIdError:
-                    logger.error(
+                    logger.debug(
                         "VM {} not found. So, its terminated.".format(vm.id)
                     )
                     response['status'] = True
@@ -1798,7 +1798,7 @@ class VirtualMachineView(LoginRequiredMixin, View):
                     vm_detail_obj.terminated_at = datetime.utcnow()
                     vm_detail_obj.save()
                 except BaseException as base_exception:
-                    logger.error(
+                    logger.debug(
                         "manager.get_vm({vm_id}) returned exception: "
                         "{details}.".format(
                             details=str(base_exception), vm_id=vm.id
@@ -1806,6 +1806,10 @@ class VirtualMachineView(LoginRequiredMixin, View):
                     )
                     break
                 else:
+                    logger.debug(
+                        'Sleeping 2 seconds for terminate action on VM %s' %
+                        vm.id
+                    )
                     sleep(2)
             if not response['status']:
                 response['text'] = str(_("VM terminate action timed out. "
