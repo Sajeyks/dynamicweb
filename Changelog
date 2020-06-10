@@ -1,3 +1,5 @@
+2.10.8: 2020-06-10
+   * #8102: Refactor MAX_TIME_TO_WAIT_FOR_VM_TERMINATE to increase time to poll whether VM has been terminated or not (MR!737)
 2.10.7: 2020-05-25
    * Bugfix: Handle VM templates deleted in OpenNebula but VM instances still existing (MR!736)
    Notes for deployment:
