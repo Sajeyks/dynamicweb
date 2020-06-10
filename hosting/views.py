@@ -1787,7 +1787,7 @@ class VirtualMachineView(LoginRequiredMixin, View):
                 try:
                     manager.get_vm(vm.id)
                 except WrongIdError:
-                    logger.debug(
+                    logger.error(
                         "VM {} not found. So, its terminated.".format(vm.id)
                     )
                     response['status'] = True
@@ -1798,7 +1798,7 @@ class VirtualMachineView(LoginRequiredMixin, View):
                     vm_detail_obj.terminated_at = datetime.utcnow()
                     vm_detail_obj.save()
                 except BaseException as base_exception:
-                    logger.debug(
+                    logger.error(
                         "manager.get_vm({vm_id}) returned exception: "
                         "{details}.".format(
                             details=str(base_exception), vm_id=vm.id
