@@ -1,5 +1,5 @@
 2.11: 2020-06-11
-   * Bugfix: Correct the wrong constant name (caused payment to go thru and showing error and VMs not instantiated) (MR!738)
+   * Bugfix: Correct the wrong constant name (caused payment to go thru and showing error and VMs not instantiated)
 2.10.8: 2020-06-10
    * #8102: Refactor MAX_TIME_TO_WAIT_FOR_VM_TERMINATE to increase time to poll whether VM has been terminated or not (MR!737)
 2.10.7: 2020-05-25
