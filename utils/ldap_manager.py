@@ -266,7 +266,7 @@ class LdapManager:
                     logger.error(
                         "Error reading int value from {}. {}"
                         "Returning default value {} instead".format(
-                            settings.LDAP_MAX_UID_PATH,
+                            settings.LDAP_MAX_UID_FILE_PATH,
                             str(ve),
                             settings.LDAP_DEFAULT_START_UID
                         )

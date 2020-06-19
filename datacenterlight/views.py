@@ -1011,14 +1011,6 @@ class OrderConfirmationView(DetailView, FormView):
                     user_hosting_key = UserHostingKey.objects.get(id=self.request.session['new_user_hosting_key_id'])
                     user_hosting_key.user = new_user
                     user_hosting_key.save()
-
-                owner = new_user
-                manager = OpenNebulaManager(
-                    email=owner.username,
-                    password=owner.password
-                )
-                keys_to_save = get_all_public_keys(new_user)
-                manager.save_key_in_opennebula_user('\n'.join(keys_to_save))
         else:
             # We assume that if the user is here, his/her StripeCustomer
             # object already exists
