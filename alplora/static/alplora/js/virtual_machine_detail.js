@@ -15,14 +15,4 @@ $( document ).ready(function() {
     $('html,body').scrollTop(scrollmem);
   });
 
-
-    // Toggle subscription and one-time payments div
-    $('#li-one-time-charges').click(function() {
-        console.log("li-one-time-charges clicked");
-    });
-    $('#li-subscriptions').click(function() {
-      console.log("li-one-time-charges clicked");
-    });
-
-
 });

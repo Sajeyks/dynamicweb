@@ -135,7 +135,15 @@ $(document).ready(function() {
     });
     $('#createvm-modal').on('hidden.bs.modal', function () {
         $(this).find('.modal-footer .btn').addClass('hide');
-    })
+    });
+
+    // Toggle subscription and one-time payments div
+    $('#li-one-time-charges').click(function() {
+        console.log("li-one-time-charges clicked");
+    });
+    $('#li-subscriptions').click(function() {
+      console.log("li-one-time-charges clicked");
+    });
 });
 
 window.onload = function () {
