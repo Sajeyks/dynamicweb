@@ -16,10 +16,10 @@
     </div>
 
 <ul class="nav nav-tabs">
-  <li class="active"><a href="#">{% trans "Subscriptions" %}</a></li>
-  <li><a href="#">{% trans "One-time payments" %}</a></li>
+  <li class="active" id="li-subscriptions"><a href="#">{% trans "Subscriptions" %}</a></li>
+  <li id="li-one-time-payments"><a href="#">{% trans "One-time payments" %}</a></li>
 </ul>
-    <div class="subscriptions">
+    <div class="subscriptions" id="subscriptions">
     <table class="table table-switch">
         <thead>
             <tr>
@@ -73,7 +73,8 @@
 {% endif %}
         </div>
 
-        <div class="one-time-charges">
+
+ <div id="#one-time-charges" class="one-time-charges invisible">
     <table class="table table-switch">
         <thead>
             <tr>
