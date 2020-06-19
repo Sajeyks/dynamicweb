@@ -140,9 +140,13 @@ $(document).ready(function() {
     // Toggle subscription and one-time payments div
     $('#li-one-time-charges').click(function() {
         console.log("li-one-time-charges clicked");
+        $('#subscriptions').slideToggle();
+        $('#one-time-charges').slideToggle();
     });
     $('#li-subscriptions').click(function() {
-      console.log("li-one-time-charges clicked");
+        console.log("li-one-time-charges clicked");
+        $('#one-time-charges').slideToggle();
+        $('#subscriptions').slideToggle();
     });
 });
 
