@@ -148,9 +148,6 @@ $(document).ready(function() {
         $('#one-time-charges').hide();
         $('#subscriptions').show();
     });
-
-    $('#one-time-charges').hide();
-    $('#subscriptions').show();
 });
 
 window.onload = function () {
