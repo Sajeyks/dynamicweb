@@ -427,8 +427,12 @@ class OpenNebulaManager():
         template_id = int(template_id)
         try:
             template_pool = self._get_template_pool()
+            if template_id in settings.UPDATED_TEMPLATES_DICT.keys():
+                template_id = settings.UPDATED_TEMPLATES_DICT[template_id]
             return template_pool.get_by_id(template_id)
-        except:
+        except Exception as ex:
+            logger.debug("Template Id we are looking for : %s" % template_id)
+            logger.error(str(ex))
             raise ConnectionRefusedError
 
     def create_template(self, name, cores, memory, disk_size, core_price,
