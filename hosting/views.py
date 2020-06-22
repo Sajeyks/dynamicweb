@@ -1313,7 +1313,7 @@ class InvoiceListView(LoginRequiredMixin, TemplateView):
             hosting_orders = HostingOrder.objects.filter(
                 customer=cu.stripecustomer).filter(
                 Q(subscription_id=None) | Q(subscription_id='')
-            )
+            ).order_by('-created_at')
             stripe_chgs = []
             for ho in hosting_orders:
                 stripe_chgs.append({ho.id: stripe.Charge.retrieve(ho.stripe_charge_id)})
@@ -1341,7 +1341,7 @@ class InvoiceListView(LoginRequiredMixin, TemplateView):
                 hosting_orders = HostingOrder.objects.filter(
                     customer=self.request.user.stripecustomer).filter(
                     Q(subscription_id=None) | Q(subscription_id='')
-                )
+                ).order_by('-created_at')
                 stripe_chgs = []
                 for ho in hosting_orders:
                     stripe_chgs.append(
