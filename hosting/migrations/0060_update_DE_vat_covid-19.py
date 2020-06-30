@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
         migrations.RunSQL(
             sql=["update hosting_vatrates set stop_date = '2020-06-30' where territory_codes = 'DE' and rate = '0.19'"],
             reverse_sql=[
-                "update hosting_vatrates set stop_date = '' where stop_date = '2020-06-30' and territory_codes = 'DE' and rate = '0.19'"],
+                "update hosting_vatrates set stop_date = null where stop_date = '2020-06-30' and territory_codes = 'DE' and rate = '0.19'"],
         ),
         migrations.RunSQL(
             sql=[
