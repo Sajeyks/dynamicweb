@@ -424,8 +424,10 @@ class PaymentOrderView(FormView):
                     )
                     gp_details = {
                         "product_name": product.product_name,
-                        "vat_rate": user_country_vat_rate * 100,
-                        "vat_amount": round(
+                        "vat_rate": 0 if product.exclude_vat_calculations else
+                        user_country_vat_rate * 100,
+                        "vat_amount": 0 if product.exclude_vat_calculations
+                        else round(
                             float(product.product_price) *
                             user_country_vat_rate, 2),
                         "vat_country": address_form.cleaned_data["country"],
@@ -444,7 +446,8 @@ class PaymentOrderView(FormView):
                         "product_id": product.id,
                         "product_slug": product.product_slug,
                         "recurring_interval":
-                            product.product_subscription_interval
+                            product.product_subscription_interval,
+                        "exclude_vat_calculations": product.exclude_vat_calculations
                     }
                     request.session["generic_payment_details"] = (
                         gp_details
