@@ -106,55 +106,58 @@
                         <div class="col-sm-12">
                             <hr class="thin-hr">
                         </div>
-                        <div class="col-sm-9">
-                            <p>
-                                <strong class="text-uppercase">{% trans "Price Before VAT" %}</strong>
-                                <strong class="pull-right">{{generic_payment_details.amount_before_vat|floatformat:2|intcomma}} CHF</strong>
-                            </p>
-                        </div>
-                        <div class="col-sm-12">
-                            <hr class="thin-hr">
-                        </div>
-                        <div class="col-sm-9">
-                            <div class="row">
-                              <div class="col-md-4 col-sm-4 col-xs-4">
-                                <p><span></span></p>
-                              </div>
-                              <div class="col-md-3 col-sm-3 col-xs-4">
-                                <p class="text-right"><strong class="cmf-ord-heading">{% trans "Pre VAT" %}</strong></p>
-                              </div>
-                              <div class="col-md-5 col-sm-5 col-xs-4 header-no-left-padding">
-                                <p class="text-right"><strong class="cmf-ord-heading">{% trans "VAT for" %} {{generic_payment_details.vat_country}} ({{generic_payment_details.vat_rate}}%)</strong></p>
-                              </div>
+                        {% if generic_payment_details.exclude_vat_calculations %}
+                        {% else %}
+                            <div class="col-sm-9">
+                                <p>
+                                    <strong class="text-uppercase">{% trans "Price Before VAT" %}</strong>
+                                    <strong class="pull-right">{{generic_payment_details.amount_before_vat|floatformat:2|intcomma}} CHF</strong>
+                                </p>
                             </div>
-                            <div class="row">
-                              <div class="col-md-4 col-sm-4 col-xs-4">
-                                <p><span>Price</span></p>
-                              </div>
-                              <div class="col-md-3 col-sm-3 col-xs-4">
-                                <p><span class="pull-right" >{{generic_payment_details.amount_before_vat|floatformat:2|intcomma}} CHF</span></p>
-                              </div>
-                              <div class="col-md-5 col-sm-5 col-xs-4">
-                                <p><span class="pull-right">{{generic_payment_details.amount|floatformat:2|intcomma}} CHF</span></p>
-                              </div>
+                            <div class="col-sm-12">
+                                <hr class="thin-hr">
                             </div>
-                        </div>
-                        <div class="col-sm-12">
-                            <hr class="thin-hr">
-                        </div>
-                        <div class="col-sm-9">
-                            <div class="row">
-                              <div class="col-md-4 col-sm-4 col-xs-4">
-                                <p><strong>Total</strong></p>
-                              </div>
-                              <div class="col-md-3 col-sm-3 col-xs-4">
-                                <p><strong class="pull-right">{{generic_payment_details.amount_before_vat|floatformat:2|intcomma}} CHF</strong></p>
-                              </div>
-                              <div class="col-md-5 col-sm-5 col-xs-4">
-                                <p><strong class="pull-right">{{generic_payment_details.amount|floatformat:2|intcomma}} CHF</strong></p>
-                              </div>
+                            <div class="col-sm-9">
+                                <div class="row">
+                                  <div class="col-md-4 col-sm-4 col-xs-4">
+                                    <p><span></span></p>
+                                  </div>
+                                  <div class="col-md-3 col-sm-3 col-xs-4">
+                                    <p class="text-right"><strong class="cmf-ord-heading">{% trans "Pre VAT" %}</strong></p>
+                                  </div>
+                                  <div class="col-md-5 col-sm-5 col-xs-4 header-no-left-padding">
+                                    <p class="text-right"><strong class="cmf-ord-heading">{% trans "VAT for" %} {{generic_payment_details.vat_country}} ({{generic_payment_details.vat_rate}}%)</strong></p>
+                                  </div>
+                                </div>
+                                <div class="row">
+                                  <div class="col-md-4 col-sm-4 col-xs-4">
+                                    <p><span>Price</span></p>
+                                  </div>
+                                  <div class="col-md-3 col-sm-3 col-xs-4">
+                                    <p><span class="pull-right" >{{generic_payment_details.amount_before_vat|floatformat:2|intcomma}} CHF</span></p>
+                                  </div>
+                                  <div class="col-md-5 col-sm-5 col-xs-4">
+                                    <p><span class="pull-right">{{generic_payment_details.amount|floatformat:2|intcomma}} CHF</span></p>
+                                  </div>
+                                </div>
                             </div>
-                        </div>
+                            <div class="col-sm-12">
+                                <hr class="thin-hr">
+                            </div>
+                            <div class="col-sm-9">
+                                <div class="row">
+                                  <div class="col-md-4 col-sm-4 col-xs-4">
+                                    <p><strong>Total</strong></p>
+                                  </div>
+                                  <div class="col-md-3 col-sm-3 col-xs-4">
+                                    <p><strong class="pull-right">{{generic_payment_details.amount_before_vat|floatformat:2|intcomma}} CHF</strong></p>
+                                  </div>
+                                  <div class="col-md-5 col-sm-5 col-xs-4">
+                                    <p><strong class="pull-right">{{generic_payment_details.amount|floatformat:2|intcomma}} CHF</strong></p>
+                                  </div>
+                                </div>
+                            </div>
+                        {% endif %}
                         <div class="col-sm-12">
                             <hr class="thin-hr">
                         </div>
