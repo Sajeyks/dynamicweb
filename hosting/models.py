@@ -82,15 +82,22 @@ class GenericProduct(AssignPermissionsMixin, models.Model):
     product_subscription_interval = models.CharField(
         max_length=10, default="month",
         help_text="Choose between `year` and `month`")
+    exclude_vat_calculations = models.BooleanField(
+        default=False,
+        help_text="When checked VAT calculations are excluded for this product"
+    )
 
     def __str__(self):
         return self.product_name
 
     def get_actual_price(self, vat_rate=None):
-        VAT = vat_rate if vat_rate is not None else self.product_vat
-        return round(
-            float(self.product_price) + float(self.product_price) * float(VAT), 2
-        )
+        if self.exclude_vat_calculations:
+            return round(float(self.product_price), 2)
+        else:
+            VAT = vat_rate if vat_rate is not None else self.product_vat
+            return round(
+                float(self.product_price) + float(self.product_price) * float(VAT), 2
+            )
 
 
 class HostingOrder(AssignPermissionsMixin, models.Model):
