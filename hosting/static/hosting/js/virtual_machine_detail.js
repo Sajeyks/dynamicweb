@@ -111,7 +111,7 @@ $(document).ready(function() {
                     console.log("Show SCA");
                     var stripe = Stripe(data.STRIPE_PUBLISHABLE_KEY);
 
-                      stripe.confirmCardPayment(pi_secret).then(function(result) {
+                      stripe.confirmCardPayment(data.payment_intent_secret).then(function(result) {
                         if (result.error) {
                           // Display error.message in your UI.
                           $("#3ds_result").text("Error!");
