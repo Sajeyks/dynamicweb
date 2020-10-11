@@ -959,7 +959,7 @@ class OrderConfirmationView(DetailView, FormView):
             ret = stripe.PaymentIntent.confirm(
                 latest_invoice.payment_intent
             )
-            if ret.status == 'requires_action':
+            if ret.status == 'requires_source_action' or ret.status == 'requires_action':
                 pi = stripe.PaymentIntent.retrieve(
                     latest_invoice.payment_intent
                 )
