@@ -1195,6 +1195,21 @@ class OrdersHostingDetailView(LoginRequiredMixin, DetailView, FormView):
             tax_rates=[stripe_tax_rate.tax_rate_id] if stripe_tax_rate else [],
         )
         stripe_subscription_obj = subscription_result.get('response_object')
+        latest_invoice = stripe.Invoice.retrieve(stripe_subscription_obj.latest_invoice)
+        ret = stripe.PaymentIntent.confirm(
+            latest_invoice.payment_intent
+        )
+        if ret.status == 'requires_action':
+            pi = stripe.PaymentIntent.retrieve(
+                latest_invoice.payment_intent
+            )
+            context = {
+                'sid': stripe_subscription_obj.id,
+                'payment_intent_secret': pi.client_secret,
+                'STRIPE_PUBLISHABLE_KEY': settings.STRIPE_API_PUBLIC_KEY,
+                'showSCA': True
+            }
+            return JsonResponse(context)
         # Check if the subscription was approved and is active
         if (stripe_subscription_obj is None or
                 stripe_subscription_obj.status != 'active'):

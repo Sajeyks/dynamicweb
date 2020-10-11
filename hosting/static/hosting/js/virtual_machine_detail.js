@@ -107,18 +107,36 @@ $(document).ready(function() {
             success: function (data) {
                 fa_icon = $('.modal-icon > .fa');
                 modal_btn = $('#createvm-modal-done-btn');
-                $('#createvm-modal-title').text(data.msg_title);
-                $('#createvm-modal-body').html(data.msg_body);
-                if (data.redirect) {
-                    modal_btn.attr('href', data.redirect).removeClass('hide');
+                if (data.showSCA){
+                    console.log("Show SCA");
+                    var stripe = Stripe(data.STRIPE_PUBLISHABLE_KEY);
+
+                      stripe.confirmCardPayment(pi_secret).then(function(result) {
+                        if (result.error) {
+                          // Display error.message in your UI.
+                          $("#3ds_result").text("Error!");
+                          $("#3ds_result").addClass("text-danger");
+                        } else {
+                          // The payment has succeeded. Display a success message.
+                          $("#3ds_result").text("Thank you for payment");
+                          $("#3ds_result").addClass("text-success");
+                        }
+                      });
+                    $('#3Dsecure-modal').show();
                 } else {
-                    modal_btn.attr('href', "");
-                }
-                if (data.status === true) {
-                    fa_icon.attr('class', 'checkmark');
-                } else {
-                    fa_icon.attr('class', 'fa fa-close');
-                    modal_btn.attr('class', '').addClass('btn btn-danger btn-ok btn-wide');
+                    $('#createvm-modal-title').text(data.msg_title);
+                    $('#createvm-modal-body').html(data.msg_body);
+                    if (data.redirect) {
+                        modal_btn.attr('href', data.redirect).removeClass('hide');
+                    } else {
+                        modal_btn.attr('href', "");
+                    }
+                    if (data.status === true) {
+                        fa_icon.attr('class', 'checkmark');
+                    } else {
+                        fa_icon.attr('class', 'fa fa-close');
+                        modal_btn.attr('class', '').addClass('btn btn-danger btn-ok btn-wide');
+                    }
                 }
             },
             error: function (xmlhttprequest, textstatus, message) {

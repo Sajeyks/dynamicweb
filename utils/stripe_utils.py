@@ -322,6 +322,7 @@ class StripeUtils(object):
             customer=customer, items=plans, trial_end=trial_end,
             coupon=coupon,
             default_tax_rates=tax_rates,
+            payment_behavior='allow_incomplete'
         )
         return subscription_result
 
