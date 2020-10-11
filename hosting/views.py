@@ -1078,6 +1078,12 @@ class OrdersHostingDetailView(LoginRequiredMixin, DetailView, FormView):
         billing_address_data = request.session.get('billing_address_data')
         vm_template_id = template.get('id', 1)
         stripe_api_cus_id = request.user.stripecustomer.stripe_id
+        logger.debug("template=%s specs=%s stripe_customer_id=%s "
+                     "billing_address_data=%s vm_template_id=%s "
+                     "stripe_api_cus_id=%s" % (
+            template, specs, stripe_customer_id, billing_address_data,
+            vm_template_id, stripe_api_cus_id)
+        )
         if 'token' in self.request.session:
             card_details = stripe_utils.get_cards_details_from_token(
                 request.session['token']
