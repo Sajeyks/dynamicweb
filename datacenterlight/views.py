@@ -709,11 +709,14 @@ class OrderConfirmationView(DetailView, FormView):
         user = request.session.get('user')
         stripe_api_cus_id = request.session.get('customer')
         stripe_utils = StripeUtils()
+        logger.debug("user=%s stripe_api_cus_id=%s" % (user, stripe_api_cus_id))
 
         if 'token' in request.session:
             card_details = stripe_utils.get_cards_details_from_token(
                 request.session.get('token')
             )
+            logger.debug(
+                "card_details=%s stripe_api_cus_id=%s" % (card_details))
             if not card_details.get('response_object'):
                 msg = card_details.get('error')
                 messages.add_message(self.request, messages.ERROR, msg,
@@ -794,6 +797,7 @@ class OrderConfirmationView(DetailView, FormView):
                 'brand': user_card_detail.brand,
                 'card_id': user_card_detail.card_id
             }
+            logger.debug("card_details_dict=%s" % card_details_dict)
         else:
             response = {
                 'status': False,
@@ -811,6 +815,7 @@ class OrderConfirmationView(DetailView, FormView):
         if ('generic_payment_type' in request.session and
                 self.request.session['generic_payment_type'] == 'generic'):
             gp_details = self.request.session['generic_payment_details']
+            logger.debug("gp_details=%s" % gp_details)
             if gp_details['recurring']:
                 # generic recurring payment
                 logger.debug("Commencing a generic recurring payment")
@@ -849,6 +854,8 @@ class OrderConfirmationView(DetailView, FormView):
         if ('generic_payment_type' not in request.session or
                 (request.session['generic_payment_details']['recurring'])):
             recurring_interval = 'month'
+            logger.debug("'generic_payment_type' not in request.session or"
+                         "(request.session['generic_payment_details']['recurring']")
             if 'generic_payment_details' in request.session:
                 vat_percent = request.session['generic_payment_details']['vat_rate']
                 vat_country = request.session['generic_payment_details']['vat_country']
@@ -897,6 +904,7 @@ class OrderConfirmationView(DetailView, FormView):
                     app='dcl',
                     price=amount_to_be_charged
                 )
+                logger.debug(specs)
             stripe_plan = stripe_utils.get_or_create_stripe_plan(
                 amount=amount_to_be_charged,
                 name=plan_name,
