@@ -2,6 +2,7 @@ import datetime
 import logging
 import subprocess
 import tempfile
+import xml
 
 from django import forms
 from django.conf import settings
@@ -207,7 +208,7 @@ class UserHostingKeyForm(forms.ModelForm):
                 logger.debug(
                     "Not a correct ssh format {error}".format(error=str(cpe)))
                 raise forms.ValidationError(KEY_ERROR_MESSAGE)
-        return openssh_pubkey_str
+        return xml.sax.saxutils.escape(openssh_pubkey_str)
 
     def clean_name(self):
         INVALID_NAME_MESSAGE = _("Comma not accepted in the name of the key")
