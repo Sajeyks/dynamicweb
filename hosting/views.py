@@ -1,6 +1,7 @@
 import logging
 import uuid
 from datetime import datetime
+from urllib.parse import quote
 from time import sleep
 
 import stripe
@@ -1292,7 +1293,7 @@ class InvoiceListView(LoginRequiredMixin, TemplateView):
         if ('user_email' in self.request.GET
             and self.request.user.email == settings.ADMIN_EMAIL):
             user_email = self.request.GET['user_email']
-            context['user_email'] = user_email
+            context['user_email'] = '%s' % quote(user_email)
             logger.debug(
                 "user_email = {}".format(user_email)
             )
