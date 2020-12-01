@@ -114,7 +114,7 @@ def get_line_item_from_stripe_invoice(invoice):
     plan_name = ""
     for line_data in invoice["lines"]["data"]:
         if is_first:
-            plan_name = line_data.plan.name
+            plan_name = line_data.plan.name if line_data.plan is not None else ""
             start_date = line_data.period.start
             end_date = line_data.period.end
             is_first = False
