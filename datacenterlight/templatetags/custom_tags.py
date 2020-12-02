@@ -72,25 +72,29 @@ def get_line_item_from_hosting_order_charge(hosting_order_id):
     :param hosting_order_id: the HostingOrder id
     :return:
     """
-    hosting_order = HostingOrder.objects.get(id = hosting_order_id)
-    if hosting_order.stripe_charge_id:
-        return mark_safe("""
-                    <td class="xs-td-inline">{product_name}</td>
-                    <td class="xs-td-inline">{created_at}</td>
-                    <td class="xs-td-inline">{total}</td>
-                    <td class="text-right last-td">
-                        <a class="btn btn-order-detail" href="{receipt_url}" target="_blank">{see_invoice_text}</a>
-                    </td>
-        """.format(
-            product_name=hosting_order.generic_product.product_name.capitalize(),
-            created_at=hosting_order.created_at.strftime('%Y-%m-%d'),
-            total='%.2f' % (hosting_order.price),
-            receipt_url=reverse('hosting:orders',
-                                kwargs={'pk': hosting_order.id}),
+    try:
+        hosting_order = HostingOrder.objects.get(id = hosting_order_id)
+        if hosting_order.stripe_charge_id:
+            return mark_safe("""
+                        <td class="xs-td-inline">{product_name}</td>
+                        <td class="xs-td-inline">{created_at}</td>
+                        <td class="xs-td-inline">{total}</td>
+                        <td class="text-right last-td">
+                            <a class="btn btn-order-detail" href="{receipt_url}" target="_blank">{see_invoice_text}</a>
+                        </td>
+            """.format(
+                product_name=hosting_order.generic_product.product_name.capitalize(),
+                created_at=hosting_order.created_at.strftime('%Y-%m-%d'),
+                total='%.2f' % (hosting_order.price),
+                receipt_url=reverse('hosting:orders',
+                                    kwargs={'pk': hosting_order.id}),
 
-            see_invoice_text=_("See Invoice")
-        ))
-    else:
+                see_invoice_text=_("See Invoice")
+            ))
+        else:
+            return ""
+    except Exception as ex:
+        logger.error("Error %s" % str(ex))
         return ""
 
 
@@ -110,7 +114,7 @@ def get_line_item_from_stripe_invoice(invoice):
     plan_name = ""
     for line_data in invoice["lines"]["data"]:
         if is_first:
-            plan_name = line_data.plan.name
+            plan_name = line_data.plan.name if line_data.plan is not None else ""
             start_date = line_data.period.start
             end_date = line_data.period.end
             is_first = False
