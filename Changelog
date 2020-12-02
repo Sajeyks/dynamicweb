@@ -1,3 +1,6 @@
+2.13: 2020-12-02
+   * 8654: Fix 500 error on invoices list for the user contact+devuanhosting.com@virus.media (MR!742)
+   * 8593: Escape user's ssh key in xml-rpc call to create VM (MR!741)
 2.12.1: 2020-07-21
    * 8307: Introduce "Exclude vat calculations" for Generic Products (MR!740)
    *       Change DE VAT rate to 16% from 19% (MR!739)
