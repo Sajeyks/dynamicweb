@@ -716,7 +716,7 @@ class OrderConfirmationView(DetailView, FormView):
                 request.session.get('token')
             )
             logger.debug(
-                "card_details=%s stripe_api_cus_id=%s" % (card_details))
+                "card_details=%s" % (card_details))
             if not card_details.get('response_object'):
                 msg = card_details.get('error')
                 messages.add_message(self.request, messages.ERROR, msg,
