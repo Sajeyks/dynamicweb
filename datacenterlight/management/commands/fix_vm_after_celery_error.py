@@ -25,7 +25,7 @@ class Command(BaseCommand):
         template_str = options['template']
 
         json_acceptable_string = user_str.replace("'", "\"")
-        user = json.loads(json_acceptable_string)
+        user_dict = json.loads(json_acceptable_string)
 
         json_acceptable_string = specs_str.replace("'", "\"")
         specs = json.loads(json_acceptable_string)
@@ -46,13 +46,13 @@ class Command(BaseCommand):
             return
 
         user = {
-            'name': user['name'],
-            'email': user['email'],
-            'username': user['username'],
-            'pass': user['pass'],
-            'request_scheme': user['request_scheme'],
-            'request_host': user['request_host'],
-            'language': user['language'],
+            'name': user_dict['name'],
+            'email': user_dict['email'],
+            'username': user_dict['username'],
+            'pass': user_dict['pass'],
+            'request_scheme': user_dict['request_scheme'],
+            'request_host': user_dict['request_host'],
+            'language': user_dict['language'],
         }
 
         on_user = user.get('username')
