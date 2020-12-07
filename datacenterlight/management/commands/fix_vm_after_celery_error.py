@@ -59,6 +59,9 @@ class Command(BaseCommand):
         on_pass = user.get('pass')
 
         # Create OpenNebulaManager
+        self.style.SUCCESS(
+            'Connecting using %s %s' % (on_user, on_pass)
+        )
         manager = OpenNebulaManager(email=on_user, password=on_pass)
         handle_metadata_and_emails(order_id, vm_id, manager, user, specs,
                                    template)
