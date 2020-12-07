@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
 from datacenterlight.tasks import handle_metadata_and_emails
 from opennebula_api.models import OpenNebulaManager
+from membership.models import CustomUser
 import logging
 import json
 
@@ -54,16 +55,13 @@ class Command(BaseCommand):
             'request_host': user_dict['request_host'],
             'language': user_dict['language'],
         }
-
-        on_user = user.get('username')
-        on_pass = user.get('pass')
-
+        cu = CustomUser.objects.get(username=user.get('username'))
         # Create OpenNebulaManager
         self.style.SUCCESS(
-            'Connecting using %s %s' % (on_user, on_pass)
+            'Connecting using %s %s' % (cu.username, cu.password)
         )
-        print('Connecting using %s %s' % (on_user, on_pass))
-        manager = OpenNebulaManager(email=on_user, password=on_pass)
+        print('Connecting using %s %s' % (cu.username, cu.password))
+        manager = OpenNebulaManager(email=cu.username, password=cu.password)
         handle_metadata_and_emails(order_id, vm_id, manager, user, specs,
                                    template)
         self.stdout.write(
