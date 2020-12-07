@@ -13,7 +13,9 @@ class Command(BaseCommand):
     def add_arguments(self, parser):
         parser.add_argument('vm_id', type=int)
         parser.add_argument('order_id', type=int)
+        parser.add_argument('user', type=str)
         parser.add_argument('specs', type=str)
+        parser.add_argument('template', type=str)
 
     def handle(self, *args, **options):
         vm_id = options['vm_id']
