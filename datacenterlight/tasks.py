@@ -56,11 +56,6 @@ def create_vm_task(self, vm_template_id, user, specs, template, order_id):
         "Running create_vm_task on {}".format(current_task.request.hostname))
     vm_id = None
     try:
-        final_price = (
-            specs.get('total_price') if 'total_price' in specs
-            else specs.get('price')
-        )
-
         if 'pass' in user:
             on_user = user.get('username')
             on_pass = user.get('pass')
@@ -92,107 +87,8 @@ def create_vm_task(self, vm_template_id, user, specs, template, order_id):
         if vm_id is None:
             raise Exception("Could not create VM")
 
-        # Update HostingOrder with the created vm_id
-        hosting_order = HostingOrder.objects.filter(id=order_id).first()
-        error_msg = None
-
-        try:
-            hosting_order.vm_id = vm_id
-            hosting_order.save()
-            logger.debug(
-                "Updated hosting_order {} with vm_id={}".format(
-                    hosting_order.id, vm_id
-                )
-            )
-        except Exception as ex:
-            error_msg = (
-                "HostingOrder with id {order_id} not found. This means that "
-                "the hosting order was not created and/or it is/was not "
-                "associated with VM with id {vm_id}. Details {details}".format(
-                    order_id=order_id, vm_id=vm_id, details=str(ex)
-                )
-            )
-            logger.error(error_msg)
-
-        stripe_utils = StripeUtils()
-        result = stripe_utils.set_subscription_metadata(
-            subscription_id=hosting_order.subscription_id,
-            metadata={"VM_ID": str(vm_id)}
-        )
-
-        if result.get('error') is not None:
-            emsg = "Could not update subscription metadata for {sub}".format(
-                sub=hosting_order.subscription_id
-            )
-            logger.error(emsg)
-            if error_msg:
-                error_msg += ". " + emsg
-            else:
-                error_msg = emsg
-
-        vm = VirtualMachineSerializer(manager.get_vm(vm_id)).data
-
-        context = {
-            'name': user.get('name'),
-            'email': user.get('email'),
-            'cores': specs.get('cpu'),
-            'memory': specs.get('memory'),
-            'storage': specs.get('disk_size'),
-            'price': final_price,
-            'template': template.get('name'),
-            'vm_name': vm.get('name'),
-            'vm_id': vm['vm_id'],
-            'order_id': order_id
-        }
-
-        if error_msg:
-            context['errors'] = error_msg
-        if 'pricing_name' in specs:
-            context['pricing'] = str(VMPricing.get_vm_pricing_by_name(
-                name=specs['pricing_name']
-            ))
-        email_data = {
-            'subject': settings.DCL_TEXT + " Order from %s" % context['email'],
-            'from_email': settings.DCL_SUPPORT_FROM_ADDRESS,
-            'to': ['info@ungleich.ch'],
-            'body': "\n".join(
-                ["%s=%s" % (k, v) for (k, v) in context.items()]),
-            'reply_to': [context['email']],
-        }
-        email = EmailMessage(**email_data)
-        email.send()
-
-        if 'pass' in user:
-            lang = 'en-us'
-            if user.get('language') is not None:
-                logger.debug(
-                    "Language is set to {}".format(user.get('language')))
-                lang = user.get('language')
-            translation.activate(lang)
-            # Send notification to the user as soon as VM has been booked
-            context = {
-                'base_url': "{0}://{1}".format(user.get('request_scheme'),
-                                               user.get('request_host')),
-                'order_url': reverse('hosting:invoices'),
-                'page_header': _(
-                    'Your New VM %(vm_name)s at Data Center Light') % {
-                    'vm_name': vm.get('name')},
-                'vm_name': vm.get('name')
-            }
-            email_data = {
-                'subject': context.get('page_header'),
-                'to': user.get('email'),
-                'context': context,
-                'template_name': 'new_booked_vm',
-                'template_path': 'hosting/emails/',
-                'from_address': settings.DCL_SUPPORT_FROM_ADDRESS,
-            }
-            email = BaseEmail(**email_data)
-            email.send()
-
-            logger.debug("New VM ID is {vm_id}".format(vm_id=vm_id))
-            if vm_id > 0:
-                get_or_create_vm_detail(custom_user, manager, vm_id)
+        handle_metadata_and_emails(order_id, vm_id, manager, user, specs,
+                                   template)
     except Exception as e:
         logger.error(str(e))
         try:
@@ -214,3 +110,127 @@ def create_vm_task(self, vm_template_id, user, specs, template, order_id):
             return
 
     return vm_id
+
+
+def handle_metadata_and_emails(order_id, vm_id, manager, user, specs,
+                               template):
+    """
+    Handle's setting up of the metadata in Stripe and database and sending of
+    emails to the user after VM creation
+
+    :param order_id: the hosting order id
+    :param vm_id: the id of the vm created
+    :param manager: the OpenNebula Manager instance
+    :param user: the user's dict passed to the celery task
+    :param specs: the specification's dict passed to the celery task
+    :param template: the template dict passed to the celery task
+
+    :return:
+    """
+
+    custom_user = CustomUser.objects.get(email=user.get('email'))
+    final_price = (
+        specs.get('total_price') if 'total_price' in specs
+        else specs.get('price')
+    )
+    # Update HostingOrder with the created vm_id
+    hosting_order = HostingOrder.objects.filter(id=order_id).first()
+    error_msg = None
+
+    try:
+        hosting_order.vm_id = vm_id
+        hosting_order.save()
+        logger.debug(
+            "Updated hosting_order {} with vm_id={}".format(
+                hosting_order.id, vm_id
+            )
+        )
+    except Exception as ex:
+        error_msg = (
+            "HostingOrder with id {order_id} not found. This means that "
+            "the hosting order was not created and/or it is/was not "
+            "associated with VM with id {vm_id}. Details {details}".format(
+                order_id=order_id, vm_id=vm_id, details=str(ex)
+            )
+        )
+        logger.error(error_msg)
+
+    stripe_utils = StripeUtils()
+    result = stripe_utils.set_subscription_metadata(
+        subscription_id=hosting_order.subscription_id,
+        metadata={"VM_ID": str(vm_id)}
+    )
+
+    if result.get('error') is not None:
+        emsg = "Could not update subscription metadata for {sub}".format(
+            sub=hosting_order.subscription_id
+        )
+        logger.error(emsg)
+        if error_msg:
+            error_msg += ". " + emsg
+        else:
+            error_msg = emsg
+
+    vm = VirtualMachineSerializer(manager.get_vm(vm_id)).data
+
+    context = {
+        'name': user.get('name'),
+        'email': user.get('email'),
+        'cores': specs.get('cpu'),
+        'memory': specs.get('memory'),
+        'storage': specs.get('disk_size'),
+        'price': final_price,
+        'template': template.get('name'),
+        'vm_name': vm.get('name'),
+        'vm_id': vm['vm_id'],
+        'order_id': order_id
+    }
+
+    if error_msg:
+        context['errors'] = error_msg
+    if 'pricing_name' in specs:
+        context['pricing'] = str(VMPricing.get_vm_pricing_by_name(
+            name=specs['pricing_name']
+        ))
+    email_data = {
+        'subject': settings.DCL_TEXT + " Order from %s" % context['email'],
+        'from_email': settings.DCL_SUPPORT_FROM_ADDRESS,
+        'to': ['info@ungleich.ch'],
+        'body': "\n".join(
+            ["%s=%s" % (k, v) for (k, v) in context.items()]),
+        'reply_to': [context['email']],
+    }
+    email = EmailMessage(**email_data)
+    email.send()
+
+    if 'pass' in user:
+        lang = 'en-us'
+        if user.get('language') is not None:
+            logger.debug(
+                "Language is set to {}".format(user.get('language')))
+            lang = user.get('language')
+        translation.activate(lang)
+        # Send notification to the user as soon as VM has been booked
+        context = {
+            'base_url': "{0}://{1}".format(user.get('request_scheme'),
+                                           user.get('request_host')),
+            'order_url': reverse('hosting:invoices'),
+            'page_header': _(
+                'Your New VM %(vm_name)s at Data Center Light') % {
+                               'vm_name': vm.get('name')},
+            'vm_name': vm.get('name')
+        }
+        email_data = {
+            'subject': context.get('page_header'),
+            'to': user.get('email'),
+            'context': context,
+            'template_name': 'new_booked_vm',
+            'template_path': 'hosting/emails/',
+            'from_address': settings.DCL_SUPPORT_FROM_ADDRESS,
+        }
+        email = BaseEmail(**email_data)
+        email.send()
+
+        logger.debug("New VM ID is {vm_id}".format(vm_id=vm_id))
+        if vm_id > 0:
+            get_or_create_vm_detail(custom_user, manager, vm_id)
