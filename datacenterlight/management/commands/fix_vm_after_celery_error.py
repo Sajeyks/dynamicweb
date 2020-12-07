@@ -49,7 +49,7 @@ class Command(BaseCommand):
             'name': user['name'],
             'email': user['email'],
             'username': user['username'],
-            'pass': user['password'],
+            'pass': user['pass'],
             'request_scheme': user['request_scheme'],
             'request_host': user['request_host'],
             'language': user['language'],
