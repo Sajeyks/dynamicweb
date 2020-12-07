@@ -57,10 +57,11 @@ class Command(BaseCommand):
         }
         cu = CustomUser.objects.get(username=user.get('username'))
         # Create OpenNebulaManager
-        self.style.SUCCESS(
-            'Connecting using %s %s' % (cu.username, cu.password)
+        self.stdout.write(
+            self.style.SUCCESS(
+                'Connecting using %s' % (cu.username)
+            )
         )
-        print('Connecting using %s %s' % (cu.username, cu.password))
         manager = OpenNebulaManager(email=cu.username, password=cu.password)
         handle_metadata_and_emails(order_id, vm_id, manager, user, specs,
                                    template)
