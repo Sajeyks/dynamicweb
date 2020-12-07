@@ -1,3 +1,5 @@
+2.14: 2020-12-07
+   * 8692: Create a script that fixes django db for the order after celery error (MR!743)
 2.13: 2020-12-02
    * 8654: Fix 500 error on invoices list for the user contact+devuanhosting.com@virus.media (MR!742)
    * 8593: Escape user's ssh key in xml-rpc call to create VM (MR!741)
