@@ -956,9 +956,9 @@ class OrderConfirmationView(DetailView, FormView):
             logger.debug(stripe_subscription_obj)
             latest_invoice = stripe.Invoice.retrieve(
                 stripe_subscription_obj.latest_invoice)
-            ret = stripe.PaymentIntent.confirm(
-                latest_invoice.payment_intent
-            )
+            # ret = stripe.PaymentIntent.confirm(
+            #     latest_invoice.payment_intent
+            # )
             if ret.status == 'requires_source_action' or ret.status == 'requires_action':
                 pi = stripe.PaymentIntent.retrieve(
                     latest_invoice.payment_intent
