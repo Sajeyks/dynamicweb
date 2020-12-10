@@ -38,7 +38,7 @@ class Command(BaseCommand):
                     ssh_key='\n'.join(pub_keys),
                     vm_name=vm_name
                 )
-                if vm_id > 0:
+                if vm_id and vm_id > 0:
                     result_dict[vm_name] = "%s OK, created VM %s" % (
                         '%s %s' % (vm_template.opennebula_vm_template_id,
                                    vm_template.name),
