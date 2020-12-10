@@ -41,15 +41,17 @@ class Command(BaseCommand):
                 )
                 if vm_id and vm_id > 0:
                     result_dict[vm_name] = "%s OK, created VM %s" % (
-                        '%s %s' % (vm_template.opennebula_vm_template_id,
-                                   vm_template.name),
+                        '%s %s %s' % (vm_template.opennebula_vm_template_id,
+                                   vm_template.name, vm_template.vm_type),
                         vm_id
                     )
                     self.stdout.write(self.style.SUCCESS(result_dict[vm_name]))
                     manager.delete_vm(vm_id)
                 else:
                     result_dict[vm_name] = '''Error creating VM %s, template_id
-                    %s ''' % (vm_name, vm_template.opennebula_vm_template_id)
+                    %s %s''' % (vm_name,
+                                vm_template.opennebula_vm_template_id,
+                                vm_template.vm_type)
                     self.stdout.write(self.style.ERROR(result_dict[vm_name]))
                 sleep(1)
             date_str = datetime.datetime.strftime(
