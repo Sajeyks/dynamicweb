@@ -62,6 +62,4 @@ class Command(BaseCommand):
                       'w',
                       encoding='utf-8') as f:
                 f.write(json.dumps(result_dict))
-        else:
-            self.stdout.write(self.style.ERROR("user_email not supplied"))
         self.stdout.write(self.style.SUCCESS("Done"))
