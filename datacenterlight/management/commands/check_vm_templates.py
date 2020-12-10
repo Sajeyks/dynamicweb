@@ -42,7 +42,7 @@ class Command(BaseCommand):
                 if vm_id and vm_id > 0:
                     result_dict[vm_name] = "%s OK, created VM %s" % (
                         '%s %s %s' % (vm_template.opennebula_vm_template_id,
-                                   vm_template.name, vm_template.vm_type),
+                                      vm_template.name, vm_template.vm_type),
                         vm_id
                     )
                     self.stdout.write(self.style.SUCCESS(result_dict[vm_name]))
