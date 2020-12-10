@@ -28,8 +28,9 @@ class Command(BaseCommand):
             specs = {'cpu': 1, 'memory': 1, 'disk_size': 10}
             manager = OpenNebulaManager(email=user_email, password=cu.password)
             pub_keys = [settings.TEST_MANAGE_SSH_KEY_PUBKEY]
-            if not os.path.exists("outputs"):
-                os.mkdir("outputs")
+            PROJECT_PATH = os.path.abspath(os.path.dirname(__name__))
+            if not os.path.exists("%s/outputs" % PROJECT_PATH):
+                os.mkdir("%s/outputs" % PROJECT_PATH)
             for vm_template in VMTemplate.objects.all():
                 vm_name = 'test-%s' % vm_template.name
                 vm_id = manager.create_vm(
@@ -54,7 +55,9 @@ class Command(BaseCommand):
             date_str = datetime.datetime.strftime(
                 datetime.datetime.now(), '%Y%m%d%H%M%S'
             )
-            with open("output/check_vm_templates_%s.txt" % date_str, 'w',
+            with open("%s/outputs/check_vm_templates_%s.txt" %
+                      (PROJECT_PATH, date_str),
+                      'w',
                       encoding='utf-8') as f:
                 f.write(json.dumps(result_dict))
         else:
