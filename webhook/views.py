@@ -111,8 +111,15 @@ def handle_webhook(request):
                 'to': settings.DCL_ERROR_EMAILS_TO_LIST,
                 'body': "Response = %s" % str(tax_id_obj),
             }
-
         send_plain_email_task.delay(email_data)
+    elif event.type == 'invoice.paid':
+        #https://stripe.com/docs/billing/migration/strong-customer-authentication#scenario-1-handling-fulfillment
+        invoice_obj = event.data.object
+        logger.debug("Webhook Event: invoice.paid")
+        logger.debug("invoice_obj %s " % str(invoice_obj))
+        if invoice_obj.paid and invoice_obj.billing_reason == "subscription_create":
+            logger.debug("Start provisioning")
+
     else:
         logger.error("Unhandled event : " + event.type)
     return HttpResponse(status=200)
