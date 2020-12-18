@@ -783,7 +783,6 @@ class OrderConfirmationView(DetailView, FormView):
                     customer=stripe_api_cus_id
                 )
                 stripe_onetime_charge = charge_response.get('response_object')
-
                 # Check if the payment was approved
                 if not stripe_onetime_charge:
                     msg = charge_response.get('error')
@@ -893,52 +892,37 @@ class OrderConfirmationView(DetailView, FormView):
             logger.debug(stripe_subscription_obj)
             latest_invoice = stripe.Invoice.retrieve(
                 stripe_subscription_obj.latest_invoice)
-            # ret = stripe.PaymentIntent.confirm(
-            #     latest_invoice.payment_intent
-            # )
-            if ret.status == 'requires_source_action' or ret.status == 'requires_action':
-                pi = stripe.PaymentIntent.retrieve(
-                    latest_invoice.payment_intent
-                )
-                context = {
-                    'sid': stripe_subscription_obj.id,
-                    'payment_intent_secret': pi.client_secret,
-                    'STRIPE_PUBLISHABLE_KEY': settings.STRIPE_API_PUBLIC_KEY,
-                    'showSCA': True
-                }
-                return JsonResponse(context)
+
             # Check if the subscription was approved and is active
             if (stripe_subscription_obj is None
-                    or stripe_subscription_obj.status != 'active'):
+                    or (stripe_subscription_obj.status != 'active'
+                        and stripe_subscription_obj.status != 'incomplete')):
                 # At this point, we have created a Stripe API card and
                 # associated it with the customer; but the transaction failed
                 # due to some reason. So, we would want to dissociate this card
                 # here.
                 # ...
-
                 msg = subscription_result.get('error')
-                messages.add_message(self.request, messages.ERROR, msg,
-                                     extra_tags='failed_payment')
-                response = {
-                    'status': False,
-                    'redirect': "{url}#{section}".format(
-                        url=(reverse(
-                            'show_product',
-                            kwargs={'product_slug':
-                                    request.session['generic_payment_details']
-                                    ['product_slug']}
-                        ) if 'generic_payment_details' in request.session else
-                                reverse('datacenterlight:payment')
-                        ),
-                        section='payment_error'
-                    ),
-                    'msg_title': str(_('Error.')),
-                    'msg_body': str(
-                        _('There was a payment related error.'
-                          ' On close of this popup, you will be redirected back to'
-                          ' the payment page.'))
-                }
-                return JsonResponse(response)
+                return show_error(msg, self.request)
+            elif stripe_subscription_obj.status == 'incomplete':
+                pi = stripe.PaymentIntent.retrieve(
+                    latest_invoice.payment_intent
+                )
+                # TODO: requires_attention is probably wrong value to compare
+                if (pi.status == 'requires_attention' or
+                        pi.status == 'requires_source_action'):
+                    logger.debug("Display SCA authentication")
+                    context = {
+                        'sid': stripe_subscription_obj.id,
+                        'payment_intent_secret': pi.client_secret,
+                        'STRIPE_PUBLISHABLE_KEY': settings.STRIPE_API_PUBLIC_KEY,
+                        'showSCA': True
+                    }
+                    return JsonResponse(context)
+                else:
+                    logger.debug("Handle this case")
+                    msg = subscription_result.get('error')
+                    return show_error(msg, self.request)
 
         # Create user if the user is not logged in and if he is not already
         # registered
@@ -1184,4 +1168,3 @@ def show_error(msg, request):
               ' the payment page.'))
     }
     return JsonResponse(response)
-
