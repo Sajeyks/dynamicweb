@@ -719,28 +719,7 @@ class OrderConfirmationView(DetailView, FormView):
                 "card_details=%s" % (card_details))
             if not card_details.get('response_object'):
                 msg = card_details.get('error')
-                messages.add_message(self.request, messages.ERROR, msg,
-                                     extra_tags='failed_payment')
-                response = {
-                    'status': False,
-                    'redirect': "{url}#{section}".format(
-                        url=(reverse(
-                            'show_product',
-                            kwargs={'product_slug':
-                                    request.session['generic_payment_details']
-                                    ['product_slug']}
-                        ) if 'generic_payment_details' in request.session else
-                                reverse('datacenterlight:payment')
-                        ),
-                        section='payment_error'),
-                    'msg_title': str(_('Error.')),
-                    'msg_body': str(
-                        _('There was a payment related error.'
-                          ' On close of this popup, you will be'
-                          ' redirected back to the payment page.')
-                    )
-                }
-                return JsonResponse(response)
+                return show_error(msg, self.request)
             card_details_response = card_details['response_object']
             card_details_dict = {
                 'last4': card_details_response['last4'],
@@ -765,30 +744,7 @@ class OrderConfirmationView(DetailView, FormView):
                                 details=acc_result['error']
                             )
                         )
-                        messages.add_message(self.request, messages.ERROR, msg,
-                                             extra_tags='failed_payment')
-                        response = {
-                            'status': False,
-                            'redirect': "{url}#{section}".format(
-                                url=(reverse(
-                                    'show_product',
-                                    kwargs={'product_slug':
-                                            request.session
-                                            ['generic_payment_details']
-                                            ['product_slug']}
-                                    ) if 'generic_payment_details' in
-                                     request.session else
-                                     reverse('datacenterlight:payment')
-                                ),
-                                section='payment_error'),
-                            'msg_title': str(_('Error.')),
-                            'msg_body': str(
-                                _('There was a payment related error.'
-                                  ' On close of this popup, you will be redirected'
-                                  ' back to the payment page.')
-                            )
-                        }
-                        return JsonResponse(response)
+                        return show_error(msg, self.request)
         elif 'card_id' in request.session:
             card_id = request.session.get('card_id')
             user_card_detail = UserCardDetail.objects.get(id=card_id)
@@ -831,26 +787,7 @@ class OrderConfirmationView(DetailView, FormView):
                 # Check if the payment was approved
                 if not stripe_onetime_charge:
                     msg = charge_response.get('error')
-                    messages.add_message(self.request, messages.ERROR, msg,
-                                         extra_tags='failed_payment')
-                    response = {
-                        'status': False,
-                        'redirect': "{url}#{section}".format(
-                            url=(reverse('show_product', kwargs={
-                                'product_slug': gp_details['product_slug']}
-                                         ) if 'generic_payment_details' in
-                                              request.session else
-                                 reverse('datacenterlight:payment')
-                                 ),
-                            section='payment_error'),
-                        'msg_title': str(_('Error.')),
-                        'msg_body': str(
-                            _('There was a payment related error.'
-                              ' On close of this popup, you will be redirected'
-                              ' back to the payment page.'))
-                    }
-                    return JsonResponse(response)
-
+                    return show_error(msg, self.request)
         if ('generic_payment_type' not in request.session or
                 (request.session['generic_payment_details']['recurring'])):
             recurring_interval = 'month'
@@ -1222,3 +1159,29 @@ class OrderConfirmationView(DetailView, FormView):
         }
 
         return JsonResponse(response)
+
+
+def show_error(msg, request):
+    messages.add_message(request, messages.ERROR, msg,
+                         extra_tags='failed_payment')
+    response = {
+        'status': False,
+        'redirect': "{url}#{section}".format(
+            url=(reverse(
+                'show_product',
+                kwargs={'product_slug':
+                            request.session['generic_payment_details']
+                            ['product_slug']}
+            ) if 'generic_payment_details' in request.session else
+                 reverse('datacenterlight:payment')
+                 ),
+            section='payment_error'
+        ),
+        'msg_title': str(_('Error.')),
+        'msg_body': str(
+            _('There was a payment related error.'
+              ' On close of this popup, you will be redirected back to'
+              ' the payment page.'))
+    }
+    return JsonResponse(response)
+
