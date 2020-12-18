@@ -110,16 +110,20 @@ $(document).ready(function() {
                 if (data.showSCA){
                     console.log("Show SCA");
                     var stripe = Stripe(data.STRIPE_PUBLISHABLE_KEY);
-
                       stripe.confirmCardPayment(data.payment_intent_secret).then(function(result) {
                         if (result.error) {
                           // Display error.message in your UI.
-                          $("#3ds_result").text("Error!");
-                          $("#3ds_result").addClass("text-danger");
+                            modal_btn.attr('href', data.error.redirect).removeClass('hide');
+                            fa_icon.attr('class', 'fa fa-close');
+                            modal_btn.attr('class', '').addClass('btn btn-danger btn-ok btn-wide');
+                            $('#createvm-modal-title').text(data.error.msg_title);
+                            $('#createvm-modal-body').html(data.error.msg_body);
                         } else {
                           // The payment has succeeded. Display a success message.
-                          $("#3ds_result").text("Thank you for payment");
-                          $("#3ds_result").addClass("text-success");
+                            modal_btn.attr('href', data.success.redirect).removeClass('hide');
+                            fa_icon.attr('class', 'checkmark');
+                            $('#createvm-modal-title').text(data.success.msg_title);
+                            $('#createvm-modal-body').html(data.success.msg_body);
                         }
                       });
                     $('#3Dsecure-modal').show();

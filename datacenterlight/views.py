@@ -916,7 +916,41 @@ class OrderConfirmationView(DetailView, FormView):
                         'sid': stripe_subscription_obj.id,
                         'payment_intent_secret': pi.client_secret,
                         'STRIPE_PUBLISHABLE_KEY': settings.STRIPE_API_PUBLIC_KEY,
-                        'showSCA': True
+                        'showSCA': True,
+                        'success': {
+                            'status': True,
+                            'redirect': (
+                                reverse('hosting:virtual_machines')
+                                if request.user.is_authenticated()
+                                else reverse('datacenterlight:index')
+                            ),
+                            'msg_title': str(_('Thank you for the order.')),
+                            'msg_body': str(
+                                _('Your VM will be up and running in a few moments.'
+                                  ' We will send you a confirmation email as soon as'
+                                  ' it is ready.'))
+                        },
+                        'error': {
+                            'status': False,
+                            'redirect': "{url}#{section}".format(
+                                url=(reverse(
+                                    'show_product',
+                                    kwargs={'product_slug':
+                                                request.session[
+                                                    'generic_payment_details']
+                                                ['product_slug']}
+                                ) if 'generic_payment_details' in request.session else
+                                     reverse('datacenterlight:payment')
+                                     ),
+                                section='payment_error'
+                            ),
+                            'msg_title': str(_('Error.')),
+                            'msg_body': str(
+                                _('There was a payment related error.'
+                                  ' On close of this popup, you will be redirected back to'
+                                  ' the payment page.')
+                            )
+                        }
                     }
                     return JsonResponse(context)
                 else:
