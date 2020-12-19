@@ -8,7 +8,9 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
+from datacenterlight.views import do_create_vm
 from membership.models import StripeCustomer
+from hosting.models import HostingOrder
 
 from utils.models import BillingAddress, UserBillingAddress
 from utils.tasks import send_plain_email_task
@@ -117,8 +119,35 @@ def handle_webhook(request):
         invoice_obj = event.data.object
         logger.debug("Webhook Event: invoice.paid")
         logger.debug("invoice_obj %s " % str(invoice_obj))
-        if invoice_obj.paid and invoice_obj.billing_reason == "subscription_create":
+        logger.debug("invoice_obj.paid = %s %s" % (invoice_obj.paid, type(invoice_obj.paid)))
+        logger.debug("invoice_obj.billing_reason = %s %s" % (invoice_obj.billing_reason, type(invoice_obj.billing_reason)))
+        # We should check for billing_reason == "subscription_create" but we check for "subscription_update"
+        # because we are using older api. See https://stripe.com/docs/upgrades?since=2015-07-13
+
+        # The billing_reason attribute of the invoice object now can take the
+        # value of subscription_create, indicating that it is the first
+        # invoice of a subscription. For older API versions,
+        # billing_reason=subscription_create is represented as
+        # subscription_update.
+
+        if invoice_obj.paid and invoice_obj.billing_reason == "subscription_update":
             logger.debug("Start provisioning")
+            # get subscription id, order_id
+            ho = None
+            try:
+                ho = HostingOrder.objects.get(subscription_id=invoice_obj.subscription)
+            except Exception as ex:
+                logger.error(str(ex))
+            if ho:
+                logger.debug("Create a VM for order %s" % str(ho))
+
+            # TODO: fix the error below
+            do_create_vm(request, user, stripe_api_cus_id,
+                         card_details_response, stripe_subscription_obj,
+                         stripe_onetime_charge, gp_details, specs,
+                         vm_template_id,
+                         template
+                         )
 
     else:
         logger.error("Unhandled event : " + event.type)
