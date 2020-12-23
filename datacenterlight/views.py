@@ -1117,8 +1117,8 @@ def do_create_vm(request, user, stripe_api_cus_id, card_details_response,
             user_hosting_key.save()
             logger.debug("User %s key is saved" % custom_user.email)
 
-    if 'card_id' in request:
-        card_id = request.get('card_id')
+    card_id = request.get('card_id', None)
+    if card_id:
         logger.debug("card_id %s was in request" % card_id)
         user_card_detail = UserCardDetail.objects.get(id=card_id)
         card_details_dict = {
