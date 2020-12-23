@@ -792,6 +792,10 @@ class OrderConfirmationView(DetailView, FormView):
                 'brand': user_card_detail.brand,
                 'card_id': user_card_detail.card_id
             }
+            UserCardDetail.set_default_card(
+                stripe_api_cus_id=stripe_api_cus_id,
+                stripe_source_id=user_card_detail.card_id
+            )
             logger.debug("card_details_dict=%s" % card_details_dict)
         else:
             response = {
@@ -1142,11 +1146,11 @@ def do_provisioning(request, user, stripe_api_cus_id, card_details_response,
             'brand': user_card_detail.brand,
             'card_id': user_card_detail.card_id
         }
-        if not user_card_detail.preferred:
-            UserCardDetail.set_default_card(
-                stripe_api_cus_id=stripe_api_cus_id,
-                stripe_source_id=user_card_detail.card_id
-            )
+        #if not user_card_detail.preferred:
+        UserCardDetail.set_default_card(
+            stripe_api_cus_id=stripe_api_cus_id,
+            stripe_source_id=user_card_detail.card_id
+        )
     else:
         logger.debug("card_id was NOT in request, using "
                      "card_details_response")
