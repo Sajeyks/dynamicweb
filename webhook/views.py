@@ -215,6 +215,14 @@ def handle_webhook(request):
                     'body': "Response = %s" % str(ex),
                 }
                 send_plain_email_task.delay(email_data)
+    elif event.type == 'invoice.payment_failed':
+        invoice_obj = event.data.object
+        logger.debug("Webhook Event: invoice.payment_failed")
+        logger.debug("invoice_obj %s " % str(invoice_obj))
+        if (invoice_obj.payment_failed and
+                invoice_obj.billing_reason == "subscription_update"):
+            logger.debug("Payment failed, inform the users")
+
     else:
         logger.error("Unhandled event : " + event.type)
     return HttpResponse(status=200)
