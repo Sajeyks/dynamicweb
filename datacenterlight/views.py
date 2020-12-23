@@ -930,26 +930,6 @@ class OrderConfirmationView(DetailView, FormView):
             if stripe_subscription_obj:
                 subscription_status = stripe_subscription_obj.status
 
-            # Store params so that they can be retrieved later
-            IncompleteSubscriptions.objects.create(
-                subscription_id=stripe_subscription_obj.id,
-                subscription_status=subscription_status,
-                name=user.get('name'),
-                email=user.get('email'),
-                request=json.dumps(req),
-                stripe_api_cus_id=stripe_api_cus_id,
-                card_details_response=json.dumps(card_details_response),
-                stripe_subscription_obj=json.dumps(stripe_subscription_obj) if stripe_customer_obj else '',
-                stripe_onetime_charge=json.dumps(stripe_onetime_charge) if stripe_onetime_charge else '',
-                gp_details=json.dumps(gp_details) if gp_details else '',
-                specs=json.dumps(specs) if specs else '',
-                vm_template_id=vm_template_id if vm_template_id else 0,
-                template=json.dumps(template) if template else '',
-                billing_address_data=json.dumps(
-                    request.session.get('billing_address_data')
-                )
-            )
-
             # Check if the subscription was approved and is active
             if (stripe_subscription_obj is None
                     or (stripe_subscription_obj.status != 'active'
@@ -962,6 +942,27 @@ class OrderConfirmationView(DetailView, FormView):
                 msg = subscription_result.get('error')
                 return show_error(msg, self.request)
             elif stripe_subscription_obj.status == 'incomplete':
+                # Store params so that they can be retrieved later
+                IncompleteSubscriptions.objects.create(
+                    subscription_id=stripe_subscription_obj.id,
+                    subscription_status=subscription_status,
+                    name=user.get('name'),
+                    email=user.get('email'),
+                    request=json.dumps(req),
+                    stripe_api_cus_id=stripe_api_cus_id,
+                    card_details_response=json.dumps(card_details_response),
+                    stripe_subscription_obj=json.dumps(
+                        stripe_subscription_obj) if stripe_customer_obj else '',
+                    stripe_onetime_charge=json.dumps(
+                        stripe_onetime_charge) if stripe_onetime_charge else '',
+                    gp_details=json.dumps(gp_details) if gp_details else '',
+                    specs=json.dumps(specs) if specs else '',
+                    vm_template_id=vm_template_id if vm_template_id else 0,
+                    template=json.dumps(template) if template else '',
+                    billing_address_data=json.dumps(
+                        request.session.get('billing_address_data')
+                    )
+                )
                 pi = stripe.PaymentIntent.retrieve(
                     latest_invoice.payment_intent
                 )
