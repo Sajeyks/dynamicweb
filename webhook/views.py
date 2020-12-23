@@ -142,9 +142,16 @@ def handle_webhook(request):
                 try:
                     incomplete_sub = IncompleteSubscriptions.objects.get(
                         subscription_id=invoice_obj.subscription)
+                    request = ""
                     soc = ""
                     card_details_response = ""
                     gp_details = ""
+                    template = ""
+                    specs = ""
+                    if incomplete_sub.request:
+                        request = json.loads(incomplete_sub.request)
+                    if incomplete_sub.specs:
+                        specs = json.loads(incomplete_sub.specs)
                     if incomplete_sub.stripe_onetime_charge:
                         soc = json.loads(incomplete_sub.stripe_onetime_charge)
                     if incomplete_sub.gp_details:
@@ -152,33 +159,35 @@ def handle_webhook(request):
                     if incomplete_sub.card_details_response:
                         card_details_response = json.loads(
                             incomplete_sub.card_details_response)
+                    if incomplete_sub.template:
+                        template = json.loads(
+                            incomplete_sub.template)
                     logger.debug("*******")
                     logger.debug(str(incomplete_sub))
                     logger.debug("*******")
                     logger.debug("1*******")
-                    logger.debug(json.loads(incomplete_sub.request))
+                    logger.debug(request)
                     logger.debug("2*******")
                     logger.debug(card_details_response)
                     logger.debug("3*******")
-                    logger.debug(json.loads(soc))
+                    logger.debug(soc)
                     logger.debug("4*******")
-                    logger.debug(json.loads(gp_details))
+                    logger.debug(gp_details)
                     logger.debug("5*******")
-                    logger.debug(json.loads(incomplete_sub.template))
+                    logger.debug(template)
                     logger.debug("6*******")
                     do_create_vm(
-                        request=json.loads(incomplete_sub.request),
+                        request=request,
                         user={'name': incomplete_sub.name,
                               'email': incomplete_sub.email},
                         stripe_api_cus_id=incomplete_sub.stripe_api_cus_id,
-                        card_details_response=json.loads(
-                            card_details_response),
+                        card_details_response=card_details_response,
                         stripe_subscription_obj=stripe_subscription_obj,
-                        stripe_onetime_charge=json.loads(soc),
-                        gp_details=json.loads(gp_details),
-                        specs=json.loads(incomplete_sub.specs),
+                        stripe_onetime_charge=soc,
+                        gp_details=gp_details,
+                        specs=specs,
                         vm_template_id=incomplete_sub.vm_template_id,
-                        template=json.loads(incomplete_sub.template)
+                        template=template
                     )
                 except (IncompleteSubscriptions.DoesNotExist,
                         IncompleteSubscriptions.MultipleObjectsReturned) as ex:
