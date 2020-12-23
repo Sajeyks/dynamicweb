@@ -1193,6 +1193,7 @@ def do_create_vm(request, user, stripe_api_cus_id, card_details_response,
         vm_template_id, template, user
     )
 
+
 def show_error(msg, request):
     messages.add_message(request, messages.ERROR, msg,
                          extra_tags='failed_payment')
