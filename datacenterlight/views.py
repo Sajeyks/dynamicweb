@@ -987,15 +987,18 @@ class OrderConfirmationView(DetailView, FormView):
                         'success': {
                             'status': True,
                             'redirect': (
-                                reverse('hosting:virtual_machines')
+                                reverse('hosting:invoices')
                                 if request.user.is_authenticated()
                                 else reverse('datacenterlight:index')
                             ),
                             'msg_title': str(_('Thank you for the order.')),
                             'msg_body': str(
-                                _('Your VM will be up and running in a few moments.'
-                                  ' We will send you a confirmation email as soon as'
-                                  ' it is ready.'))
+                                _('Your product will be provisioned as soon as'
+                                  ' we receive a payment confirmation from '
+                                  'Stripe. We will send you a confirmation '
+                                  'email. You can always contact us at '
+                                  'support@datacenterlight.ch')
+                            )
                         },
                         'error': {
                             'status': False,
