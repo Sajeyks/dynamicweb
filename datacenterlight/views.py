@@ -965,7 +965,7 @@ class OrderConfirmationView(DetailView, FormView):
                 # TODO: requires_attention is probably wrong value to compare
                 if (pi.status == 'requires_attention' or
                         pi.status == 'requires_source_action'):
-                    logger.debug("Display SCA authentication")
+                    logger.debug("Display SCA authentication %s " % pi.status)
                     context = {
                         'sid': stripe_subscription_obj.id,
                         'payment_intent_secret': pi.client_secret,
