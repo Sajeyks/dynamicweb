@@ -309,6 +309,7 @@ class PaymentOrderView(FormView):
 
     @cache_control(no_cache=True, must_revalidate=True, no_store=True)
     def get(self, request, *args, **kwargs):
+        logger.debug("Session: %s" % str(request.session))
         request.session.pop('vat_validation_status')
         if (('type' in request.GET and request.GET['type'] == 'generic')
                 or 'product_slug' in kwargs):
@@ -461,6 +462,7 @@ class PaymentOrderView(FormView):
             token = address_form.cleaned_data.get('token')
             if token is '':
                 card_id = address_form.cleaned_data.get('card')
+                logger.debug("token is empty and card_id is %s" % card_id)
                 try:
                     user_card_detail = UserCardDetail.objects.get(id=card_id)
                     if not request.user.has_perm(
@@ -487,6 +489,7 @@ class PaymentOrderView(FormView):
                 request.session['card_id'] = user_card_detail.id
             else:
                 request.session['token'] = token
+                logger.debug("token is %s" % token)
             if request.user.is_authenticated():
                 this_user = {
                     'email': request.user.email,
