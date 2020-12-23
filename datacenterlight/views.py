@@ -1043,7 +1043,6 @@ class OrderConfirmationView(DetailView, FormView):
                   ' We will send you a confirmation email as soon as'
                   ' it is ready.'))
         }
-        clear_all_session_vars(request)
 
         return JsonResponse(response)
 
@@ -1064,7 +1063,7 @@ def do_provisioning(request, user, stripe_api_cus_id, card_details_response,
             'generic_payment_details': {
                 'amount': 100,
                 'recurring':
-            }
+            },
         }
     :param user: a dict
         {
@@ -1273,7 +1272,6 @@ def do_provisioning(request, user, stripe_api_cus_id, card_details_response,
                   'info@ungleich.ch for any question that you may have.')
             )
         }
-        clear_all_session_vars(request)
 
         return JsonResponse(response)
 
