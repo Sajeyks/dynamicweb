@@ -136,84 +136,84 @@ def handle_webhook(request):
         if (invoice_obj.paid and
                 invoice_obj.billing_reason == "subscription_update"):
             logger.debug("Start provisioning")
-            # try:
-            stripe_subscription_obj = stripe.Subscription.retrieve(
-                invoice_obj.subscription)
             try:
-                incomplete_sub = IncompleteSubscriptions.objects.get(
-                    subscription_id=invoice_obj.subscription)
-                request = ""
-                soc = ""
-                card_details_response = ""
-                gp_details = ""
-                template = ""
-                specs = ""
-                billing_address_data = ""
-                if incomplete_sub.request:
-                    request = json.loads(incomplete_sub.request)
-                if incomplete_sub.specs:
-                    specs = json.loads(incomplete_sub.specs)
-                if incomplete_sub.stripe_onetime_charge:
-                    soc = json.loads(incomplete_sub.stripe_onetime_charge)
-                if incomplete_sub.gp_details:
-                    gp_details = json.loads(incomplete_sub.gp_details)
-                if incomplete_sub.card_details_response:
-                    card_details_response = json.loads(
-                        incomplete_sub.card_details_response)
-                if incomplete_sub.template:
-                    template = json.loads(
-                        incomplete_sub.template)
-                if incomplete_sub.billing_address_data:
-                    billing_address_data = json.loads(
-                        incomplete_sub.billing_address_data)
-                logger.debug("*******")
-                logger.debug(str(incomplete_sub))
-                logger.debug("*******")
-                logger.debug("1*******")
-                logger.debug(request)
-                logger.debug("2*******")
-                logger.debug(card_details_response)
-                logger.debug("3*******")
-                logger.debug(soc)
-                logger.debug("4*******")
-                logger.debug(gp_details)
-                logger.debug("5*******")
-                logger.debug(template)
-                logger.debug("6*******")
-                do_create_vm(
-                    request=request,
-                    user={'name': incomplete_sub.name,
-                          'email': incomplete_sub.email},
-                    stripe_api_cus_id=incomplete_sub.stripe_api_cus_id,
-                    card_details_response=card_details_response,
-                    stripe_subscription_obj=stripe_subscription_obj,
-                    stripe_onetime_charge=soc,
-                    gp_details=gp_details,
-                    specs=specs,
-                    vm_template_id=incomplete_sub.vm_template_id,
-                    template=template,
-                    billing_address_data=billing_address_data
-                )
-            except (IncompleteSubscriptions.DoesNotExist,
-                    IncompleteSubscriptions.MultipleObjectsReturned) as ex:
+                stripe_subscription_obj = stripe.Subscription.retrieve(
+                    invoice_obj.subscription)
+                try:
+                    incomplete_sub = IncompleteSubscriptions.objects.get(
+                        subscription_id=invoice_obj.subscription)
+                    request = ""
+                    soc = ""
+                    card_details_response = ""
+                    gp_details = ""
+                    template = ""
+                    specs = ""
+                    billing_address_data = ""
+                    if incomplete_sub.request:
+                        request = json.loads(incomplete_sub.request)
+                    if incomplete_sub.specs:
+                        specs = json.loads(incomplete_sub.specs)
+                    if incomplete_sub.stripe_onetime_charge:
+                        soc = json.loads(incomplete_sub.stripe_onetime_charge)
+                    if incomplete_sub.gp_details:
+                        gp_details = json.loads(incomplete_sub.gp_details)
+                    if incomplete_sub.card_details_response:
+                        card_details_response = json.loads(
+                            incomplete_sub.card_details_response)
+                    if incomplete_sub.template:
+                        template = json.loads(
+                            incomplete_sub.template)
+                    if incomplete_sub.billing_address_data:
+                        billing_address_data = json.loads(
+                            incomplete_sub.billing_address_data)
+                    logger.debug("*******")
+                    logger.debug(str(incomplete_sub))
+                    logger.debug("*******")
+                    logger.debug("1*******")
+                    logger.debug(request)
+                    logger.debug("2*******")
+                    logger.debug(card_details_response)
+                    logger.debug("3*******")
+                    logger.debug(soc)
+                    logger.debug("4*******")
+                    logger.debug(gp_details)
+                    logger.debug("5*******")
+                    logger.debug(template)
+                    logger.debug("6*******")
+                    do_create_vm(
+                        request=request,
+                        user={'name': incomplete_sub.name,
+                              'email': incomplete_sub.email},
+                        stripe_api_cus_id=incomplete_sub.stripe_api_cus_id,
+                        card_details_response=card_details_response,
+                        stripe_subscription_obj=stripe_subscription_obj,
+                        stripe_onetime_charge=soc,
+                        gp_details=gp_details,
+                        specs=specs,
+                        vm_template_id=incomplete_sub.vm_template_id,
+                        template=template,
+                        billing_address_data=billing_address_data
+                    )
+                except (IncompleteSubscriptions.DoesNotExist,
+                        IncompleteSubscriptions.MultipleObjectsReturned) as ex:
+                    logger.error(str(ex))
+                    # TODO Inform admin
+                    email_data = {
+                        'subject': "IncompleteSubscriptions error",
+                        'from_email': settings.DCL_SUPPORT_FROM_ADDRESS,
+                        'to': settings.DCL_ERROR_EMAILS_TO_LIST,
+                        'body': "Response = %s" % str(ex),
+                    }
+                    send_plain_email_task.delay(email_data)
+            except Exception as ex:
                 logger.error(str(ex))
-                # TODO Inform admin
                 email_data = {
-                    'subject': "IncompleteSubscriptions error",
+                    'subject': "invoice.paid Webhook error",
                     'from_email': settings.DCL_SUPPORT_FROM_ADDRESS,
                     'to': settings.DCL_ERROR_EMAILS_TO_LIST,
                     'body': "Response = %s" % str(ex),
                 }
                 send_plain_email_task.delay(email_data)
-            # except Exception as ex:
-            #     logger.error(str(ex))
-            #     email_data = {
-            #         'subject': "invoice.paid Webhook error",
-            #         'from_email': settings.DCL_SUPPORT_FROM_ADDRESS,
-            #         'to': settings.DCL_ERROR_EMAILS_TO_LIST,
-            #         'body': "Response = %s" % str(ex),
-            #     }
-            #     send_plain_email_task.delay(email_data)
     else:
         logger.error("Unhandled event : " + event.type)
     return HttpResponse(status=200)

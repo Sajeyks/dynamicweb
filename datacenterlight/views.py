@@ -1144,12 +1144,14 @@ def do_create_vm(request, user, stripe_api_cus_id, card_details_response,
         )
 
     # Save billing address
-    logger.debug('billing_address_data is {}'.format(billing_address_data))
     billing_address_data.update({
         'user': custom_user.id
     })
+    logger.debug('billing_address_data is {}'.format(billing_address_data))
 
-    if 'generic_payment_type' in request:
+    generic_payment_type = request.get('generic_payment_type', None)
+    if generic_payment_type:
+        logger.debug("generic_payment_type case")
         stripe_cus = StripeCustomer.objects.filter(
             stripe_id=stripe_api_cus_id
         ).first()
@@ -1185,12 +1187,15 @@ def do_create_vm(request, user, stripe_api_cus_id, card_details_response,
             billing_address_user_form.is_valid()
             billing_address_user_form.save()
 
-        if request['generic_payment_details']['recurring']:
+        recurring = request['generic_payment_details'].get('recurring')
+        if recurring:
+            logger.debug("recurring case")
             # Associate the given stripe subscription with the order
             order.set_subscription_id(
                 stripe_subscription_obj.id, card_details_dict
             )
         else:
+            logger.debug("one time charge case")
             # Associate the given stripe charge id with the order
             order.set_stripe_charge(stripe_onetime_charge)
 
