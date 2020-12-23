@@ -988,7 +988,38 @@ class OrderConfirmationView(DetailView, FormView):
 
 def do_create_vm(request, user, stripe_api_cus_id, card_details_response,
                  stripe_subscription_obj, stripe_onetime_charge, gp_details,
-                 specs, vm_template_id, template):
+                 specs, vm_template_id, template, billing_address_data):
+    """
+    :param request: a dict
+        {
+            'scheme': 'https',
+            'host': 'domain',
+            'language': 'en-us',
+            'new_user_hosting_key_id': 1,
+            'card': {
+                'card_id': 1,   # if usercarddetail exists already, else
+            },
+            'generic_payment_type': 'generic'   # represents a generic payment
+            'generic_payment_details': {
+                'amount': 100,
+                'recurring':
+            }
+        }
+    :param user: a dict
+        {
+            'name': 'John Doe',
+            'email': 'john@doe.com'
+        }
+    :param stripe_api_cus_id: 'cus_xxxxxxx' the actual stripe customer id str
+    :param card_details_response:
+    :param stripe_subscription_obj: The actual Stripe's Subscription Object
+    :param stripe_onetime_charge: Stripe's Charge object
+    :param gp_details:
+    :param specs:
+    :param vm_template_id:
+    :param template:
+    :return:
+    """
     # Create user if the user is not logged in and if he is not already
     # registered
     try:
