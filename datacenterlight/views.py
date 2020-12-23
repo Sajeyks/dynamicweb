@@ -717,6 +717,30 @@ class OrderConfirmationView(DetailView, FormView):
         stripe_utils = StripeUtils()
         logger.debug("user=%s stripe_api_cus_id=%s" % (user, stripe_api_cus_id))
         card_details_response = None
+        new_user_hosting_key_id = None
+        card_id = None
+        generic_payment_type = None
+        generic_payment_details = None
+        stripe_subscription_obj = None
+        if 'generic_payment_details' in request.session:
+            generic_payment_details = request.session[
+                'generic_payment_details']
+        if 'generic_payment_type' in request.session:
+            generic_payment_type = request.session['generic_payment_type']
+        if 'new_user_hosting_key_id' in self.request.session:
+            new_user_hosting_key_id = request.session[
+                'new_user_hosting_key_id']
+        if 'card_id' in request.session:
+            card_id = request.session.get('card_id')
+        req = {
+            'scheme': self.request.scheme,
+            'host': self.request.get_host(),
+            'language': get_language(),
+            'new_user_hosting_key_id': new_user_hosting_key_id,
+            'card_id': card_id,
+            'generic_payment_type': generic_payment_type,
+            'generic_payment_details': generic_payment_details
+        }
 
         if 'token' in request.session:
             card_details = stripe_utils.get_cards_details_from_token(
@@ -899,31 +923,6 @@ class OrderConfirmationView(DetailView, FormView):
             logger.debug(stripe_subscription_obj)
             latest_invoice = stripe.Invoice.retrieve(
                 stripe_subscription_obj.latest_invoice)
-
-            new_user_hosting_key_id = None
-            card_id = None
-            generic_payment_type = None
-            generic_payment_details = None
-            if 'generic_payment_details' in request.session:
-                generic_payment_details = request.session[
-                    'generic_payment_details']
-            if 'generic_payment_type' in request.session:
-                generic_payment_type = request.session['generic_payment_type']
-            if 'new_user_hosting_key_id' in self.request.session:
-                new_user_hosting_key_id = request.session[
-                    'new_user_hosting_key_id']
-            if 'card_id' in request.session:
-                card_id = request.session.get('card_id')
-            req = {
-                'scheme': self.request.scheme,
-                'host': self.request.get_host(),
-                'language': get_language(),
-                'new_user_hosting_key_id': new_user_hosting_key_id,
-                'card_id': card_id,
-                'generic_payment_type': generic_payment_type,
-                'generic_payment_details': generic_payment_details
-            }
-
             subscription_status = ''
             if stripe_subscription_obj:
                 subscription_status = stripe_subscription_obj.status
@@ -1043,6 +1042,7 @@ class OrderConfirmationView(DetailView, FormView):
                   ' We will send you a confirmation email as soon as'
                   ' it is ready.'))
         }
+        clear_all_session_vars(request)
 
         return JsonResponse(response)
 

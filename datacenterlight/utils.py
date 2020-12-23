@@ -103,8 +103,6 @@ def create_vm(billing_address_data, stripe_customer_id, specs,
 
     create_vm_task.delay(vm_template_id, user, specs, template, order.id)
 
-    clear_all_session_vars(request)
-
 
 def clear_all_session_vars(request):
     if request.session is not None:
