@@ -710,7 +710,7 @@ class OrderConfirmationView(DetailView, FormView):
         stripe_api_cus_id = request.session.get('customer')
         stripe_utils = StripeUtils()
         logger.debug("user=%s stripe_api_cus_id=%s" % (user, stripe_api_cus_id))
-        card_details_response =  None
+        card_details_response = None
 
         if 'token' in request.session:
             card_details = stripe_utils.get_cards_details_from_token(
