@@ -146,14 +146,13 @@ def handle_webhook(request):
                     logger.debug(incomplete_sub)
                     logger.debug("*******")
                     do_create_vm(
-                        request=incomplete_sub.request,
+                        request=json.loads(incomplete_sub.request),
                         user={'name': incomplete_sub.name,
                               'email': incomplete_sub.email},
                         stripe_api_cus_id=incomplete_sub.stripe_api_cus_id,
                         card_details_response=json.loads(
                             incomplete_sub.card_details_response),
-                        stripe_subscription_obj=json.loads(
-                            incomplete_sub.stripe_subscription_obj),
+                        stripe_subscription_obj=stripe_subscription_obj,
                         stripe_onetime_charge=json.loads(
                             incomplete_sub.stripe_onetime_charge),
                         gp_details=json.loads(incomplete_sub.gp_details),
