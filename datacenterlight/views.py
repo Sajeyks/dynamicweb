@@ -1020,7 +1020,7 @@ class OrderConfirmationView(DetailView, FormView):
                         "requires_source_action")
                     msg = subscription_result.get('error')
                     return show_error(msg, self.request)
-        do_provisioning(
+        provisioning_response = do_provisioning(
             req, user, stripe_api_cus_id,
             card_details_response, stripe_subscription_obj,
             stripe_onetime_charge, gp_details, specs, vm_template_id,
@@ -1033,6 +1033,10 @@ class OrderConfirmationView(DetailView, FormView):
         except (CustomUser.DoesNotExist,
                 CustomUser.MultipleObjectsReturned) as ex:
             logger.error(str(ex))
+
+        if (provisioning_response and
+                type(provisioning_response) == JsonResponse):
+            return provisioning_response
 
         response = {
             'status': True,
