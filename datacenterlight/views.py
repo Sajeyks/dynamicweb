@@ -1205,6 +1205,7 @@ def do_provisioning(request, user, stripe_api_cus_id, card_details_response,
             order.set_subscription_id(
                 stripe_subscription_obj.id, card_details_dict
             )
+            logger.debug("recurring case, set order subscription id done")
         else:
             logger.debug("one time charge case")
             # Associate the given stripe charge id with the order
@@ -1215,6 +1216,7 @@ def do_provisioning(request, user, stripe_api_cus_id, card_details_response,
         order.generic_payment_description = gp_details["description"]
         order.generic_product_id = gp_details["product_id"]
         order.save()
+        logger.debug("Order saved")
         # send emails
         context = {
             'name': user.get('name'),
@@ -1262,10 +1264,12 @@ def do_provisioning(request, user, stripe_api_cus_id, card_details_response,
         }
         send_plain_email_task.delay(email_data)
         redirect_url = reverse('datacenterlight:index')
+        logger.debug("Sent user/admin emails")
         if real_request:
             clear_all_session_vars(real_request)
             if real_request.user.is_authenticated():
                 redirect_url = reverse('hosting:invoices')
+        logger.debug("redirect_url = %s " % redirect_url)
         response = {
             'status': True,
             'redirect': redirect_url,
