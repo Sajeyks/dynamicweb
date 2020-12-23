@@ -143,8 +143,19 @@ def handle_webhook(request):
                     incomplete_sub = IncompleteSubscriptions.objects.get(
                         subscription_id=invoice_obj.subscription)
                     logger.debug("*******")
-                    logger.debug(incomplete_sub)
+                    logger.debug(str(incomplete_sub))
                     logger.debug("*******")
+                    logger.debug("1*******")
+                    logger.debug(json.loads(incomplete_sub.request))
+                    logger.debug("2*******")
+                    logger.debug(json.loads(incomplete_sub.card_details_response))
+                    logger.debug("3*******")
+                    logger.debug(json.loads(incomplete_sub.stripe_onetime_charge))
+                    logger.debug("4*******")
+                    logger.debug(json.loads(incomplete_sub.gp_details))
+                    logger.debug("5*******")
+                    logger.debug(json.loads(incomplete_sub.template))
+                    logger.debug("6*******")
                     do_create_vm(
                         request=json.loads(incomplete_sub.request),
                         user={'name': incomplete_sub.name,
