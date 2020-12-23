@@ -1280,7 +1280,8 @@ def do_provisioning(request, user, stripe_api_cus_id, card_details_response,
                   'info@ungleich.ch for any question that you may have.')
             )
         }
-
+        logger.debug("after response")
+        logger.debug(str(response))
         return JsonResponse(response)
 
     user = {
