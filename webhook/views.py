@@ -198,7 +198,6 @@ def handle_webhook(request):
                 except (IncompleteSubscriptions.DoesNotExist,
                         IncompleteSubscriptions.MultipleObjectsReturned) as ex:
                     logger.error(str(ex))
-                    # TODO Inform admin
                     email_data = {
                         'subject': "IncompleteSubscriptions error",
                         'from_email': settings.DCL_SUPPORT_FROM_ADDRESS,
