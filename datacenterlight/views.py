@@ -1039,16 +1039,13 @@ class OrderConfirmationView(DetailView, FormView):
             template, request.session.get('billing_address_data'),
             self.request
         )
-        try:
-            custom_user = CustomUser.objects.get(email=user.get('email'))
-            login(self.request, custom_user)
-        except (CustomUser.DoesNotExist,
-                CustomUser.MultipleObjectsReturned) as ex:
-            logger.error(str(ex))
 
         if (provisioning_response and
-                type(provisioning_response) == JsonResponse):
-            return provisioning_response
+                type(provisioning_response['response']) == JsonResponse):
+            new_user = provisioning_response.get('user', None)
+            if new_user:
+                login(self.request, new_user)
+            return provisioning_response['response']
 
         response = {
             'status': True,
@@ -1103,6 +1100,7 @@ def do_provisioning(request, user, stripe_api_cus_id, card_details_response,
     """
     # Create user if the user is not logged in and if he is not already
     # registered
+    new_user = None
     try:
         custom_user = CustomUser.objects.get(
             email=user.get('email'))
@@ -1299,7 +1297,7 @@ def do_provisioning(request, user, stripe_api_cus_id, card_details_response,
         }
         logger.debug("after response")
         logger.debug(str(response))
-        return JsonResponse(response)
+        return {'response': JsonResponse(response), 'user': new_user}
 
     user = {
         'name': custom_user.name,
