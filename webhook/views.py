@@ -153,7 +153,7 @@ def handle_webhook(request):
                         card_details_response=json.loads(
                             incomplete_sub.card_details_response),
                         stripe_subscription_obj=json.loads(
-                            stripe_subscription_obj),
+                            incomplete_sub.stripe_subscription_obj),
                         stripe_onetime_charge=json.loads(
                             incomplete_sub.stripe_onetime_charge),
                         gp_details=json.loads(incomplete_sub.gp_details),
