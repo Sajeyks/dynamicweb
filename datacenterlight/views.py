@@ -962,8 +962,29 @@ class OrderConfirmationView(DetailView, FormView):
                         "requires_source_action")
                     msg = subscription_result.get('error')
                     return show_error(msg, self.request)
+        new_user_hosting_key_id = None
+        card_id = None
+        generic_payment_type = None
+        generic_payment_details = None
+        if 'generic_payment_details' in request.session:
+            generic_payment_details = request.session['generic_payment_details']
+        if 'generic_payment_type' in request.session:
+            generic_payment_type = request.session['generic_payment_type']
+        if 'new_user_hosting_key_id' in self.request.session:
+            new_user_hosting_key_id = request.session['new_user_hosting_key_id']
+        if 'card_id' in request.session:
+            card_id = request.session.get('card_id')
+        req = {
+            'scheme': self.request.scheme,
+            'host': self.request.get_host(),
+            'language': get_language(),
+            'new_user_hosting_key_id': new_user_hosting_key_id,
+            'card_id': card_id,
+            'generic_payment_type': generic_payment_type,
+            'generic_payment_details': generic_payment_details
+        }
 
-        do_create_vm(self.request, user, stripe_api_cus_id,
+        do_create_vm(req, user, stripe_api_cus_id,
             card_details_response, stripe_subscription_obj,
             stripe_onetime_charge, gp_details, specs, vm_template_id,
             template, request.session.get('billing_address_data')
@@ -996,9 +1017,7 @@ def do_create_vm(request, user, stripe_api_cus_id, card_details_response,
             'host': 'domain',
             'language': 'en-us',
             'new_user_hosting_key_id': 1,
-            'card': {
-                'card_id': 1,   # if usercarddetail exists already, else
-            },
+            'card_id': 1,   # if usercarddetail exists already,
             'generic_payment_type': 'generic'   # represents a generic payment
             'generic_payment_details': {
                 'amount': 100,
@@ -1058,8 +1077,8 @@ def do_create_vm(request, user, stripe_api_cus_id, card_details_response,
             user_hosting_key.user = new_user
             user_hosting_key.save()
 
-    if 'card_id' in request.get('card'):
-        card_id = request.get('card')['card_id']
+    if 'card_id' in request:
+        card_id = request.get('card_id')
         user_card_detail = UserCardDetail.objects.get(id=card_id)
         card_details_dict = {
             'last4': user_card_detail.last4,
