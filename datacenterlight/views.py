@@ -1006,7 +1006,7 @@ class OrderConfirmationView(DetailView, FormView):
                             )
                         }
                     }
-                    clear_all_session_vars(request)
+                    #clear_all_session_vars(request)
                     return JsonResponse(context)
                 else:
                     logger.debug(

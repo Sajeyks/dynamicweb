@@ -745,7 +745,7 @@ class StripeTaxRate(AssignPermissionsMixin, models.Model):
 
 class IncompleteSubscriptions(AssignPermissionsMixin, models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
-    completed_at = models.DateTimeField()
+    completed_at = models.DateTimeField(null=True)
     subscription_id = models.CharField(max_length=100)
     subscription_status = models.CharField(max_length=30)
     name = models.CharField(max_length=50)
