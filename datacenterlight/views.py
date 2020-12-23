@@ -706,6 +706,12 @@ class OrderConfirmationView(DetailView, FormView):
         return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
+        stripe_onetime_charge = None
+        stripe_customer_obj = None
+        gp_details = None
+        specs = None
+        vm_template_id = 0
+        template = None
         user = request.session.get('user')
         stripe_api_cus_id = request.session.get('customer')
         stripe_utils = StripeUtils()
