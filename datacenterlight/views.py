@@ -966,7 +966,7 @@ class OrderConfirmationView(DetailView, FormView):
         do_create_vm(self.request, user, stripe_api_cus_id,
             card_details_response, stripe_subscription_obj,
             stripe_onetime_charge, gp_details, specs, vm_template_id,
-            template
+            template, request.session.get('billing_address_data')
         )
 
         response = {
@@ -1005,8 +1005,8 @@ def do_create_vm(request, user, stripe_api_cus_id, card_details_response,
         logger.debug(
             "Customer {} does not exist.".format(user.get('email')))
         password = CustomUser.get_random_password()
-        base_url = "{0}://{1}".format(request.scheme,
-                                      request.get_host())
+        base_url = "{0}://{1}".format(request['scheme'],
+                                      request['host'])
         custom_user = CustomUser.register(
             user.get('name'), password,
             user.get('email'),
@@ -1020,23 +1020,14 @@ def do_create_vm(request, user, stripe_api_cus_id, card_details_response,
         new_user = authenticate(username=custom_user.email,
                                 password=password)
         login(request, new_user)
-        if 'new_user_hosting_key_id' in request.session:
+        if 'new_user_hosting_key_id' in request:
             user_hosting_key = UserHostingKey.objects.get(
-                id=request.session['new_user_hosting_key_id'])
+                id=request['new_user_hosting_key_id'])
             user_hosting_key.user = new_user
             user_hosting_key.save()
 
-    if 'token' in request.session:
-        ucd = UserCardDetail.get_or_create_user_card_detail(
-            stripe_customer=request.user.stripecustomer,
-            card_details=card_details_response
-        )
-        UserCardDetail.save_default_card_local(
-            request.user.stripecustomer.stripe_id,
-            ucd.card_id
-        )
-    else:
-        card_id = request.session.get('card_id')
+    if 'card_id' in request.get('card'):
+        card_id = request.get('card')['card_id']
         user_card_detail = UserCardDetail.objects.get(id=card_id)
         card_details_dict = {
             'last4': user_card_detail.last4,
@@ -1048,15 +1039,23 @@ def do_create_vm(request, user, stripe_api_cus_id, card_details_response,
                 stripe_api_cus_id=stripe_api_cus_id,
                 stripe_source_id=user_card_detail.card_id
             )
+    else:
+        ucd = UserCardDetail.get_or_create_user_card_detail(
+            stripe_customer=custom_user.stripecustomer,
+            card_details=card_details_response
+        )
+        UserCardDetail.save_default_card_local(
+            custom_user.stripecustomer.stripe_id,
+            ucd.card_id
+        )
 
     # Save billing address
-    billing_address_data = request.session.get('billing_address_data')
     logger.debug('billing_address_data is {}'.format(billing_address_data))
     billing_address_data.update({
         'user': custom_user.id
     })
 
-    if 'generic_payment_type' in request.session:
+    if 'generic_payment_type' in request:
         stripe_cus = StripeCustomer.objects.filter(
             stripe_id=stripe_api_cus_id
         ).first()
@@ -1071,7 +1070,7 @@ def do_create_vm(request, user, stripe_api_cus_id, card_details_response,
         billing_address.save()
 
         order = HostingOrder.create(
-            price=request.session['generic_payment_details']['amount'],
+            price=request['generic_payment_details']['amount'],
             customer=stripe_cus,
             billing_address=billing_address,
             vm_pricing=VMPricing.get_default_pricing()
@@ -1092,7 +1091,7 @@ def do_create_vm(request, user, stripe_api_cus_id, card_details_response,
             billing_address_user_form.is_valid()
             billing_address_user_form.save()
 
-        if request.session['generic_payment_details']['recurring']:
+        if request['generic_payment_details']['recurring']:
             # Associate the given stripe subscription with the order
             order.set_subscription_id(
                 stripe_subscription_obj.id, card_details_dict
@@ -1176,9 +1175,9 @@ def do_create_vm(request, user, stripe_api_cus_id, card_details_response,
         'email': custom_user.email,
         'username': custom_user.username,
         'pass': custom_user.password,
-        'request_scheme': request.scheme,
-        'request_host': request.get_host(),
-        'language': get_language(),
+        'request_scheme': request['scheme'],
+        'request_host': request['host'],
+        'language': request['language'],
     }
 
     create_vm(
