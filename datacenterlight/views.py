@@ -1050,6 +1050,7 @@ def do_create_vm(request, user, stripe_api_cus_id, card_details_response,
         stripe_customer_id = stripe_customer.id
         new_user = authenticate(username=custom_user.email,
                                 password=password)
+        # TODO do we need login here ?
         login(request, new_user)
         if 'new_user_hosting_key_id' in request:
             user_hosting_key = UserHostingKey.objects.get(
