@@ -741,3 +741,22 @@ class StripeTaxRate(AssignPermissionsMixin, models.Model):
     display_name = models.CharField(max_length=100)
     percentage = models.FloatField(default=0)
     description = models.CharField(max_length=100)
+
+
+class IncompleteSubscriptions(AssignPermissionsMixin, models.Model):
+    created_at = models.DateTimeField(auto_now_add=True)
+    completed_at = models.DateTimeField()
+    subscription_id = models.CharField(max_length=100)
+    subscription_status = models.CharField(max_length=30)
+    name = models.CharField(max_length=50)
+    email = models.EmailField()
+    request = models.TextField()
+    stripe_api_cus_id = models.CharField(max_length=30)
+    card_details_response = models.TextField()
+    stripe_subscription_obj = models.TextField()
+    stripe_onetime_charge = models.TextField()
+    gp_details = models.TextField()
+    specs = models.TextField()
+    vm_template_id = models.PositiveIntegerField(default=0)
+    template = models.TextField()
+    billing_address_data = models.TextField()

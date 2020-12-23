@@ -1,6 +1,7 @@
 import logging
-
+import json
 import stripe
+
 from django import forms
 from django.conf import settings
 from django.contrib import messages
@@ -19,9 +20,8 @@ from hosting.forms import (
 )
 from hosting.models import (
     HostingBill, HostingOrder, UserCardDetail, GenericProduct, UserHostingKey,
-    StripeTaxRate)
+    StripeTaxRate, IncompleteSubscriptions)
 from membership.models import CustomUser, StripeCustomer
-from opennebula_api.models import OpenNebulaManager
 from opennebula_api.serializers import VMTemplateSerializer
 from utils.forms import (
     BillingAddressForm, BillingAddressFormSignup, UserBillingAddressForm,
@@ -894,6 +894,53 @@ class OrderConfirmationView(DetailView, FormView):
             latest_invoice = stripe.Invoice.retrieve(
                 stripe_subscription_obj.latest_invoice)
 
+            new_user_hosting_key_id = None
+            card_id = None
+            generic_payment_type = None
+            generic_payment_details = None
+            if 'generic_payment_details' in request.session:
+                generic_payment_details = request.session[
+                    'generic_payment_details']
+            if 'generic_payment_type' in request.session:
+                generic_payment_type = request.session['generic_payment_type']
+            if 'new_user_hosting_key_id' in self.request.session:
+                new_user_hosting_key_id = request.session[
+                    'new_user_hosting_key_id']
+            if 'card_id' in request.session:
+                card_id = request.session.get('card_id')
+            req = {
+                'scheme': self.request.scheme,
+                'host': self.request.get_host(),
+                'language': get_language(),
+                'new_user_hosting_key_id': new_user_hosting_key_id,
+                'card_id': card_id,
+                'generic_payment_type': generic_payment_type,
+                'generic_payment_details': generic_payment_details
+            }
+
+            subscription_status = ''
+            if stripe_subscription_obj:
+                subscription_status = stripe_subscription_obj.status
+
+            # Store params so that they can be retrieved later
+            IncompleteSubscriptions.objects.create(
+                subscription_status=subscription_status,
+                name=user.get('name'),
+                email=user.get('email'),
+                request=json.dumps(req),
+                stripe_api_cus_id=stripe_api_cus_id,
+                card_details_response=json.dumps(card_details_response),
+                stripe_subscription_obj=json.dumps(stripe_subscription_obj) if stripe_customer_obj else '',
+                stripe_onetime_charge=json.dumps(stripe_onetime_charge) if stripe_onetime_charge else '',
+                gp_details=json.dumps(gp_details) if gp_details else '',
+                specs=json.dumps(specs) if specs else '',
+                vm_template_id=vm_template_id if vm_template_id else 0,
+                template=json.dumps(template) if template else '',
+                billing_address_data=json.dumps(
+                    request.session.get('billing_address_data')
+                )
+            )
+
             # Check if the subscription was approved and is active
             if (stripe_subscription_obj is None
                     or (stripe_subscription_obj.status != 'active'
@@ -953,6 +1000,7 @@ class OrderConfirmationView(DetailView, FormView):
                             )
                         }
                     }
+                    clear_all_session_vars(request)
                     return JsonResponse(context)
                 else:
                     logger.debug(
@@ -962,28 +1010,6 @@ class OrderConfirmationView(DetailView, FormView):
                         "requires_source_action")
                     msg = subscription_result.get('error')
                     return show_error(msg, self.request)
-        new_user_hosting_key_id = None
-        card_id = None
-        generic_payment_type = None
-        generic_payment_details = None
-        if 'generic_payment_details' in request.session:
-            generic_payment_details = request.session['generic_payment_details']
-        if 'generic_payment_type' in request.session:
-            generic_payment_type = request.session['generic_payment_type']
-        if 'new_user_hosting_key_id' in self.request.session:
-            new_user_hosting_key_id = request.session['new_user_hosting_key_id']
-        if 'card_id' in request.session:
-            card_id = request.session.get('card_id')
-        req = {
-            'scheme': self.request.scheme,
-            'host': self.request.get_host(),
-            'language': get_language(),
-            'new_user_hosting_key_id': new_user_hosting_key_id,
-            'card_id': card_id,
-            'generic_payment_type': generic_payment_type,
-            'generic_payment_details': generic_payment_details
-        }
-
         do_create_vm(req, user, stripe_api_cus_id,
             card_details_response, stripe_subscription_obj,
             stripe_onetime_charge, gp_details, specs, vm_template_id,
@@ -1191,14 +1217,14 @@ def do_create_vm(request, user, stripe_api_cus_id, card_details_response,
                       "We have just received a payment of CHF {amount:.2f}"
                       " from you.{recurring}\n\n"
                       "Cheers,\nYour Data Center Light team".format(
-                name=user.get('name'),
-                amount=gp_details['amount'],
-                recurring=(
-                    recurring_text
-                    if gp_details['recurring'] else ''
-                )
-            )
-            ),
+                            name=user.get('name'),
+                            amount=gp_details['amount'],
+                            recurring=(
+                                recurring_text
+                                if gp_details['recurring'] else ''
+                            )
+                        )
+                    ),
             'reply_to': ['info@ungleich.ch'],
         }
         send_plain_email_task.delay(email_data)

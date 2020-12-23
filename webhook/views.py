@@ -1,7 +1,8 @@
 import datetime
 import logging
-
+import json
 import stripe
+
 # Create your views here.
 from django.conf import settings
 from django.http import HttpResponse
@@ -10,7 +11,7 @@ from django.views.decorators.http import require_POST
 
 from datacenterlight.views import do_create_vm
 from membership.models import StripeCustomer
-from hosting.models import HostingOrder
+from hosting.models import IncompleteSubscriptions
 
 from utils.models import BillingAddress, UserBillingAddress
 from utils.tasks import send_plain_email_task
@@ -115,14 +116,16 @@ def handle_webhook(request):
             }
         send_plain_email_task.delay(email_data)
     elif event.type == 'invoice.paid':
-        #https://stripe.com/docs/billing/migration/strong-customer-authentication#scenario-1-handling-fulfillment
+        #More info:  https://stripe.com/docs/billing/migration/strong-customer-authentication#scenario-1-handling-fulfillment
         invoice_obj = event.data.object
         logger.debug("Webhook Event: invoice.paid")
         logger.debug("invoice_obj %s " % str(invoice_obj))
         logger.debug("invoice_obj.paid = %s %s" % (invoice_obj.paid, type(invoice_obj.paid)))
         logger.debug("invoice_obj.billing_reason = %s %s" % (invoice_obj.billing_reason, type(invoice_obj.billing_reason)))
-        # We should check for billing_reason == "subscription_create" but we check for "subscription_update"
-        # because we are using older api. See https://stripe.com/docs/upgrades?since=2015-07-13
+        # We should check for billing_reason == "subscription_create" but we
+        # check for "subscription_update"
+        # because we are using older api.
+        # See https://stripe.com/docs/upgrades?since=2015-07-13
 
         # The billing_reason attribute of the invoice object now can take the
         # value of subscription_create, indicating that it is the first
@@ -130,32 +133,54 @@ def handle_webhook(request):
         # billing_reason=subscription_create is represented as
         # subscription_update.
 
-        if invoice_obj.paid and invoice_obj.billing_reason == "subscription_update":
+        if (invoice_obj.paid and
+                invoice_obj.billing_reason == "subscription_update"):
             logger.debug("Start provisioning")
-            # get subscription id, order_id
-            ho = None
             try:
-                ho = HostingOrder.objects.get(subscription_id=invoice_obj.subscription)
+                stripe_subscription_obj = stripe.Subscription.retrieve(
+                    invoice_obj.subscription)
+                try:
+                    incomplete_sub = IncompleteSubscriptions.objects.get(
+                        subscription_id=invoice_obj.subscription)
+                    logger.debug("*******")
+                    logger.debug(incomplete_sub)
+                    logger.debug("*******")
+                    do_create_vm(
+                        request=incomplete_sub.request,
+                        user={'name': incomplete_sub.name,
+                              'email': incomplete_sub.email},
+                        stripe_api_cus_id=incomplete_sub.stripe_api_cus_id,
+                        card_details_response=json.loads(
+                            incomplete_sub.card_details_response),
+                        stripe_subscription_obj=json.loads(
+                            stripe_subscription_obj),
+                        stripe_onetime_charge=json.loads(
+                            incomplete_sub.stripe_onetime_charge),
+                        gp_details=json.loads(incomplete_sub.gp_details),
+                        specs=json.loads(incomplete_sub.specs),
+                        vm_template_id=incomplete_sub.vm_template_id,
+                        template=json.loads(incomplete_sub.template)
+                    )
+                except (IncompleteSubscriptions.DoesNotExist,
+                        IncompleteSubscriptions.MultipleObjectsReturned) as ex:
+                    logger.error(str(ex))
+                    # TODO Inform admin
+                    email_data = {
+                        'subject': "IncompleteSubscriptions error",
+                        'from_email': settings.DCL_SUPPORT_FROM_ADDRESS,
+                        'to': settings.DCL_ERROR_EMAILS_TO_LIST,
+                        'body': "Response = %s" % str(ex),
+                    }
+                    send_plain_email_task.delay(email_data)
             except Exception as ex:
                 logger.error(str(ex))
-            if ho:
-                logger.debug("Create a VM for order %s" % str(ho))
-                # TODO: fix the error below
-                try:
-                    user = {'name': ho.customer.user.name,
-                            'email': ho.customer.user.email}
-                    stripe_api_cus_id = ho.customer.stripe_id
-                    stripe_subscription_obj = stripe.Subscription.retrieve(invoice_obj.subscription)
-                    do_create_vm(request, user, stripe_api_cus_id,
-                                 card_details_response,
-                                 stripe_subscription_obj,
-                                 stripe_onetime_charge, gp_details, specs,
-                                 vm_template_id,
-                                 template
-                                 )
-                except Exception as ex:
-                    logger.error(str(ex))
-
+                email_data = {
+                    'subject': "invoice.paid Webhook error",
+                    'from_email': settings.DCL_SUPPORT_FROM_ADDRESS,
+                    'to': settings.DCL_ERROR_EMAILS_TO_LIST,
+                    'body': "Response = %s" % str(ex),
+                }
+                send_plain_email_task.delay(email_data)
     else:
         logger.error("Unhandled event : " + event.type)
     return HttpResponse(status=200)
