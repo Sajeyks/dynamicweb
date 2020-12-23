@@ -1115,7 +1115,7 @@ def do_create_vm(request, user, stripe_api_cus_id, card_details_response,
                 id=request['new_user_hosting_key_id'])
             user_hosting_key.user = new_user
             user_hosting_key.save()
-            logger.debug("User's key is saved" % custom_user.email)
+            logger.debug("User %s key is saved" % custom_user.email)
 
     if 'card_id' in request:
         card_id = request.get('card_id')
@@ -1132,7 +1132,7 @@ def do_create_vm(request, user, stripe_api_cus_id, card_details_response,
                 stripe_source_id=user_card_detail.card_id
             )
     else:
-        logger.debug("card_id %s was NOT in request, using "
+        logger.debug("card_id was NOT in request, using "
                      "card_details_response")
         ucd = UserCardDetail.get_or_create_user_card_detail(
             stripe_customer=custom_user.stripecustomer,
