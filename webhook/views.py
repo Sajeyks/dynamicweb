@@ -148,6 +148,7 @@ def handle_webhook(request):
                     gp_details = ""
                     template = ""
                     specs = ""
+                    billing_address_data = ""
                     if incomplete_sub.request:
                         request = json.loads(incomplete_sub.request)
                     if incomplete_sub.specs:
@@ -162,6 +163,9 @@ def handle_webhook(request):
                     if incomplete_sub.template:
                         template = json.loads(
                             incomplete_sub.template)
+                    if incomplete_sub.billing_address:
+                        billing_address_data = json.loads(
+                            incomplete_sub.billing_address_data)
                     logger.debug("*******")
                     logger.debug(str(incomplete_sub))
                     logger.debug("*******")
@@ -187,7 +191,8 @@ def handle_webhook(request):
                         gp_details=gp_details,
                         specs=specs,
                         vm_template_id=incomplete_sub.vm_template_id,
-                        template=template
+                        template=template,
+                        billing_address_data=billing_address_data
                     )
                 except (IncompleteSubscriptions.DoesNotExist,
                         IncompleteSubscriptions.MultipleObjectsReturned) as ex:
