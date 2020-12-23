@@ -1120,9 +1120,10 @@ def do_provisioning(request, user, stripe_api_cus_id, card_details_response,
         new_user = authenticate(username=custom_user.email,
                                 password=password)
         logger.debug("User %s is authenticated" % custom_user.email)
-        if 'new_user_hosting_key_id' in request:
+        new_user_hosting_key_id = request.get('new_user_hosting_key_id', None)
+        if new_user_hosting_key_id:
             user_hosting_key = UserHostingKey.objects.get(
-                id=request['new_user_hosting_key_id'])
+                id=new_user_hosting_key_id)
             user_hosting_key.user = new_user
             user_hosting_key.save()
             logger.debug("User %s key is saved" % custom_user.email)
