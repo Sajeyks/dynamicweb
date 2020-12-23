@@ -1016,11 +1016,12 @@ class OrderConfirmationView(DetailView, FormView):
                         "requires_source_action")
                     msg = subscription_result.get('error')
                     return show_error(msg, self.request)
-        do_create_vm(
+        do_provisioning(
             req, user, stripe_api_cus_id,
             card_details_response, stripe_subscription_obj,
             stripe_onetime_charge, gp_details, specs, vm_template_id,
-            template, request.session.get('billing_address_data')
+            template, request.session.get('billing_address_data'),
+            self.request
         )
         try:
             custom_user = CustomUser.objects.get(email=user.get('email'))
@@ -1047,9 +1048,10 @@ class OrderConfirmationView(DetailView, FormView):
         return JsonResponse(response)
 
 
-def do_create_vm(request, user, stripe_api_cus_id, card_details_response,
-                 stripe_subscription_obj, stripe_onetime_charge, gp_details,
-                 specs, vm_template_id, template, billing_address_data):
+def do_provisioning(request, user, stripe_api_cus_id, card_details_response,
+                    stripe_subscription_obj, stripe_onetime_charge, gp_details,
+                    specs, vm_template_id, template, billing_address_data,
+                    real_request):
     """
     :param request: a dict
         {
@@ -1077,6 +1079,7 @@ def do_create_vm(request, user, stripe_api_cus_id, card_details_response,
     :param specs:
     :param vm_template_id:
     :param template:
+    :param real_request:
     :return:
     """
     # Create user if the user is not logged in and if he is not already
@@ -1255,14 +1258,14 @@ def do_create_vm(request, user, stripe_api_cus_id, card_details_response,
             'reply_to': ['info@ungleich.ch'],
         }
         send_plain_email_task.delay(email_data)
-
+        redirect_url = reverse('datacenterlight:index')
+        if real_request:
+            clear_all_session_vars(real_request)
+            if real_request.user.is_authenticated():
+                redirect_url = reverse('hosting:invoices')
         response = {
             'status': True,
-            'redirect': (
-                reverse('hosting:invoices')
-                if request.user.is_authenticated()
-                else reverse('datacenterlight:index')
-            ),
+            'redirect': redirect_url,
             'msg_title': str(_('Thank you for the payment.')),
             'msg_body': str(
                 _('You will soon receive a confirmation email of the '
@@ -1289,6 +1292,9 @@ def do_create_vm(request, user, stripe_api_cus_id, card_details_response,
         stripe_subscription_obj, card_details_dict, request,
         vm_template_id, template, user
     )
+
+    if real_request:
+        clear_all_session_vars(real_request)
 
 
 def show_error(msg, request):

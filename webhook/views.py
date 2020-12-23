@@ -9,7 +9,7 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
-from datacenterlight.views import do_create_vm
+from datacenterlight.views import do_provisioning
 from membership.models import StripeCustomer
 from hosting.models import IncompleteSubscriptions
 
@@ -180,7 +180,7 @@ def handle_webhook(request):
                     logger.debug("5*******")
                     logger.debug(template)
                     logger.debug("6*******")
-                    do_create_vm(
+                    do_provisioning(
                         request=request,
                         user={'name': incomplete_sub.name,
                               'email': incomplete_sub.email},
@@ -192,7 +192,8 @@ def handle_webhook(request):
                         specs=specs,
                         vm_template_id=incomplete_sub.vm_template_id,
                         template=template,
-                        billing_address_data=billing_address_data
+                        billing_address_data=billing_address_data,
+                        real_request=None
                     )
                 except (IncompleteSubscriptions.DoesNotExist,
                         IncompleteSubscriptions.MultipleObjectsReturned) as ex:
