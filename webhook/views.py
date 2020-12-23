@@ -140,14 +140,21 @@ def handle_webhook(request):
                 logger.error(str(ex))
             if ho:
                 logger.debug("Create a VM for order %s" % str(ho))
-
-            # TODO: fix the error below
-            do_create_vm(request, user, stripe_api_cus_id,
-                         card_details_response, stripe_subscription_obj,
-                         stripe_onetime_charge, gp_details, specs,
-                         vm_template_id,
-                         template
-                         )
+                # TODO: fix the error below
+                try:
+                    user = {'name': ho.customer.user.name,
+                            'email': ho.customer.user.email}
+                    stripe_api_cus_id = ho.customer.stripe_id
+                    stripe_subscription_obj = stripe.Subscription.retrieve(invoice_obj.subscription)
+                    do_create_vm(request, user, stripe_api_cus_id,
+                                 card_details_response,
+                                 stripe_subscription_obj,
+                                 stripe_onetime_charge, gp_details, specs,
+                                 vm_template_id,
+                                 template
+                                 )
+                except Exception as ex:
+                    logger.error(str(ex))
 
     else:
         logger.error("Unhandled event : " + event.type)
