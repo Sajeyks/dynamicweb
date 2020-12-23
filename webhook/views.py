@@ -163,7 +163,7 @@ def handle_webhook(request):
                     if incomplete_sub.template:
                         template = json.loads(
                             incomplete_sub.template)
-                    if incomplete_sub.billing_address:
+                    if incomplete_sub.billing_address_data:
                         billing_address_data = json.loads(
                             incomplete_sub.billing_address_data)
                     logger.debug("*******")
