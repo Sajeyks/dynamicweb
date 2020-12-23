@@ -1142,6 +1142,11 @@ def do_create_vm(request, user, stripe_api_cus_id, card_details_response,
             custom_user.stripecustomer.stripe_id,
             ucd.card_id
         )
+        card_details_dict = {
+            'last4': ucd.last4,
+            'brand': ucd.brand,
+            'card_id': ucd.card_id
+        }
 
     # Save billing address
     billing_address_data.update({
