@@ -991,46 +991,40 @@ def do_create_vm(request, user, stripe_api_cus_id, card_details_response,
                  specs, vm_template_id, template):
     # Create user if the user is not logged in and if he is not already
     # registered
-    if not request.user.is_authenticated():
-        try:
-            custom_user = CustomUser.objects.get(
-                email=user.get('email'))
-            stripe_customer = StripeCustomer.objects.filter(
-                user_id=custom_user.id).first()
-            if stripe_customer is None:
-                stripe_customer = StripeCustomer.objects.create(
-                    user=custom_user, stripe_id=stripe_api_cus_id
-                )
-            stripe_customer_id = stripe_customer.id
-        except CustomUser.DoesNotExist:
-            logger.debug(
-                "Customer {} does not exist.".format(user.get('email')))
-            password = CustomUser.get_random_password()
-            base_url = "{0}://{1}".format(request.scheme,
-                                          request.get_host())
-            custom_user = CustomUser.register(
-                user.get('name'), password,
-                user.get('email'),
-                app='dcl', base_url=base_url, send_email=True,
-                account_details=password
+    try:
+        custom_user = CustomUser.objects.get(
+            email=user.get('email'))
+        stripe_customer = StripeCustomer.objects.filter(
+            user_id=custom_user.id).first()
+        if stripe_customer is None:
+            stripe_customer = StripeCustomer.objects.create(
+                user=custom_user, stripe_id=stripe_api_cus_id
             )
-            logger.debug("Created user {}.".format(user.get('email')))
-            stripe_customer = StripeCustomer.objects. \
-                create(user=custom_user, stripe_id=stripe_api_cus_id)
-            stripe_customer_id = stripe_customer.id
-            new_user = authenticate(username=custom_user.email,
-                                    password=password)
-            login(request, new_user)
-            if 'new_user_hosting_key_id' in request.session:
-                user_hosting_key = UserHostingKey.objects.get(
-                    id=request.session['new_user_hosting_key_id'])
-                user_hosting_key.user = new_user
-                user_hosting_key.save()
-    else:
-        # We assume that if the user is here, his/her StripeCustomer
-        # object already exists
-        stripe_customer_id = request.user.stripecustomer.id
-        custom_user = request.user
+        stripe_customer_id = stripe_customer.id
+    except CustomUser.DoesNotExist:
+        logger.debug(
+            "Customer {} does not exist.".format(user.get('email')))
+        password = CustomUser.get_random_password()
+        base_url = "{0}://{1}".format(request.scheme,
+                                      request.get_host())
+        custom_user = CustomUser.register(
+            user.get('name'), password,
+            user.get('email'),
+            app='dcl', base_url=base_url, send_email=True,
+            account_details=password
+        )
+        logger.debug("Created user {}.".format(user.get('email')))
+        stripe_customer = StripeCustomer.objects. \
+            create(user=custom_user, stripe_id=stripe_api_cus_id)
+        stripe_customer_id = stripe_customer.id
+        new_user = authenticate(username=custom_user.email,
+                                password=password)
+        login(request, new_user)
+        if 'new_user_hosting_key_id' in request.session:
+            user_hosting_key = UserHostingKey.objects.get(
+                id=request.session['new_user_hosting_key_id'])
+            user_hosting_key.user = new_user
+            user_hosting_key.save()
 
     if 'token' in request.session:
         ucd = UserCardDetail.get_or_create_user_card_detail(
