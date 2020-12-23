@@ -930,6 +930,7 @@ class OrderConfirmationView(DetailView, FormView):
 
             # Store params so that they can be retrieved later
             IncompleteSubscriptions.objects.create(
+                subscription_id=stripe_subscription_obj.id,
                 subscription_status=subscription_status,
                 name=user.get('name'),
                 email=user.get('email'),
