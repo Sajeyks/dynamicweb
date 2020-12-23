@@ -38,6 +38,7 @@ def get_cms_integration(name):
 def create_vm(billing_address_data, stripe_customer_id, specs,
               stripe_subscription_obj, card_details_dict, request,
               vm_template_id, template, user):
+    logger.debug("In create_vm")
     billing_address = BillingAddress(
         cardholder_name=billing_address_data['cardholder_name'],
         street_address=billing_address_data['street_address'],
