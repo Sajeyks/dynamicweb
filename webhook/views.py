@@ -142,17 +142,27 @@ def handle_webhook(request):
                 try:
                     incomplete_sub = IncompleteSubscriptions.objects.get(
                         subscription_id=invoice_obj.subscription)
+                    soc = ""
+                    card_details_response = ""
+                    gp_details = ""
+                    if incomplete_sub.stripe_onetime_charge:
+                        soc = json.loads(incomplete_sub.stripe_onetime_charge)
+                    if incomplete_sub.gp_details:
+                        gp_details = json.loads(incomplete_sub.gp_details)
+                    if incomplete_sub.card_details_response:
+                        card_details_response = json.loads(
+                            incomplete_sub.card_details_response)
                     logger.debug("*******")
                     logger.debug(str(incomplete_sub))
                     logger.debug("*******")
                     logger.debug("1*******")
                     logger.debug(json.loads(incomplete_sub.request))
                     logger.debug("2*******")
-                    logger.debug(json.loads(incomplete_sub.card_details_response))
+                    logger.debug(card_details_response)
                     logger.debug("3*******")
-                    logger.debug(json.loads(incomplete_sub.stripe_onetime_charge))
+                    logger.debug(json.loads(soc))
                     logger.debug("4*******")
-                    logger.debug(json.loads(incomplete_sub.gp_details))
+                    logger.debug(json.loads(gp_details))
                     logger.debug("5*******")
                     logger.debug(json.loads(incomplete_sub.template))
                     logger.debug("6*******")
@@ -162,11 +172,10 @@ def handle_webhook(request):
                               'email': incomplete_sub.email},
                         stripe_api_cus_id=incomplete_sub.stripe_api_cus_id,
                         card_details_response=json.loads(
-                            incomplete_sub.card_details_response),
+                            card_details_response),
                         stripe_subscription_obj=stripe_subscription_obj,
-                        stripe_onetime_charge=json.loads(
-                            incomplete_sub.stripe_onetime_charge),
-                        gp_details=json.loads(incomplete_sub.gp_details),
+                        stripe_onetime_charge=json.loads(soc),
+                        gp_details=json.loads(gp_details),
                         specs=json.loads(incomplete_sub.specs),
                         vm_template_id=incomplete_sub.vm_template_id,
                         template=json.loads(incomplete_sub.template)
