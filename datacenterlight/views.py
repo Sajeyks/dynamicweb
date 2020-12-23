@@ -1017,11 +1017,18 @@ class OrderConfirmationView(DetailView, FormView):
                         "requires_source_action")
                     msg = subscription_result.get('error')
                     return show_error(msg, self.request)
-        do_create_vm(req, user, stripe_api_cus_id,
+        do_create_vm(
+            req, user, stripe_api_cus_id,
             card_details_response, stripe_subscription_obj,
             stripe_onetime_charge, gp_details, specs, vm_template_id,
             template, request.session.get('billing_address_data')
         )
+        try:
+            custom_user = CustomUser.objects.get(email=user.get('email'))
+            login(self.request, custom_user)
+        except (CustomUser.DoesNotExist,
+                CustomUser.MultipleObjectsReturned) as ex:
+            logger.error(str(ex))
 
         response = {
             'status': True,
@@ -1102,16 +1109,17 @@ def do_create_vm(request, user, stripe_api_cus_id, card_details_response,
         stripe_customer_id = stripe_customer.id
         new_user = authenticate(username=custom_user.email,
                                 password=password)
-        # TODO do we need login here ?
-        login(request, new_user)
+        logger.debug("User %s is authenticated" % custom_user.email)
         if 'new_user_hosting_key_id' in request:
             user_hosting_key = UserHostingKey.objects.get(
                 id=request['new_user_hosting_key_id'])
             user_hosting_key.user = new_user
             user_hosting_key.save()
+            logger.debug("User's key is saved" % custom_user.email)
 
     if 'card_id' in request:
         card_id = request.get('card_id')
+        logger.debug("card_id %s was in request" % card_id)
         user_card_detail = UserCardDetail.objects.get(id=card_id)
         card_details_dict = {
             'last4': user_card_detail.last4,
@@ -1124,6 +1132,8 @@ def do_create_vm(request, user, stripe_api_cus_id, card_details_response,
                 stripe_source_id=user_card_detail.card_id
             )
     else:
+        logger.debug("card_id %s was NOT in request, using "
+                     "card_details_response")
         ucd = UserCardDetail.get_or_create_user_card_detail(
             stripe_customer=custom_user.stripecustomer,
             card_details=card_details_response
