@@ -34,6 +34,7 @@ def handleStripeError(f):
             logger.error(str(e))
             return response
         except stripe.error.RateLimitError as e:
+            logger.error(str(e))
             response.update(
                 {'error': "Too many requests made to the API too quickly"})
             return response
@@ -317,13 +318,16 @@ class StripeUtils(object):
                             ]
         :return: The subscription StripeObject
         """
-
+        logger.debug("Subscribing %s to plan %s : coupon = %s" % (
+            customer, str(plans), str(coupon)
+        ))
         subscription_result = self.stripe.Subscription.create(
             customer=customer, items=plans, trial_end=trial_end,
             coupon=coupon,
             default_tax_rates=tax_rates,
             payment_behavior='allow_incomplete'
         )
+        logger.debug("Done subscribing")
         return subscription_result
 
     @handleStripeError
