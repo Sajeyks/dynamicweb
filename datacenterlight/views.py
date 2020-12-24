@@ -289,7 +289,7 @@ class PaymentOrderView(FormView):
                 #  confirmation
                 stripe_utils = StripeUtils()
                 payment_intent_response = stripe_utils.get_payment_intent(
-                    float(product.get_actual_price())
+                    int(product.get_actual_price() * 100)
                 )
                 if not payment_intent_response.get('response_object'):
                     logger.error("Could not create payment_intent %s" %
