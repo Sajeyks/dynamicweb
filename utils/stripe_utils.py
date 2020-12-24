@@ -269,7 +269,7 @@ class StripeUtils(object):
                     stripe_plan_id=stripe_plan_id)
             except stripe.error.InvalidRequestError as e:
                 logger.error(str(e))
-                logger.error("error_code = " % e.__dict__)
+                logger.error("error_code = %s" % str(e.__dict__))
                 if self.RESOURCE_ALREADY_EXISTS_ERROR_CODE in e.error.code:
                     logger.debug(
                         self.PLAN_EXISTS_ERROR_MSG.format(stripe_plan_id))
