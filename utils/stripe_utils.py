@@ -70,7 +70,7 @@ class StripeUtils(object):
     CURRENCY = 'chf'
     INTERVAL = 'month'
     SUCCEEDED_STATUS = 'succeeded'
-    STRIPE_PLAN_ALREADY_EXISTS = 'Plan already exists'
+    RESOURCE_ALREADY_EXISTS_ERROR_CODE = 'resource_already_exists'
     STRIPE_NO_SUCH_PLAN = 'No such plan'
     PLAN_EXISTS_ERROR_MSG = 'Plan {} exists already.\nCreating a local StripePlan now.'
     PLAN_DOES_NOT_EXIST_ERROR_MSG = 'Plan {} does not exist.'
@@ -268,11 +268,17 @@ class StripeUtils(object):
                 stripe_plan_db_obj = StripePlan.objects.create(
                     stripe_plan_id=stripe_plan_id)
             except stripe.error.InvalidRequestError as e:
-                if self.STRIPE_PLAN_ALREADY_EXISTS in str(e):
+                logger.error(str(e))
+                logger.error("error_code = " % e.error.code)
+                if self.RESOURCE_ALREADY_EXISTS_ERROR_CODE in e.error.code:
                     logger.debug(
                         self.PLAN_EXISTS_ERROR_MSG.format(stripe_plan_id))
-                    stripe_plan_db_obj = StripePlan.objects.create(
+                    stripe_plan_db_obj, c = StripePlan.objects.get_or_create(
                         stripe_plan_id=stripe_plan_id)
+                    if c:
+                        logger.debug("Created stripe plan %s" % stripe_plan_id)
+                    else:
+                        logger.debug("Plan %s exists already" % stripe_plan_id)
         return stripe_plan_db_obj
 
     @handleStripeError
