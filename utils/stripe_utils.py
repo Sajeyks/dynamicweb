@@ -305,6 +305,8 @@ class StripeUtils(object):
         """
         Subscribes the given customer to the list of given plans
 
+        :param tax_rates:
+        :param coupon:
         :param customer: The stripe customer identifier
         :param plans: A list of stripe plans.
         :param trial_end: An integer representing when the Stripe subscription
