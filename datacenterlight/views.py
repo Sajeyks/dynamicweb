@@ -296,8 +296,8 @@ class PaymentOrderView(FormView):
                     logger.error("Could not create payment_intent %s" %
                                  str(payment_intent_response))
                 else:
-                    logger.debug("payment_intent_obj = %s" %
-                                 str(payment_intent))
+                    logger.debug("payment_intent.client_secret = %s" %
+                                 str(payment_intent.client_secret))
                 context.update({'generic_payment_form': ProductPaymentForm(
                     prefix='generic_payment_form',
                     initial={
