@@ -221,7 +221,10 @@ def handle_webhook(request):
         if (invoice_obj.payment_failed and
                 invoice_obj.billing_reason == "subscription_update"):
             logger.debug("Payment failed, inform the users")
-
+    elif event.type == 'payment_intent.succeeded':
+        payment_intent_obj = event.data.object
+        logger.debug("Webhook Event: payment_intent.succeeded")
+        logger.debug("payment_intent_obj %s " % str(payment_intent_obj))
     else:
         logger.error("Unhandled event : " + event.type)
     return HttpResponse(status=200)

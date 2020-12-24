@@ -493,6 +493,19 @@ class StripeUtils(object):
         )
         return tax_id_obj
 
+    @handleStripeError
+    def get_payment_intent(self, amount):
+        """
+        Adds VM metadata to a subscription
+        :param amount: the amount of payment_intent
+        :return:
+        """
+        payment_intent_obj = stripe.PaymentIntent.create(
+            amount=amount,
+            currency='chf'
+        )
+        return payment_intent_obj
+
     def compare_vat_numbers(self, vat1, vat2):
         _vat1 = vat1.replace(" ", "").replace(".", "").replace("-","")
         _vat2 = vat2.replace(" ", "").replace(".", "").replace("-","")

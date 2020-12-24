@@ -285,12 +285,28 @@ class PaymentOrderView(FormView):
                 product = GenericProduct.objects.get(
                     id=self.request.session['product_id']
                 )
+                # TODO get the correct price of the product from order
+                #  confirmation
+                stripe_utils = StripeUtils()
+                payment_intent_response = stripe_utils.get_payment_intent(
+                    float(product.get_actual_price())
+                )
+                if not payment_intent_response.get('response_object'):
+                    logger.error("Could not create payment_intent %s" %
+                                 str(payment_intent_response))
+                else:
+                    logger.debug("*******")
+                    logger.debug(
+                        "payment_intent_obj = %s" %
+                        str(payment_intent_response.get('response_object')))
+                    logger.debug("*******")
                 context.update({'generic_payment_form': ProductPaymentForm(
                     prefix='generic_payment_form',
                     initial={'product_name': product.product_name,
                              'amount': float(product.get_actual_price()),
                              'recurring': product.product_is_subscription,
                              'description': product.product_description,
+                             'payment_intent_secret': 'secret_here'
                              },
                     product_id=product.id
                 ), })

@@ -197,7 +197,7 @@ $(document).ready(function () {
             } else {
                 var process_text = "Processing";
                 if (typeof window.processing_text !== 'undefined') {
-                    process_text = window.processing_text
+                    process_text = window.processing_text;
                 }
 
                 $form_new.find('[type=submit]').html(process_text + ' <i class="fa fa-spinner fa-pulse"></i>');
