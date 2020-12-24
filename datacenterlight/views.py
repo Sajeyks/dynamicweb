@@ -291,23 +291,22 @@ class PaymentOrderView(FormView):
                 payment_intent_response = stripe_utils.get_payment_intent(
                     int(product.get_actual_price() * 100)
                 )
-                if not payment_intent_response.get('response_object'):
+                payment_intent = payment_intent_response.get('response_object')
+                if not payment_intent:
                     logger.error("Could not create payment_intent %s" %
                                  str(payment_intent_response))
                 else:
-                    logger.debug("*******")
-                    logger.debug(
-                        "payment_intent_obj = %s" %
-                        str(payment_intent_response.get('response_object')))
-                    logger.debug("*******")
+                    logger.debug("payment_intent_obj = %s" %
+                                 str(payment_intent))
                 context.update({'generic_payment_form': ProductPaymentForm(
                     prefix='generic_payment_form',
-                    initial={'product_name': product.product_name,
-                             'amount': float(product.get_actual_price()),
-                             'recurring': product.product_is_subscription,
-                             'description': product.product_description,
-                             'payment_intent_secret': 'secret_here'
-                             },
+                    initial={
+                        'product_name': product.product_name,
+                        'amount': float(product.get_actual_price()),
+                        'recurring': product.product_is_subscription,
+                        'description': product.product_description,
+                        'payment_intent_secret': payment_intent.client_secret
+                    },
                     product_id=product.id
                 ), })
             else:

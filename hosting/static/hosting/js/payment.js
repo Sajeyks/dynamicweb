@@ -178,7 +178,28 @@ $(document).ready(function () {
     }
 
     var $form_new = $('#payment-form-new');
-    $form_new.submit(payWithStripe_new);
+    $form_new.submit(payWithPaymentIntent);
+    function payWithPaymentIntent(e) {
+        e.preventDefault();
+
+        stripe.confirmCardPayment(
+          window.paymentIntentSecret,
+          {
+            payment_method: {card: cardNumberElement}
+          }
+        ).then(function(result) {
+          if (result.error) {
+            // Display error.message in your UI.
+            var errorElement = document.getElementById('card-errors');
+            errorElement.textContent = result.error.message;
+          } else {
+            // The payment has succeeded
+            // Display a success message
+            alert("Thanks for the order. Your product will be provisioned " +
+                "as soon as we receive the payment. Thank you.");
+          }
+        });
+    }
     function payWithStripe_new(e) {
         e.preventDefault();
 
