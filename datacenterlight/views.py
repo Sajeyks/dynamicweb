@@ -602,9 +602,11 @@ class OrderConfirmationView(DetailView, FormView):
             context['cc_last4'] = card_details_response['last4']
             context['cc_brand'] = card_details_response['brand']
             context['cc_exp_year'] = card_details_response['exp_year']
-            context['cc_exp_month'] = '{:02d}'.format(card_details_response['exp_month'])
+            context['cc_exp_month'] = '{:02d}'.format(
+                card_details_response['exp_month'])
             context['id_payment_method'] = payment_method
         else:
+            # TODO check when we go through this case (to me, it seems useless)
             card_id = self.request.session.get('card_id')
             card_detail = UserCardDetail.objects.get(id=card_id)
             context['cc_last4'] = card_detail.last4
@@ -619,7 +621,9 @@ class OrderConfirmationView(DetailView, FormView):
                     request.session["vat_validation_status"] == "not_needed"):
                 request.session['generic_payment_details']['vat_rate'] = 0
                 request.session['generic_payment_details']['vat_amount'] = 0
-                request.session['generic_payment_details']['amount'] = request.session['generic_payment_details']['amount_before_vat']
+                request.session['generic_payment_details']['amount'] = (
+                    request.session['generic_payment_details']['amount_before_vat']
+                )
             context.update({
                 'generic_payment_details':
                     request.session['generic_payment_details'],
@@ -642,7 +646,8 @@ class OrderConfirmationView(DetailView, FormView):
             vm_specs["price_after_discount"] = price - discount["amount"]
             amount_to_charge = price
             vat_number = request.session.get('billing_address_data').get("vat_number")
-            billing_address = BillingAddress.objects.get(id=request.session["billing_address_id"])
+            billing_address = BillingAddress.objects.get(
+                id=request.session["billing_address_id"])
             if vat_number:
                 validate_result = validate_vat_number(
                     stripe_customer_id=request.session['customer'],
@@ -656,7 +661,6 @@ class OrderConfirmationView(DetailView, FormView):
                     return HttpResponseRedirect(
                         reverse('datacenterlight:payment') + '#vat_error'
                     )
-
                 request.session["vat_validation_status"] = validate_result["status"]
 
             if user_vat_country.lower() == "ch":
