@@ -719,6 +719,24 @@ class OrderConfirmationView(DetailView, FormView):
             context.update({
                 'payment_intent_secret': payment_intent.client_secret
             })
+            logger.debug("Request %s" % create_incomplete_intent_request(
+                self.request))
+            logger.debug("%s" % str(payment_intent))
+            logger.debug("customer %s" % request.session['customer'])
+            logger.debug("card_details_response %s" % card_details_response)
+            logger.debug("request.session[generic_payment_details] %s" % request.session["generic_payment_details"])
+            logger.debug("request.session[billing_address_data] %s" % request.session["billing_address_data"])
+            IncompletePaymentIntents.objects.create(
+                request=create_incomplete_intent_request(self.request),
+                payment_intent_id=payment_intent.id,
+                stripe_api_cus_id=request.session['customer'],
+                card_details_response=json.dumps(card_details_response),
+                stripe_subscription_id=None,
+                stripe_charge_id=None,
+                gp_details=json.dumps(request.session["generic_payment_details"]),
+                billing_address_data=json.dumps(request.session["billing_address_data"])
+            )
+            logger.debug("IncompletePaymentIntent done")
 
         context.update({
             'site_url': reverse('datacenterlight:index'),
@@ -739,24 +757,6 @@ class OrderConfirmationView(DetailView, FormView):
             'stripe_key': settings.STRIPE_API_PUBLIC_KEY,
             'is_subscription': str(is_subscription).lower()
         })
-        logger.debug("Request %s" % create_incomplete_intent_request(
-            self.request))
-        logger.debug("%s" % str(payment_intent))
-        logger.debug("customer %s" % request.session['customer'])
-        logger.debug("card_details_response %s" % card_details_response)
-        logger.debug("request.session[generic_payment_details] %s" % request.session["generic_payment_details"])
-        logger.debug("request.session[billing_address_data] %s" % request.session["billing_address_data"])
-        IncompletePaymentIntents.objects.create(
-            request=create_incomplete_intent_request(self.request),
-            payment_intent_id=payment_intent.id,
-            stripe_api_cus_id=request.session['customer'],
-            card_details_response=json.dumps(card_details_response),
-            stripe_subscription_id=None,
-            stripe_charge_id=None,
-            gp_details=json.dumps(request.session["generic_payment_details"]),
-            billing_address_data=json.dumps(request.session["billing_address_data"])
-        )
-        logger.debug("IncompletePaymentIntent done")
         return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
