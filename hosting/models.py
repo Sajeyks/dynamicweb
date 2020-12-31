@@ -169,8 +169,12 @@ class HostingOrder(AssignPermissionsMixin, models.Model):
 
     def set_stripe_charge(self, stripe_charge):
         self.stripe_charge_id = stripe_charge.id
-        self.last4 = stripe_charge.source.last4
-        self.cc_brand = stripe_charge.source.brand
+        if stripe_charge.source is None:
+            self.last4 = stripe_charge.payment_method_details.card.last4
+            self.cc_brand = stripe_charge.payment_method_details.card.brand
+        else:
+            self.last4 = stripe_charge.source.last4
+            self.cc_brand = stripe_charge.source.brand
         self.save()
 
     def set_subscription_id(self, subscription_id, cc_details):
