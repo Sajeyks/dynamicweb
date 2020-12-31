@@ -241,7 +241,7 @@ def handle_webhook(request):
                 request = json.loads(incomplete_pm.request)
             logger.debug("request = %s" % str(request))
             if incomplete_pm.stripe_onetime_charge:
-                soc = json.loads(incomplete_pm.stripe_onetime_charge)
+                soc = incomplete_pm.stripe_onetime_charge
             logger.debug("stripe_onetime_charge = %s" % str(soc))
             if incomplete_pm.gp_details:
                 gp_details = json.loads(incomplete_pm.gp_details)
