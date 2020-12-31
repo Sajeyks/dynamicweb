@@ -225,8 +225,9 @@ def handle_webhook(request):
         payment_intent_obj = event.data.object
         logger.debug("Webhook Event: payment_intent.succeeded")
         logger.debug("payment_intent_obj %s " % str(payment_intent_obj))
-
         try:
+            logger.debug("Looking for IncompletePaymentIntents %s " %
+                         payment_intent_obj.id)
             incomplete_pm = IncompletePaymentIntents.objects.get(
                 payment_intent_id=payment_intent_obj.id)
             request = ""
@@ -282,6 +283,7 @@ def handle_webhook(request):
         except (IncompletePaymentIntents.DoesNotExist,
                 IncompletePaymentIntents.MultipleObjectsReturned) as ex:
             logger.error(str(ex))
+            logger.debug(str(ex))
             email_data = {
                 'subject': "IncompletePaymentIntents error",
                 'from_email': settings.DCL_SUPPORT_FROM_ADDRESS,
