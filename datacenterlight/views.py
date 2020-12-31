@@ -584,6 +584,9 @@ class OrderConfirmationView(DetailView, FormView):
     @cache_control(no_cache=True, must_revalidate=True, no_store=True)
     def get(self, request, *args, **kwargs):
         context = {}
+        # this is amount to be charge/subscribed before VAT and discount
+        # and expressed in chf. To convert to cents, multiply by 100
+        amount_to_charge = 0
         if (('specs' not in request.session or 'user' not in request.session)
                 and 'generic_payment_type' not in request.session):
             return HttpResponseRedirect(reverse('datacenterlight:index'))
@@ -621,6 +624,7 @@ class OrderConfirmationView(DetailView, FormView):
                 'generic_payment_details':
                     request.session['generic_payment_details'],
             })
+            amount_to_charge = request.session['generic_payment_details']['amount']
         else:
             vm_specs = request.session.get('specs')
             user_vat_country = (
@@ -636,7 +640,7 @@ class OrderConfirmationView(DetailView, FormView):
             )
             vm_specs["price"] = price
             vm_specs["price_after_discount"] = price - discount["amount"]
-
+            amount_to_charge = price
             vat_number = request.session.get('billing_address_data').get("vat_number")
             billing_address = BillingAddress.objects.get(id=request.session["billing_address_id"])
             if vat_number:
@@ -689,8 +693,7 @@ class OrderConfirmationView(DetailView, FormView):
         # the customer
         stripe_utils = StripeUtils()
         payment_intent_response = stripe_utils.get_payment_intent(
-            int(request.session['generic_payment_details']['amount'] *
-                100),
+            int(amount_to_charge * 100),
             customer=request.session['customer']
         )
         payment_intent = payment_intent_response.get(
