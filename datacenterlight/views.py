@@ -20,7 +20,7 @@ from hosting.forms import (
 )
 from hosting.models import (
     HostingBill, HostingOrder, UserCardDetail, GenericProduct, UserHostingKey,
-    StripeTaxRate, IncompleteSubscriptions)
+    StripeTaxRate, IncompleteSubscriptions, IncompletePaymentIntents)
 from membership.models import CustomUser, StripeCustomer
 from opennebula_api.serializers import VMTemplateSerializer
 from utils.forms import (
@@ -745,6 +745,16 @@ class OrderConfirmationView(DetailView, FormView):
             },
             'stripe_key': settings.STRIPE_API_PUBLIC_KEY,
         })
+        IncompletePaymentIntents.objects.create(
+            request=create_incomplete_intent_request(self.request),
+            payment_intent_id=payment_intent.id,
+            stripe_api_cus_id=request.session['customer'],
+            card_details_response=card_details_response,
+            stripe_subscription_id=None,
+            stripe_charge_id=None,
+            gp_details=request.session["generic_payment_details"],
+            billing_address_data=request.session["billing_address_data"]
+        )
         return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
@@ -1113,46 +1123,36 @@ class OrderConfirmationView(DetailView, FormView):
         return JsonResponse(response)
 
 
-def do_provisioning(request, user, stripe_api_cus_id, card_details_response,
-                    stripe_subscription_obj, stripe_onetime_charge, gp_details,
-                    specs, vm_template_id, template, billing_address_data,
-                    real_request):
+def create_incomplete_intent_request(request):
     """
-    :param request: a dict
-        {
-            'scheme': 'https',
-            'host': 'domain',
-            'language': 'en-us',
-            'new_user_hosting_key_id': 1,
-            'card_id': 1,   # if usercarddetail exists already,
-            'generic_payment_type': 'generic'   # represents a generic payment
-            'generic_payment_details': {
-                'amount': 100,
-                'recurring':
-            },
-        }
-    :param user: a dict
-        {
-            'name': 'John Doe',
-            'email': 'john@doe.com'
-        }
-    :param stripe_api_cus_id: 'cus_xxxxxxx' the actual stripe customer id str
-    :param card_details_response:
-    :param stripe_subscription_obj: The actual Stripe's Subscription Object
-    :param stripe_onetime_charge: Stripe's Charge object
-    :param gp_details:
-    :param specs:
-    :param vm_template_id:
-    :param template:
-    :param real_request:
+    Persist session variables so that they could be pick up
+    in the webhook for processing.
+    :param request:
     :return:
     """
-    # Create user if the user is not logged in and if he is not already
-    # registered
+    req = {
+        'scheme': request.scheme,
+        'host': request.get_host(),
+        'language': get_language(),
+        'new_user_hosting_key_id': request.session.get(
+            'new_user_hosting_key_id', None),
+        'card_id': request.session.get('card_id', None),
+        'generic_payment_type': request.session.get(
+            'generic_payment_type', None),
+        'generic_payment_details': request.session.get(
+            'generic_payment_details', None),
+        'user': request.session.get('user', None)
+    }
+    return json.dumps(req)
+
+
+def get_or_create_custom_user(request, stripe_api_cus_id):
     new_user = None
+    name = request.get('user').get('name')
+    email = request.get('user').get('email')
+
     try:
-        custom_user = CustomUser.objects.get(
-            email=user.get('email'))
+        custom_user = CustomUser.objects.get(email=email)
         stripe_customer = StripeCustomer.objects.filter(
             user_id=custom_user.id).first()
         if stripe_customer is None:
@@ -1162,17 +1162,17 @@ def do_provisioning(request, user, stripe_api_cus_id, card_details_response,
         stripe_customer_id = stripe_customer.id
     except CustomUser.DoesNotExist:
         logger.debug(
-            "Customer {} does not exist.".format(user.get('email')))
+            "Customer {} does not exist.".format(email))
         password = CustomUser.get_random_password()
         base_url = "{0}://{1}".format(request['scheme'],
                                       request['host'])
         custom_user = CustomUser.register(
-            user.get('name'), password,
-            user.get('email'),
+            name, password,
+            email,
             app='dcl', base_url=base_url, send_email=True,
             account_details=password
         )
-        logger.debug("Created user {}.".format(user.get('email')))
+        logger.debug("Created user {}.".format(email))
         stripe_customer = StripeCustomer.objects. \
             create(user=custom_user, stripe_id=stripe_api_cus_id)
         stripe_customer_id = stripe_customer.id
@@ -1186,8 +1186,11 @@ def do_provisioning(request, user, stripe_api_cus_id, card_details_response,
             user_hosting_key.user = new_user
             user_hosting_key.save()
             logger.debug("User %s key is saved" % custom_user.email)
+    return custom_user, new_user
 
-    card_id = request.get('card_id', None)
+
+def set_user_card(card_id, stripe_api_cus_id, custom_user,
+                  card_details_response):
     if card_id:
         logger.debug("card_id %s was in request" % card_id)
         user_card_detail = UserCardDetail.objects.get(id=card_id)
@@ -1217,6 +1220,190 @@ def do_provisioning(request, user, stripe_api_cus_id, card_details_response,
             'brand': ucd.brand,
             'card_id': ucd.card_id
         }
+    return card_details_dict
+
+
+def do_provisioning_generic(
+        request, stripe_api_cus_id, card_details_response,
+        stripe_subscription_id, stripe_charge_id, gp_details,
+        billing_address_data):
+    user = request.get('user', None)
+    logger.debug("generic_payment_type case")
+    custom_user, new_user = get_or_create_custom_user(
+        request, stripe_api_cus_id)
+
+    card_id = request.get('card_id', None)
+
+    card_details_dict = set_user_card(card_id, stripe_api_cus_id, custom_user,
+                                      card_details_response)
+
+    # Save billing address
+    billing_address_data.update({
+        'user': custom_user.id
+    })
+    logger.debug('billing_address_data is {}'.format(billing_address_data))
+
+    stripe_cus = StripeCustomer.objects.filter(
+        stripe_id=stripe_api_cus_id
+    ).first()
+    billing_address = BillingAddress(
+        cardholder_name=billing_address_data['cardholder_name'],
+        street_address=billing_address_data['street_address'],
+        city=billing_address_data['city'],
+        postal_code=billing_address_data['postal_code'],
+        country=billing_address_data['country'],
+        vat_number=billing_address_data['vat_number']
+    )
+    billing_address.save()
+
+    order = HostingOrder.create(
+        price=request['generic_payment_details']['amount'],
+        customer=stripe_cus,
+        billing_address=billing_address,
+        vm_pricing=VMPricing.get_default_pricing()
+    )
+
+    # Create a Hosting Bill
+    HostingBill.create(customer=stripe_cus,
+                       billing_address=billing_address)
+
+    # Create Billing Address for User if he does not have one
+    if not stripe_cus.user.billing_addresses.count():
+        billing_address_data.update({
+            'user': stripe_cus.user.id
+        })
+        billing_address_user_form = UserBillingAddressForm(
+            billing_address_data
+        )
+        billing_address_user_form.is_valid()
+        billing_address_user_form.save()
+
+    recurring = request['generic_payment_details'].get('recurring')
+    if recurring:
+        logger.debug("recurring case")
+        # Associate the given stripe subscription with the order
+        order.set_subscription_id(
+            stripe_subscription_id, card_details_dict
+        )
+        logger.debug("recurring case, set order subscription id done")
+    else:
+        logger.debug("one time charge case")
+        # Associate the given stripe charge id with the order
+        stripe_onetime_charge = stripe.Charge.retrieve(stripe_charge_id)
+        order.set_stripe_charge(stripe_onetime_charge)
+
+    # Set order status approved
+    order.set_approved()
+    order.generic_payment_description = gp_details["description"]
+    order.generic_product_id = gp_details["product_id"]
+    order.save()
+    logger.debug("Order saved")
+    # send emails
+    context = {
+        'name': user.get('name'),
+        'email': user.get('email'),
+        'amount': gp_details['amount'],
+        'description': gp_details['description'],
+        'recurring': gp_details['recurring'],
+        'product_name': gp_details['product_name'],
+        'product_id': gp_details['product_id'],
+        'order_id': order.id
+    }
+
+    email_data = {
+        'subject': (settings.DCL_TEXT +
+                    " Payment received from %s" % context['email']),
+        'from_email': settings.DCL_SUPPORT_FROM_ADDRESS,
+        'to': ['info@ungleich.ch'],
+        'body': "\n".join(
+            ["%s=%s" % (k, v) for (k, v) in context.items()]),
+        'reply_to': [context['email']],
+    }
+    send_plain_email_task.delay(email_data)
+    recurring_text = _(" This is a monthly recurring plan.")
+    if gp_details['recurring_interval'] == "year":
+        recurring_text = _(" This is an yearly recurring plan.")
+
+    email_data = {
+        'subject': _("Confirmation of your payment"),
+        'from_email': settings.DCL_SUPPORT_FROM_ADDRESS,
+        'to': [user.get('email')],
+        'body': _("Hi {name},\n\n"
+                  "thank you for your order!\n"
+                  "We have just received a payment of CHF {amount:.2f}"
+                  " from you.{recurring}\n\n"
+                  "Cheers,\nYour Data Center Light team".format(
+            name=user.get('name'),
+            amount=gp_details['amount'],
+            recurring=(
+                recurring_text
+                if gp_details['recurring'] else ''
+            )
+        )
+        ),
+        'reply_to': ['info@ungleich.ch'],
+    }
+    send_plain_email_task.delay(email_data)
+    redirect_url = reverse('datacenterlight:index')
+    logger.debug("Sent user/admin emails")
+    logger.debug("redirect_url = %s " % redirect_url)
+    response = {
+        'status': True,
+        'redirect': redirect_url,
+        'msg_title': str(_('Thank you for the payment.')),
+        'msg_body': str(
+            _('You will soon receive a confirmation email of the '
+              'payment. You can always contact us at '
+              'info@ungleich.ch for any question that you may have.')
+        )
+    }
+    logger.debug("after response")
+    logger.debug(str(response))
+    return {'response': JsonResponse(response), 'user': new_user}
+
+
+def do_provisioning(request, stripe_api_cus_id, card_details_response,
+                    stripe_subscription_obj, stripe_onetime_charge, gp_details,
+                    specs, vm_template_id, template, billing_address_data,
+                    real_request):
+    """
+    :param request: a dict
+        {
+            'scheme': 'https',
+            'host': 'domain',
+            'language': 'en-us',
+            'new_user_hosting_key_id': 1,
+            'card_id': 1,   # if usercarddetail exists already,
+            'generic_payment_type': 'generic'   # represents a generic payment
+            'generic_payment_details': {
+                'amount': 100,
+                'recurring':
+            },
+            'user': {
+                'name': 'John Doe',
+                'email': 'john@doe.com'
+            }
+        }
+    :param stripe_api_cus_id: 'cus_xxxxxxx' the actual stripe customer id str
+    :param card_details_response:
+    :param stripe_subscription_obj: The actual Stripe's Subscription Object
+    :param stripe_onetime_charge: Stripe's Charge object
+    :param gp_details:
+    :param specs:
+    :param vm_template_id:
+    :param template:
+    :param real_request:
+    :return:
+    """
+    # Create user if the user is not logged in and if he is not already
+    # registered
+    custom_user, new_user = get_or_create_custom_user(
+        request, stripe_api_cus_id)
+
+    card_id = request.get('card_id', None)
+
+    card_details_dict = set_user_card(card_id, stripe_api_cus_id, custom_user,
+                  card_details_response)
 
     # Save billing address
     billing_address_data.update({
