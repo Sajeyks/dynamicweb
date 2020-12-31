@@ -729,6 +729,10 @@ class OrderConfirmationView(DetailView, FormView):
                 reverse('datacenterlight:index')
             },
             'stripe_key': settings.STRIPE_API_PUBLIC_KEY,
+            'is_subscription': 'true' if (
+                    'generic_payment_type' not in request.session or
+                    (request.session['generic_payment_details']['recurring'])
+            ) else 'false'
         })
         logger.debug("Request %s" % create_incomplete_intent_request(
             self.request))

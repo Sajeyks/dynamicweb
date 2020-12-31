@@ -337,5 +337,6 @@
     var success_title = '{{ success_msg.msg_title }}';
     var success_url = '{{ success_msg.redirect }}';
     window.stripeKey = "{{stripe_key}}";
+    window.isSubscription = ("{{is_subscription}}" === 'true');
 </script>
 {%endblock%}
