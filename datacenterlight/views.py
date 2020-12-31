@@ -748,6 +748,10 @@ class OrderConfirmationView(DetailView, FormView):
         logger.debug("Request %s" % create_incomplete_intent_request(
             self.request))
         logger.debug("%s" % str(payment_intent))
+        logger.debug("customer %s" % request.session['customer'])
+        logger.debug("card_details_response %s" % card_details_response)
+        logger.debug("request.session[generic_payment_details] %s" % request.session["generic_payment_details"])
+        logger.debug("request.session[billing_address_data] %s" % request.session["billing_address_data"])
         IncompletePaymentIntents.objects.create(
             request=create_incomplete_intent_request(self.request),
             payment_intent_id=payment_intent.id,
