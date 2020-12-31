@@ -788,7 +788,8 @@ class OrderConfirmationView(DetailView, FormView):
             'new_user_hosting_key_id': new_user_hosting_key_id,
             'card_id': card_id,
             'generic_payment_type': generic_payment_type,
-            'generic_payment_details': generic_payment_details
+            'generic_payment_details': generic_payment_details,
+            'user': user
         }
 
         if 'id_payment_method' in request.session:
@@ -1089,7 +1090,7 @@ class OrderConfirmationView(DetailView, FormView):
                     msg = subscription_result.get('error')
                     return show_error(msg, self.request)
         provisioning_response = do_provisioning(
-            req, user, stripe_api_cus_id,
+            req, stripe_api_cus_id,
             card_details_response, stripe_subscription_obj,
             stripe_onetime_charge, gp_details, specs, vm_template_id,
             template, request.session.get('billing_address_data'),
@@ -1405,6 +1406,9 @@ def do_provisioning(request, stripe_api_cus_id, card_details_response,
     :param real_request:
     :return:
     """
+
+    user = request.get('user', None)
+
     # Create user if the user is not logged in and if he is not already
     # registered
     custom_user, new_user = get_or_create_custom_user(
