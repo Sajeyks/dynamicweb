@@ -98,8 +98,14 @@ class StripeUtils(object):
     @handleStripeError
     def dissociate_customer_card(self, stripe_customer_id, card_id):
         customer = stripe.Customer.retrieve(stripe_customer_id)
-        card = customer.sources.retrieve(card_id)
-        card.delete()
+        if card_id.startswith("pm"):
+            logger.debug("PaymentMethod %s detached %s" % (card_id,
+                                                           stripe_customer_id))
+            customer.PaymentMethod.detach(card_id)
+        else:
+            logger.debug("card %s detached %s" % (card_id, stripe_customer_id))
+            card = customer.sources.retrieve(card_id)
+            card.delete()
 
     @handleStripeError
     def update_customer_card(self, customer_id, token):
