@@ -587,6 +587,7 @@ class OrderConfirmationView(DetailView, FormView):
         # this is amount to be charge/subscribed before VAT and discount
         # and expressed in chf. To convert to cents, multiply by 100
         amount_to_charge = 0
+        vm_specs = None
         if (('specs' not in request.session or 'user' not in request.session)
                 and 'generic_payment_type' not in request.session):
             return HttpResponseRedirect(reverse('datacenterlight:index'))
@@ -875,18 +876,6 @@ class OrderConfirmationView(DetailView, FormView):
             if gp_details['recurring']:
                 # generic recurring payment
                 logger.debug("Commencing a generic recurring payment")
-            else:
-                # generic one time payment
-                logger.debug("Commencing a one time payment")
-                charge_response = stripe_utils.make_charge(
-                    amount=gp_details['amount'],
-                    customer=stripe_api_cus_id
-                )
-                stripe_onetime_charge = charge_response.get('response_object')
-                # Check if the payment was approved
-                if not stripe_onetime_charge:
-                    msg = charge_response.get('error')
-                    return show_error(msg, self.request)
         if ('generic_payment_type' not in request.session or
                 (request.session['generic_payment_details']['recurring'])):
             recurring_interval = 'month'
@@ -1079,7 +1068,6 @@ class OrderConfirmationView(DetailView, FormView):
                             )
                         }
                     }
-                    #clear_all_session_vars(request)
                     return JsonResponse(context)
                 else:
                     logger.debug(
@@ -1089,6 +1077,10 @@ class OrderConfirmationView(DetailView, FormView):
                         "requires_source_action")
                     msg = subscription_result.get('error')
                     return show_error(msg, self.request)
+        # the code below is executed for
+        # a) subscription case
+        # b) the subscription object is active itself, without requiring
+        #    SCA
         provisioning_response = do_provisioning(
             req, stripe_api_cus_id,
             card_details_response, stripe_subscription_obj,
