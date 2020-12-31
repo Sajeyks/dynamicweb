@@ -269,6 +269,15 @@ def handle_webhook(request):
                 billing_address_data=billing_address_data
             )
             incomplete_pm.completed_at = datetime.datetime.now()
+            charges = ""
+            if len(payment_intent_obj.charges.data) > 0:
+                for d in payment_intent_obj.charges.data:
+                    if charges == "":
+                        charges = "%s" % d.id
+                    else:
+                        charges = "%s,%s" % (charges, d.id)
+            incomplete_pm.stripe_charge_id=charges
+            incomplete_pm.save()
         except (IncompletePaymentIntents.DoesNotExist,
                 IncompletePaymentIntents.MultipleObjectsReturned) as ex:
             logger.error(str(ex))
