@@ -524,7 +524,8 @@ class StripeUtils(object):
         payment_intent_obj = stripe.PaymentIntent.create(
             amount=amount,
             currency='chf',
-            customer=customer
+            customer=customer,
+            setup_future_usage='off_session'
         )
         return payment_intent_obj
 
