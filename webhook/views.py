@@ -228,7 +228,7 @@ def handle_webhook(request):
 
         try:
             incomplete_pm = IncompletePaymentIntents.objects.get(
-                payment_intent_obj.id)
+                payment_intent_id=payment_intent_obj.id)
             request = ""
             soc = ""
             card_details_response = ""
