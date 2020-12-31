@@ -753,8 +753,8 @@ class IncompletePaymentIntents(AssignPermissionsMixin, models.Model):
     request = models.TextField()
     stripe_api_cus_id = models.CharField(max_length=30)
     card_details_response = models.TextField()
-    stripe_subscription_id = models.TextField()
-    stripe_charge_id = models.TextField()
+    stripe_subscription_id = models.CharField(max_length=100, null=True)
+    stripe_charge_id = models.CharField(max_length=100, null=True)
     gp_details = models.TextField()
     billing_address_data = models.TextField()
 
