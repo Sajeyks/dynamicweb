@@ -1403,6 +1403,7 @@ def do_provisioning(request, stripe_api_cus_id, card_details_response,
     :return:
     """
 
+    logger.debug("do_provisioning")
     user = request.get('user', None)
 
     # Create user if the user is not logged in and if he is not already

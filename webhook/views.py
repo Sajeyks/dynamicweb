@@ -139,6 +139,8 @@ def handle_webhook(request):
                 invoice_obj.billing_reason == subscription_update""")
             logger.debug("Start provisioning")
             try:
+                logger.debug("Looking for subscription %s" %
+                             invoice_obj.subscription)
                 stripe_subscription_obj = stripe.Subscription.retrieve(
                     invoice_obj.subscription)
                 try:
