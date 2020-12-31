@@ -673,7 +673,11 @@ class UserCardDetail(AssignPermissionsMixin, models.Model):
         stripe_utils = StripeUtils()
         cus_response = stripe_utils.get_customer(stripe_api_cus_id)
         cu = cus_response['response_object']
-        cu.default_source = stripe_source_id
+        if stripe_source_id.startswith("pm"):
+            # card is a payment method
+            cu.invoice_settings.default_payment_method = stripe_source_id
+        else:
+            cu.default_source = stripe_source_id
         cu.save()
         UserCardDetail.save_default_card_local(
             stripe_api_cus_id, stripe_source_id
