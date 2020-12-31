@@ -735,6 +735,14 @@ class OrderConfirmationView(DetailView, FormView):
             ),
             'cms_integration': get_cms_integration('default'),
             'error_msg': get_error_response_dict("Error", request),
+            'success_msg': {
+                'msg_title': _("Thank you !"),
+                'msg_body': _("Your product will be provisioned as soon as "
+                                 "we receive the payment."),
+                'redirect': reverse('hosting:invoices') if
+                request.user.is_authenticated() else
+                reverse('datacenterlight:index')
+            },
             'stripe_key': settings.STRIPE_API_PUBLIC_KEY,
         })
         return render(request, self.template_name, context)

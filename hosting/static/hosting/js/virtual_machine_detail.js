@@ -104,20 +104,23 @@ $(document).ready(function() {
           }
         ).then(function(result) {
             window.result = result;
-          if (result.error) {
-            // Display error.message in your UI.
-            var errorElement = document.getElementById('card-errors');
-            errorElement.textContent = result.error.message;
-          } else {
-            // The payment has succeeded
-            // Display a success message
-            alert("Thanks for the order. Your product will be provisioned " +
-                "as soon as we receive the payment. Thank you.");
-            modal_btn.attr('href', err).removeClass('hide');
-            fa_icon.attr('class', 'checkmark');
-            $('#createvm-modal-title').text(data.success.msg_title);
-            $('#createvm-modal-body').html(data.success.msg_body);
-          }
+            fa_icon = $('.modal-icon > .fa');
+            modal_btn = $('#createvm-modal-done-btn');
+            if (result.error) {
+                // Display error.message in your UI.
+                modal_btn.attr('href', error_url).removeClass('hide');
+                fa_icon.attr('class', 'fa fa-close');
+                modal_btn.attr('class', '').addClass('btn btn-danger btn-ok btn-wide');
+                $('#createvm-modal-title').text(error_title);
+                $('#createvm-modal-body').html(result.error.message + " " + error_msg);
+            } else {
+                // The payment has succeeded
+                // Display a success message
+                modal_btn.attr('href', success_url).removeClass('hide');
+                fa_icon.attr('class', 'checkmark');
+                $('#createvm-modal-title').text(success_title);
+                $('#createvm-modal-body').html(success_msg);
+            }
         });
     }
     /*
