@@ -745,6 +745,9 @@ class OrderConfirmationView(DetailView, FormView):
             },
             'stripe_key': settings.STRIPE_API_PUBLIC_KEY,
         })
+        logger.debug("Request %s" % create_incomplete_intent_request(
+            self.request))
+        logger.debug("%s" % str(payment_intent))
         IncompletePaymentIntents.objects.create(
             request=create_incomplete_intent_request(self.request),
             payment_intent_id=payment_intent.id,
@@ -755,6 +758,7 @@ class OrderConfirmationView(DetailView, FormView):
             gp_details=request.session["generic_payment_details"],
             billing_address_data=request.session["billing_address_data"]
         )
+        logger.debug("IncompletePaymentIntent done")
         return render(request, self.template_name, context)
 
     def post(self, request, *args, **kwargs):
