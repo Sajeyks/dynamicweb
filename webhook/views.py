@@ -230,6 +230,7 @@ def handle_webhook(request):
                          payment_intent_obj.id)
             incomplete_pm = IncompletePaymentIntents.objects.get(
                 payment_intent_id=payment_intent_obj.id)
+            logger.debug("incomplete_pm = %s" % str(incomplete_pm))
             request = ""
             soc = ""
             card_details_response = ""
@@ -238,16 +239,21 @@ def handle_webhook(request):
             billing_address_data = ""
             if incomplete_pm.request:
                 request = json.loads(incomplete_pm.request)
+            logger.debug("request = %s" % str(request))
             if incomplete_pm.stripe_onetime_charge:
                 soc = json.loads(incomplete_pm.stripe_onetime_charge)
+            logger.debug("stripe_onetime_charge = %s" % str(soc))
             if incomplete_pm.gp_details:
                 gp_details = json.loads(incomplete_pm.gp_details)
+            logger.debug("gp_details = %s" % str(gp_details))
             if incomplete_pm.card_details_response:
                 card_details_response = json.loads(
                     incomplete_pm.card_details_response)
+            logger.debug("card_details_response = %s" % str(card_details_response))
             if incomplete_pm.billing_address_data:
                 billing_address_data = json.loads(
                     incomplete_pm.billing_address_data)
+            logger.debug("billing_address_data = %s" % str(billing_address_data))
             logger.debug("1*******")
             logger.debug(request)
             logger.debug("2*******")
