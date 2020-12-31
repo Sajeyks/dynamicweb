@@ -259,15 +259,6 @@ def handle_webhook(request):
             logger.debug(template)
             logger.debug("6*******")
             logger.debug(billing_address_data)
-            do_provisioning_generic(
-                request=request,
-                stripe_api_cus_id=incomplete_pm.stripe_api_cus_id,
-                card_details_response=card_details_response,
-                stripe_subscription_id=None,
-                stripe_charge_id=soc,
-                gp_details=gp_details,
-                billing_address_data=billing_address_data
-            )
             incomplete_pm.completed_at = datetime.datetime.now()
             charges = ""
             if len(payment_intent_obj.charges.data) > 0:
@@ -276,7 +267,17 @@ def handle_webhook(request):
                         charges = "%s" % d.id
                     else:
                         charges = "%s,%s" % (charges, d.id)
+            logger.debug("Charge ids = %s" % charges)
             incomplete_pm.stripe_charge_id=charges
+            do_provisioning_generic(
+                request=request,
+                stripe_api_cus_id=incomplete_pm.stripe_api_cus_id,
+                card_details_response=card_details_response,
+                stripe_subscription_id=None,
+                stripe_charge_id=charges,
+                gp_details=gp_details,
+                billing_address_data=billing_address_data
+            )
             incomplete_pm.save()
         except (IncompletePaymentIntents.DoesNotExist,
                 IncompletePaymentIntents.MultipleObjectsReturned) as ex:
