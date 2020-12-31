@@ -8,7 +8,8 @@ from django.contrib import messages
 from django.contrib.auth import login, authenticate
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect, JsonResponse, Http404
+from django.http import HttpResponseRedirect, JsonResponse, Http404, \
+    HttpResponse
 from django.shortcuts import render
 from django.utils.translation import get_language, ugettext_lazy as _
 from django.views.decorators.cache import cache_control
@@ -1239,11 +1240,14 @@ def do_provisioning_generic(
     logger.debug("generic_payment_type case")
     custom_user, new_user = get_or_create_custom_user(
         request, stripe_api_cus_id)
+    logger.debug("%s %s" % (custom_user.email, custom_user.id))
 
     card_id = request.get('card_id', None)
 
     card_details_dict = set_user_card(card_id, stripe_api_cus_id, custom_user,
                                       card_details_response)
+
+    logger.debug("After card details dict %s" % str(card_details_dict))
 
     # Save billing address
     billing_address_data.update({
@@ -1367,7 +1371,7 @@ def do_provisioning_generic(
     }
     logger.debug("after response")
     logger.debug(str(response))
-    return {'response': JsonResponse(response), 'user': new_user}
+    return HttpResponse(status=200)
 
 
 def do_provisioning(request, stripe_api_cus_id, card_details_response,
