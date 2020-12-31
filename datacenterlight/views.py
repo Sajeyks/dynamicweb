@@ -757,11 +757,11 @@ class OrderConfirmationView(DetailView, FormView):
             request=create_incomplete_intent_request(self.request),
             payment_intent_id=payment_intent.id,
             stripe_api_cus_id=request.session['customer'],
-            card_details_response=card_details_response,
+            card_details_response=json.dumps(card_details_response),
             stripe_subscription_id=None,
             stripe_charge_id=None,
-            gp_details=request.session["generic_payment_details"],
-            billing_address_data=request.session["billing_address_data"]
+            gp_details=json.dumps(request.session["generic_payment_details"]),
+            billing_address_data=json.dumps(request.session["billing_address_data"])
         )
         logger.debug("IncompletePaymentIntent done")
         return render(request, self.template_name, context)
