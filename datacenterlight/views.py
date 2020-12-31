@@ -504,7 +504,7 @@ class PaymentOrderView(FormView):
                         )
                         customer = StripeCustomer.create_stripe_api_customer(
                             email=user_email,
-                            token=id_payment_method,
+                            id_payment_method=id_payment_method,
                             customer_name=user_name)
                 except CustomUser.DoesNotExist:
                     logger.debug(
@@ -515,7 +515,7 @@ class PaymentOrderView(FormView):
                     )
                     customer = StripeCustomer.create_stripe_api_customer(
                         email=user_email,
-                        token=id_payment_method,
+                        id_payment_method=id_payment_method,
                         customer_name=user_name)
 
             billing_address = address_form.save()

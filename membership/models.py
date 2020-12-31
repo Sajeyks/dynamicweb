@@ -277,7 +277,7 @@ class StripeCustomer(models.Model):
         return "%s - %s" % (self.stripe_id, self.user.email)
 
     @classmethod
-    def create_stripe_api_customer(cls, email=None, token=None,
+    def create_stripe_api_customer(cls, email=None, id_payment_method=None,
                                    customer_name=None):
         """
             This method creates a Stripe API customer with the given
