@@ -1201,6 +1201,7 @@ class OrdersHostingDetailView(LoginRequiredMixin, DetailView, FormView):
                        discount['stripe_coupon_id']
                     else ""),
             tax_rates=[stripe_tax_rate.tax_rate_id] if stripe_tax_rate else [],
+            default_payment_method=request.session['id_payment_method']
         )
         stripe_subscription_obj = subscription_result.get('response_object')
         latest_invoice = stripe.Invoice.retrieve(stripe_subscription_obj.latest_invoice)

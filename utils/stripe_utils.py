@@ -329,10 +329,12 @@ class StripeUtils(object):
 
     @handleStripeError
     def subscribe_customer_to_plan(self, customer, plans, trial_end=None,
-                                   coupon="", tax_rates=list()):
+                                   coupon="", tax_rates=list(),
+                                   default_payment_method=""):
         """
         Subscribes the given customer to the list of given plans
 
+        :param default_payment_method:
         :param tax_rates:
         :param coupon:
         :param customer: The stripe customer identifier
@@ -355,7 +357,8 @@ class StripeUtils(object):
             customer=customer, items=plans, trial_end=trial_end,
             coupon=coupon,
             default_tax_rates=tax_rates,
-            payment_behavior='allow_incomplete'
+            payment_behavior='allow_incomplete',
+            default_payment_method=default_payment_method
         )
         logger.debug("Done subscribing")
         return subscription_result
