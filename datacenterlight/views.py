@@ -469,36 +469,11 @@ class PaymentOrderView(FormView):
                     return self.render_to_response(context)
             id_payment_method = self.request.POST.get('id_payment_method',
                                                       None)
-            if id_payment_method is None:
-                card_id = address_form.cleaned_data.get('card')
-                logger.debug("token is empty and card_id is %s" % card_id)
-                try:
-                    user_card_detail = UserCardDetail.objects.get(id=card_id)
-                    if not request.user.has_perm(
-                            'view_usercarddetail', user_card_detail
-                    ):
-                        raise UserCardDetail.DoesNotExist(
-                            _("{user} does not have permission to access the "
-                              "card").format(user=request.user.email)
-                        )
-                except UserCardDetail.DoesNotExist as e:
-                    ex = str(e)
-                    logger.error("Card Id: {card_id}, Exception: {ex}".format(
-                        card_id=card_id, ex=ex
-                    )
-                    )
-                    msg = _("An error occurred. Details: {}".format(ex))
-                    messages.add_message(
-                        self.request, messages.ERROR, msg,
-                        extra_tags='make_charge_error'
-                    )
-                    return HttpResponseRedirect(
-                        reverse('datacenterlight:payment') + '#payment_error'
-                    )
-                request.session['card_id'] = user_card_detail.id
-            else:
-                request.session["id_payment_method"] = id_payment_method
-                logger.debug("id_payment_method is %s" % id_payment_method)
+            if id_payment_method == 'undefined':
+                # Probably user chose one of the previously saved cards
+                id_payment_method = address_form.cleaned_data.get('card')
+            request.session["id_payment_method"] = id_payment_method
+            logger.debug("id_payment_method is %s" % id_payment_method)
             if request.user.is_authenticated():
                 this_user = {
                     'email': request.user.email,
