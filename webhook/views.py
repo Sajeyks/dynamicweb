@@ -268,6 +268,7 @@ def handle_webhook(request):
                 gp_details=gp_details,
                 billing_address_data=billing_address_data
             )
+            incomplete_pm.completed_at = datetime.datetime.now()
         except (IncompletePaymentIntents.DoesNotExist,
                 IncompletePaymentIntents.MultipleObjectsReturned) as ex:
             logger.error(str(ex))
