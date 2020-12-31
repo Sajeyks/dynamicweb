@@ -694,24 +694,31 @@ class OrderConfirmationView(DetailView, FormView):
                 'keys': get_all_public_keys(self.request.user)
             })
 
-        # Obtain PaymentIntent so that we can initiate and charge/subscribe
-        # the customer
-        stripe_utils = StripeUtils()
-        payment_intent_response = stripe_utils.get_payment_intent(
-            int(amount_to_charge * 100),
-            customer=request.session['customer']
-        )
-        payment_intent = payment_intent_response.get(
-            'response_object')
-        if not payment_intent:
-            logger.error("Could not create payment_intent %s" %
-                         str(payment_intent_response))
+        is_subscription = False
+        if ('generic_payment_type' not in request.session or
+                (request.session['generic_payment_details']['recurring'])):
+            # Obtain PaymentIntent so that we can initiate and charge
+            # the customer
+            is_subscription = True
+            logger.debug("CASE: Subscription")
         else:
-            logger.debug("payment_intent.client_secret = %s" %
-                         str(payment_intent.client_secret))
-        context.update({
-            'payment_intent_secret': payment_intent.client_secret
-        })
+            logger.debug("CASE: One time payment")
+            stripe_utils = StripeUtils()
+            payment_intent_response = stripe_utils.get_payment_intent(
+                int(amount_to_charge * 100),
+                customer=request.session['customer']
+            )
+            payment_intent = payment_intent_response.get(
+                'response_object')
+            if not payment_intent:
+                logger.error("Could not create payment_intent %s" %
+                             str(payment_intent_response))
+            else:
+                logger.debug("payment_intent.client_secret = %s" %
+                             str(payment_intent.client_secret))
+            context.update({
+                'payment_intent_secret': payment_intent.client_secret
+            })
 
         context.update({
             'site_url': reverse('datacenterlight:index'),
@@ -730,10 +737,7 @@ class OrderConfirmationView(DetailView, FormView):
                 reverse('datacenterlight:index')
             },
             'stripe_key': settings.STRIPE_API_PUBLIC_KEY,
-            'is_subscription': 'true' if (
-                    'generic_payment_type' not in request.session or
-                    (request.session['generic_payment_details']['recurring'])
-            ) else 'false'
+            'is_subscription': str(is_subscription).lower()
         })
         logger.debug("Request %s" % create_incomplete_intent_request(
             self.request))
