@@ -263,9 +263,11 @@ class PaymentOrderView(FormView):
                 stripe_customer = user.stripecustomer
             else:
                 stripe_customer = None
-            cards_list = UserCardDetail.get_all_cards_list(
-                stripe_customer=stripe_customer
+            stripe_utils = StripeUtils()
+            cards_list_request = stripe_utils.get_available_payment_methods(
+                stripe_customer
             )
+            cards_list = cards_list_request.get('response_object')
             context.update({'cards_list': cards_list})
         else:
             billing_address_form = BillingAddressFormSignup(

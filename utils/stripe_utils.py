@@ -528,6 +528,34 @@ class StripeUtils(object):
         )
         return payment_intent_obj
 
+    @handleStripeError
+    def get_available_payment_methods(self, customer):
+        """	Retrieves all payment methods of the given customer
+            :param customer: StripeCustomer object
+            :return: a list of available payment methods
+        """
+        return_list = []
+        if customer is None:
+            return return_list
+        cu = stripe.Customer.retrieve(customer.stripe_id)
+        pms = stripe.PaymentMethod.list(
+            customer=customer.stripe_id,
+            type="card",
+        )
+        default_source = None
+        if cu.default_source:
+            default_source = cu.default_source
+        else:
+            default_source = cu.invoice_settings.default_payment_method
+        for pm in pms.data:
+            return_list.append({
+                'last4': pm.card.last4, 'brand': pm.card.brand, 'id': pm.id,
+                'exp_year': pm.card.exp_year,
+                'exp_month': '{:02d}'.format(pm.card.exp_month),
+                'preferred': pm.id == default_source
+            })
+        return return_list
+
     def compare_vat_numbers(self, vat1, vat2):
         _vat1 = vat1.replace(" ", "").replace(".", "").replace("-","")
         _vat2 = vat2.replace(" ", "").replace(".", "").replace("-","")
