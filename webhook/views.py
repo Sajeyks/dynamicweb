@@ -287,7 +287,8 @@ def handle_webhook(request):
             )
             incomplete_pm.save()
         except (IncompletePaymentIntents.DoesNotExist,
-                IncompletePaymentIntents.MultipleObjectsReturned) as ex:
+                IncompletePaymentIntents.MultipleObjectsReturned,
+                Exception) as ex:
             logger.error(str(ex))
             logger.debug(str(ex))
             email_data = {
