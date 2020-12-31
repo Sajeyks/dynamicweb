@@ -595,33 +595,14 @@ class SettingsView(LoginRequiredMixin, FormView):
             messages.add_message(request, messages.SUCCESS, msg)
             return HttpResponseRedirect(reverse_lazy('hosting:settings'))
         if 'delete_card' in request.POST:
-            try:
-                card = UserCardDetail.objects.get(pk=self.kwargs.get('pk'))
-                if (request.user.has_perm(self.permission_required[0], card)
-                        and
-                        request.user
-                                .stripecustomer
-                                .usercarddetail_set
-                                .count() > 1):
-                    if card.card_id is not None:
-                        stripe_utils = StripeUtils()
-                        stripe_utils.dissociate_customer_card(
-                            request.user.stripecustomer.stripe_id,
-                            card.card_id
-                        )
-                        if card.preferred:
-                            UserCardDetail.set_default_card_from_stripe(
-                                request.user.stripecustomer.stripe_id
-                            )
-                        card.delete()
-                        msg = _("Card deassociation successful")
-                        messages.add_message(request, messages.SUCCESS, msg)
-                else:
-                    msg = _("You are not permitted to do this operation")
-                    messages.add_message(request, messages.ERROR, msg)
-            except UserCardDetail.DoesNotExist:
-                msg = _("The selected card does not exist")
-                messages.add_message(request, messages.ERROR, msg)
+            card = self.kwargs.get('pk')
+            stripe_utils = StripeUtils()
+            stripe_utils.dissociate_customer_card(
+                request.user.stripecustomer.stripe_id,
+                card
+            )
+            msg = _("Card deassociation successful")
+            messages.add_message(request, messages.SUCCESS, msg)
             return HttpResponseRedirect(reverse_lazy('hosting:settings'))
         form = self.get_form()
         if form.is_valid():
@@ -697,7 +678,7 @@ class SettingsView(LoginRequiredMixin, FormView):
                     messages.add_message(request, messages.SUCCESS, msg)
             else:
                 # TODO : Test this flow
-                id_payment_method = form.cleaned_data.get('id_payment_method')
+                id_payment_method = request.POST.get('id_payment_method', None)
                 stripe_utils = StripeUtils()
                 card_details = stripe_utils.get_cards_details_from_payment_method(
                     id_payment_method

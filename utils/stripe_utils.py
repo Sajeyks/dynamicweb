@@ -101,7 +101,9 @@ class StripeUtils(object):
         if card_id.startswith("pm"):
             logger.debug("PaymentMethod %s detached %s" % (card_id,
                                                            stripe_customer_id))
-            customer.PaymentMethod.detach(card_id)
+            pm = stripe.PaymentMethod.retrieve(card_id)
+            stripe.PaymentMethod.detach(card_id)
+            pm.delete()
         else:
             logger.debug("card %s detached %s" % (card_id, stripe_customer_id))
             card = customer.sources.retrieve(card_id)
