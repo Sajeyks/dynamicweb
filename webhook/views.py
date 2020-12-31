@@ -197,8 +197,9 @@ def handle_webhook(request):
                         billing_address_data=billing_address_data,
                         real_request=None
                     )
-                except (IncompleteSubscriptions.DoesNotExist,
-                        IncompleteSubscriptions.MultipleObjectsReturned) as ex:
+                except IncompleteSubscriptions.DoesNotExist as ex:
+                    logger.error(str(ex))
+                except IncompleteSubscriptions.MultipleObjectsReturned as ex:
                     logger.error(str(ex))
                     email_data = {
                         'subject': "IncompleteSubscriptions error",
