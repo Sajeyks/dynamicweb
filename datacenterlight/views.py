@@ -1127,7 +1127,8 @@ def create_incomplete_intent_request(request):
             'generic_payment_type', None),
         'generic_payment_details': request.session.get(
             'generic_payment_details', None),
-        'user': request.session.get('user', None)
+        'user': request.session.get('user', None),
+        'id_payment_method': request.session.get('id_payment_method', None),
     }
     return json.dumps(req)
 
@@ -1213,6 +1214,15 @@ def do_provisioning_generic(
         request, stripe_api_cus_id, card_details_response,
         stripe_subscription_id, stripe_charge_id, gp_details,
         billing_address_data):
+    stripe_utils = StripeUtils()
+    acc_result = stripe_utils.associate_customer_card(
+        stripe_api_cus_id, request['id_payment_method'],
+        set_as_default=True
+    )
+    logger.debug("Card %s associate result %s" % (
+        request['id_payment_method'],
+        acc_result.get('response_object')
+    ))
     user = request.get('user', None)
     logger.debug("generic_payment_type case")
     custom_user, new_user = get_or_create_custom_user(
