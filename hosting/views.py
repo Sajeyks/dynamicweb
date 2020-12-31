@@ -694,16 +694,17 @@ class SettingsView(LoginRequiredMixin, FormView):
                     msg = _("Billing address updated successfully")
                     messages.add_message(request, messages.SUCCESS, msg)
             else:
-                token = form.cleaned_data.get('token')
+                # TODO : Test this flow
+                id_payment_method = form.cleaned_data.get('id_payment_method')
                 stripe_utils = StripeUtils()
-                card_details = stripe_utils.get_cards_details_from_token(
-                    token
+                card_details = stripe_utils.get_cards_details_from_payment_method(
+                    id_payment_method
                 )
                 if not card_details.get('response_object'):
                     form.add_error("__all__", card_details.get('error'))
                     return self.render_to_response(self.get_context_data())
                 stripe_customer = StripeCustomer.get_or_create(
-                    email=request.user.email, token=token
+                    email=request.user.email, id_payment_method=id_payment_method
                 )
                 card = card_details['response_object']
                 if UserCardDetail.get_user_card_details(stripe_customer, card):
@@ -711,7 +712,7 @@ class SettingsView(LoginRequiredMixin, FormView):
                     messages.add_message(request, messages.ERROR, msg)
                 else:
                     acc_result = stripe_utils.associate_customer_card(
-                        request.user.stripecustomer.stripe_id, token
+                        request.user.stripecustomer.stripe_id, id_payment_method
                     )
                     if acc_result['response_object'] is None:
                         msg = _(
@@ -1085,7 +1086,7 @@ class OrdersHostingDetailView(LoginRequiredMixin, DetailView, FormView):
             template, specs, stripe_customer_id, billing_address_data,
             vm_template_id, stripe_api_cus_id)
         )
-        if 'token' in self.request.session:
+        if 'id_payment_method' in self.request.session:
             card_details = stripe_utils.get_cards_details_from_token(
                 request.session['token']
             )
@@ -1102,7 +1103,7 @@ class OrdersHostingDetailView(LoginRequiredMixin, DetailView, FormView):
             )
             if not ucd:
                 acc_result = stripe_utils.associate_customer_card(
-                    stripe_api_cus_id, request.session['token'],
+                    stripe_api_cus_id, request.session['id_payment_method'],
                     set_as_default=True
                 )
                 if acc_result['response_object'] is None:

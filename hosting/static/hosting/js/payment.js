@@ -84,68 +84,72 @@ $(document).ready(function () {
     var hasCreditcard = window.hasCreditcard || false;
     if (!hasCreditcard && window.stripeKey) {
         var stripe = Stripe(window.stripeKey);
-        var element_style = {
-            fonts: [{
-                family: 'lato-light',
-                src: 'url(https://cdn.jsdelivr.net/font-lato/2.0/Lato/Lato-Light.woff) format("woff2")'
-            }, {
-                family: 'lato-regular',
-                src: 'url(https://cdn.jsdelivr.net/font-lato/2.0/Lato/Lato-Regular.woff) format("woff2")'
-            }
-            ],
-            locale: window.current_lan
-        };
-        var elements = stripe.elements(element_style);
-        var credit_card_text_style = {
-            base: {
-                iconColor: '#666EE8',
-                color: '#31325F',
-                lineHeight: '25px',
-                fontWeight: 300,
-                fontFamily: "'lato-light', sans-serif",
-                fontSize: '14px',
-                '::placeholder': {
-                    color: '#777'
+        if (window.pm_id) {
+
+        } else {
+            var element_style = {
+                fonts: [{
+                    family: 'lato-light',
+                    src: 'url(https://cdn.jsdelivr.net/font-lato/2.0/Lato/Lato-Light.woff) format("woff2")'
+                }, {
+                    family: 'lato-regular',
+                    src: 'url(https://cdn.jsdelivr.net/font-lato/2.0/Lato/Lato-Regular.woff) format("woff2")'
                 }
-            },
-            invalid: {
-                iconColor: '#eb4d5c',
-                color: '#eb4d5c',
-                lineHeight: '25px',
-                fontWeight: 300,
-                fontFamily: "'lato-regular', sans-serif",
-                fontSize: '14px',
-                '::placeholder': {
+                ],
+                locale: window.current_lan
+            };
+            var elements = stripe.elements(element_style);
+            var credit_card_text_style = {
+                base: {
+                    iconColor: '#666EE8',
+                    color: '#31325F',
+                    lineHeight: '25px',
+                    fontWeight: 300,
+                    fontFamily: "'lato-light', sans-serif",
+                    fontSize: '14px',
+                    '::placeholder': {
+                        color: '#777'
+                    }
+                },
+                invalid: {
+                    iconColor: '#eb4d5c',
                     color: '#eb4d5c',
-                    fontWeight: 400
+                    lineHeight: '25px',
+                    fontWeight: 300,
+                    fontFamily: "'lato-regular', sans-serif",
+                    fontSize: '14px',
+                    '::placeholder': {
+                        color: '#eb4d5c',
+                        fontWeight: 400
+                    }
                 }
-            }
-        };
+            };
 
-        var enter_ccard_text = "Enter your credit card number";
-        if (typeof window.enter_your_card_text !== 'undefined') {
-            enter_ccard_text = window.enter_your_card_text;
+            var enter_ccard_text = "Enter your credit card number";
+            if (typeof window.enter_your_card_text !== 'undefined') {
+                enter_ccard_text = window.enter_your_card_text;
+            }
+            var cardNumberElement = elements.create('cardNumber', {
+                style: credit_card_text_style,
+                placeholder: enter_ccard_text
+            });
+            cardNumberElement.mount('#card-number-element');
+
+            var cardExpiryElement = elements.create('cardExpiry', {
+                style: credit_card_text_style
+            });
+            cardExpiryElement.mount('#card-expiry-element');
+
+            var cardCvcElement = elements.create('cardCvc', {
+                style: credit_card_text_style
+            });
+            cardCvcElement.mount('#card-cvc-element');
+            cardNumberElement.on('change', function (event) {
+                if (event.brand) {
+                    setBrandIcon(event.brand);
+                }
+            });
         }
-        var cardNumberElement = elements.create('cardNumber', {
-            style: credit_card_text_style,
-            placeholder: enter_ccard_text
-        });
-        cardNumberElement.mount('#card-number-element');
-
-        var cardExpiryElement = elements.create('cardExpiry', {
-            style: credit_card_text_style
-        });
-        cardExpiryElement.mount('#card-expiry-element');
-
-        var cardCvcElement = elements.create('cardCvc', {
-            style: credit_card_text_style
-        });
-        cardCvcElement.mount('#card-cvc-element');
-        cardNumberElement.on('change', function (event) {
-            if (event.brand) {
-                setBrandIcon(event.brand);
-            }
-        });
     }
 
     var submit_form_btn = $('#payment_button_with_creditcard');
@@ -163,7 +167,7 @@ $(document).ready(function () {
         if (parts.length === 2) return parts.pop().split(";").shift();
     }
 
-    function submitBillingForm() {
+    function submitBillingForm(pmId) {
         var billing_form = $('#billing-form');
         var recurring_input = $('#id_generic_payment_form-recurring');
         billing_form.append('<input type="hidden" name="generic_payment_form-product_name" value="' + $('#id_generic_payment_form-product_name').val() + '" />');
@@ -174,20 +178,46 @@ $(document).ready(function () {
             billing_form.append('<input type="hidden" name="generic_payment_form-recurring" value="' + (recurring_input.prop('checked') ? 'on' : '') + '" />');
         }
         billing_form.append('<input type="hidden" name="generic_payment_form-description" value="' + $('#id_generic_payment_form-description').val() + '" />');
+        billing_form.append('<input type="hidden" name="id_payment_method" value="' + pmId + '" />');
         billing_form.submit();
     }
 
     var $form_new = $('#payment-form-new');
     $form_new.submit(payWithPaymentIntent);
+    window.result = "";
+    window.card = "";
     function payWithPaymentIntent(e) {
         e.preventDefault();
 
-        stripe.confirmCardPayment(
+        function stripePMHandler(paymentMethod) {
+            // Insert the token ID into the form so it gets submitted to the server
+	    console.log(paymentMethod);
+            $('#id_payment_method').val(paymentMethod.id);
+            submitBillingForm(paymentMethod.id);
+        }
+        stripe.createPaymentMethod({
+            type: 'card',
+            card: cardNumberElement,
+          })
+          .then(function(result) {
+            // Handle result.error or result.paymentMethod
+              window.result = result;
+              if(result.error) {
+                  var errorElement = document.getElementById('card-errors');
+                  errorElement.textContent = result.error.message;
+              } else {
+                  console.log("created paymentMethod " + result.paymentMethod.id);
+                  stripePMHandler(result.paymentMethod);
+              }
+          });
+        window.card = cardNumberElement;
+        /* stripe.confirmCardPayment(
           window.paymentIntentSecret,
           {
             payment_method: {card: cardNumberElement}
           }
         ).then(function(result) {
+            window.result = result;
           if (result.error) {
             // Display error.message in your UI.
             var errorElement = document.getElementById('card-errors');
@@ -198,7 +228,7 @@ $(document).ready(function () {
             alert("Thanks for the order. Your product will be provisioned " +
                 "as soon as we receive the payment. Thank you.");
           }
-        });
+        }); */
     }
     function payWithStripe_new(e) {
         e.preventDefault();

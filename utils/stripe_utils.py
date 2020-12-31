@@ -83,12 +83,15 @@ class StripeUtils(object):
         customer.save()
 
     @handleStripeError
-    def associate_customer_card(self, stripe_customer_id, token,
+    def associate_customer_card(self, stripe_customer_id, id_payment_method,
                                 set_as_default=False):
         customer = stripe.Customer.retrieve(stripe_customer_id)
-        card = customer.sources.create(source=token)
+        stripe.PaymentMethod.attach(
+            id_payment_method,
+            customer=stripe_customer_id,
+        )
         if set_as_default:
-            customer.default_source = card.id
+            customer.invoice_settings.default_payment_method = id_payment_method
             customer.save()
         return True
 
@@ -100,6 +103,7 @@ class StripeUtils(object):
 
     @handleStripeError
     def update_customer_card(self, customer_id, token):
+        # TODO replace token with payment intent
         customer = stripe.Customer.retrieve(customer_id)
         current_card_token = customer.default_source
         customer.sources.retrieve(current_card_token).delete()
@@ -188,6 +192,24 @@ class StripeUtils(object):
         }
         return card_details
 
+    @handleStripeError
+    def get_cards_details_from_payment_method(self, payment_method_id):
+        payment_method = stripe.PaymentMethod.retrieve(payment_method_id)
+        # payment_method does not always seem to have a card with id
+        # if that is the case, fallback to payment_method_id for card_id
+        card_id = payment_method_id
+        if hasattr(payment_method.card, 'id'):
+            card_id = payment_method.card.id
+        card_details = {
+            'last4': payment_method.card.last4,
+            'brand': payment_method.card.brand,
+            'exp_month': payment_method.card.exp_month,
+            'exp_year': payment_method.card.exp_year,
+            'fingerprint': payment_method.card.fingerprint,
+            'card_id': card_id
+        }
+        return card_details
+
     def check_customer(self, stripe_cus_api_id, user, token):
         try:
             customer = stripe.Customer.retrieve(stripe_cus_api_id)
@@ -207,11 +229,11 @@ class StripeUtils(object):
         return customer
 
     @handleStripeError
-    def create_customer(self, token, email, name=None):
+    def create_customer(self, id_payment_method, email, name=None):
         if name is None or name.strip() == "":
             name = email
         customer = self.stripe.Customer.create(
-            source=token,
+            payment_method=id_payment_method,
             description=name,
             email=email
         )
@@ -494,15 +516,15 @@ class StripeUtils(object):
         return tax_id_obj
 
     @handleStripeError
-    def get_payment_intent(self, amount):
-        """
-        Adds VM metadata to a subscription
-        :param amount: the amount of payment_intent
-        :return:
+    def get_payment_intent(self, amount, customer):
+        """	Create a stripe PaymentIntent of the given amount and return it
+            :param amount: the amount of payment_intent
+            :return:
         """
         payment_intent_obj = stripe.PaymentIntent.create(
             amount=amount,
-            currency='chf'
+            currency='chf',
+            customer=customer
         )
         return payment_intent_obj
 

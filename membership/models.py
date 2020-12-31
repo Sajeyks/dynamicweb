@@ -296,7 +296,7 @@ class StripeCustomer(models.Model):
             return None
 
     @classmethod
-    def get_or_create(cls, email=None, token=None):
+    def get_or_create(cls, email=None, token=None, id_payment_method=None):
         """
             Check if there is a registered stripe customer with that email
             or create a new one

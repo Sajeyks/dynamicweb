@@ -285,28 +285,13 @@ class PaymentOrderView(FormView):
                 product = GenericProduct.objects.get(
                     id=self.request.session['product_id']
                 )
-                # TODO get the correct price of the product from order
-                #  confirmation
-                stripe_utils = StripeUtils()
-                payment_intent_response = stripe_utils.get_payment_intent(
-                    int(product.get_actual_price() * 100)
-                )
-                payment_intent = payment_intent_response.get('response_object')
-                if not payment_intent:
-                    logger.error("Could not create payment_intent %s" %
-                                 str(payment_intent_response))
-                else:
-                    logger.debug("payment_intent.client_secret = %s" %
-                                 str(payment_intent.client_secret))
                 context.update({'generic_payment_form': ProductPaymentForm(
                     prefix='generic_payment_form',
-                    initial={
-                        'product_name': product.product_name,
-                        'amount': float(product.get_actual_price()),
-                        'recurring': product.product_is_subscription,
-                        'description': product.product_description,
-                        'payment_intent_secret': payment_intent.client_secret
-                    },
+                    initial={'product_name': product.product_name,
+                             'amount': float(product.get_actual_price()),
+                             'recurring': product.product_is_subscription,
+                             'description': product.product_description,
+                             },
                     product_id=product.id
                 ), })
             else:
@@ -479,8 +464,9 @@ class PaymentOrderView(FormView):
                     context['generic_payment_form'] = generic_payment_form
                     context['billing_address_form'] = address_form
                     return self.render_to_response(context)
-            token = address_form.cleaned_data.get('token')
-            if token is '':
+            id_payment_method = self.request.POST.get('id_payment_method',
+                                                      None)
+            if id_payment_method is None:
                 card_id = address_form.cleaned_data.get('card')
                 logger.debug("token is empty and card_id is %s" % card_id)
                 try:
@@ -508,15 +494,16 @@ class PaymentOrderView(FormView):
                     )
                 request.session['card_id'] = user_card_detail.id
             else:
-                request.session['token'] = token
-                logger.debug("token is %s" % token)
+                request.session["id_payment_method"] = id_payment_method
+                logger.debug("id_payment_method is %s" % id_payment_method)
             if request.user.is_authenticated():
                 this_user = {
                     'email': request.user.email,
                     'name': request.user.name
                 }
                 customer = StripeCustomer.get_or_create(
-                    email=this_user.get('email'), token=token
+                    email=this_user.get('email'),
+                    id_payment_method=id_payment_method
                 )
             else:
                 user_email = address_form.cleaned_data.get('email')
@@ -539,7 +526,7 @@ class PaymentOrderView(FormView):
                         )
                         customer = StripeCustomer.create_stripe_api_customer(
                             email=user_email,
-                            token=token,
+                            token=id_payment_method,
                             customer_name=user_name)
                 except CustomUser.DoesNotExist:
                     logger.debug(
@@ -550,7 +537,7 @@ class PaymentOrderView(FormView):
                     )
                     customer = StripeCustomer.create_stripe_api_customer(
                         email=user_email,
-                        token=token,
+                        token=id_payment_method,
                         customer_name=user_name)
 
             billing_address = address_form.save()
@@ -622,11 +609,11 @@ class OrderConfirmationView(DetailView, FormView):
         if (('specs' not in request.session or 'user' not in request.session)
                 and 'generic_payment_type' not in request.session):
             return HttpResponseRedirect(reverse('datacenterlight:index'))
-        if 'token' in self.request.session:
-            token = self.request.session['token']
+        if 'id_payment_method' in self.request.session:
+            payment_method = self.request.session['id_payment_method']
             stripe_utils = StripeUtils()
-            card_details = stripe_utils.get_cards_details_from_token(
-                token
+            card_details = stripe_utils.get_cards_details_from_payment_method(
+                payment_method
             )
             if not card_details.get('response_object'):
                 return HttpResponseRedirect(reverse('hosting:payment'))
@@ -635,6 +622,7 @@ class OrderConfirmationView(DetailView, FormView):
             context['cc_brand'] = card_details_response['brand']
             context['cc_exp_year'] = card_details_response['exp_year']
             context['cc_exp_month'] = '{:02d}'.format(card_details_response['exp_month'])
+            context['id_payment_method'] = payment_method
         else:
             card_id = self.request.session.get('card_id')
             card_detail = UserCardDetail.objects.get(id=card_id)
@@ -718,6 +706,27 @@ class OrderConfirmationView(DetailView, FormView):
                 'form': UserHostingKeyForm(request=self.request),
                 'keys': get_all_public_keys(self.request.user)
             })
+
+        # Obtain PaymentIntent so that we can initiate and charge/subscribe
+        # the customer
+        stripe_utils = StripeUtils()
+        payment_intent_response = stripe_utils.get_payment_intent(
+            int(request.session['generic_payment_details']['amount'] *
+                100),
+            customer=request.session['customer']
+        )
+        payment_intent = payment_intent_response.get(
+            'response_object')
+        if not payment_intent:
+            logger.error("Could not create payment_intent %s" %
+                         str(payment_intent_response))
+        else:
+            logger.debug("payment_intent.client_secret = %s" %
+                         str(payment_intent.client_secret))
+        context.update({
+            'payment_intent_secret': payment_intent.client_secret
+        })
+
         context.update({
             'site_url': reverse('datacenterlight:index'),
             'page_header_text': _('Confirm Order'),
@@ -725,6 +734,8 @@ class OrderConfirmationView(DetailView, FormView):
                 request.session.get('billing_address_data')
             ),
             'cms_integration': get_cms_integration('default'),
+            'error_msg': get_error_response_dict("Error", request),
+            'stripe_key': settings.STRIPE_API_PUBLIC_KEY,
         })
         return render(request, self.template_name, context)
 
@@ -765,9 +776,9 @@ class OrderConfirmationView(DetailView, FormView):
             'generic_payment_details': generic_payment_details
         }
 
-        if 'token' in request.session:
-            card_details = stripe_utils.get_cards_details_from_token(
-                request.session.get('token')
+        if 'id_payment_method' in request.session:
+            card_details = stripe_utils.get_cards_details_from_payment_method(
+                request.session.get('id_payment_method')
             )
             logger.debug(
                 "card_details=%s" % (card_details))
@@ -788,7 +799,7 @@ class OrderConfirmationView(DetailView, FormView):
                 )
                 if not ucd:
                     acc_result = stripe_utils.associate_customer_card(
-                        stripe_api_cus_id, request.session['token'],
+                        stripe_api_cus_id, request.session['id_payment_method'],
                         set_as_default=True
                     )
                     if acc_result['response_object'] is None:
@@ -799,6 +810,21 @@ class OrderConfirmationView(DetailView, FormView):
                             )
                         )
                         return show_error(msg, self.request)
+            else:
+                # Associate PaymentMethod with the stripe customer
+                # and set it as the default source
+                acc_result = stripe_utils.associate_customer_card(
+                    stripe_api_cus_id, request.session['id_payment_method'],
+                    set_as_default=True
+                )
+                if acc_result['response_object'] is None:
+                    msg = _(
+                        'An error occurred while associating the card.'
+                        ' Details: {details}'.format(
+                            details=acc_result['error']
+                        )
+                    )
+                    return show_error(msg, self.request)
         elif 'card_id' in request.session:
             card_id = request.session.get('card_id')
             user_card_detail = UserCardDetail.objects.get(id=card_id)
@@ -1334,9 +1360,7 @@ def do_provisioning(request, user, stripe_api_cus_id, card_details_response,
         clear_all_session_vars(real_request)
 
 
-def show_error(msg, request):
-    messages.add_message(request, messages.ERROR, msg,
-                         extra_tags='failed_payment')
+def get_error_response_dict(msg, request):
     response = {
         'status': False,
         'redirect': "{url}#{section}".format(
@@ -1356,4 +1380,10 @@ def show_error(msg, request):
               ' On close of this popup, you will be redirected back to'
               ' the payment page.'))
     }
-    return JsonResponse(response)
+    return response
+
+
+def show_error(msg, request):
+    messages.add_message(request, messages.ERROR, msg,
+                         extra_tags='failed_payment')
+    return JsonResponse(get_error_response_dict(msg,request))

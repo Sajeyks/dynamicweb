@@ -92,6 +92,35 @@ $(document).ready(function() {
     });
 
     var create_vm_form = $('#virtual_machine_create_form');
+    create_vm_form.submit(placeOrderPaymentIntent);
+
+    function placeOrderPaymentIntent(e) {
+        e.preventDefault();
+        var stripe = Stripe(window.stripeKey);
+        stripe.confirmCardPayment(
+          window.paymentIntentSecret,
+          {
+            payment_method: window.pm_id
+          }
+        ).then(function(result) {
+            window.result = result;
+          if (result.error) {
+            // Display error.message in your UI.
+            var errorElement = document.getElementById('card-errors');
+            errorElement.textContent = result.error.message;
+          } else {
+            // The payment has succeeded
+            // Display a success message
+            alert("Thanks for the order. Your product will be provisioned " +
+                "as soon as we receive the payment. Thank you.");
+            modal_btn.attr('href', err).removeClass('hide');
+            fa_icon.attr('class', 'checkmark');
+            $('#createvm-modal-title').text(data.success.msg_title);
+            $('#createvm-modal-body').html(data.success.msg_body);
+          }
+        });
+    }
+    /*
     create_vm_form.submit(function () {
         $('#btn-create-vm').prop('disabled', true);
         $.ajax({
@@ -154,7 +183,7 @@ $(document).ready(function() {
             }
         });
         return false;
-    });
+    });*/
     $('#createvm-modal').on('hidden.bs.modal', function () {
         $(this).find('.modal-footer .btn').addClass('hide');
     });
