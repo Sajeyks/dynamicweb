@@ -92,101 +92,102 @@ $(document).ready(function() {
     });
 
     var create_vm_form = $('#virtual_machine_create_form');
-    create_vm_form.submit(placeOrderPaymentIntent);
-
-    function placeOrderPaymentIntent(e) {
-        e.preventDefault();
-        var stripe = Stripe(window.stripeKey);
-        stripe.confirmCardPayment(
-          window.paymentIntentSecret,
-          {
-            payment_method: window.pm_id
-          }
-        ).then(function(result) {
-            window.result = result;
-            fa_icon = $('.modal-icon > .fa');
-            modal_btn = $('#createvm-modal-done-btn');
-            if (result.error) {
-                // Display error.message in your UI.
-                modal_btn.attr('href', error_url).removeClass('hide');
-                fa_icon.attr('class', 'fa fa-close');
-                modal_btn.attr('class', '').addClass('btn btn-danger btn-ok btn-wide');
-                $('#createvm-modal-title').text(error_title);
-                $('#createvm-modal-body').html(result.error.message + " " + error_msg);
-            } else {
-                // The payment has succeeded
-                // Display a success message
-                modal_btn.attr('href', success_url).removeClass('hide');
-                fa_icon.attr('class', 'checkmark');
-                $('#createvm-modal-title').text(success_title);
-                $('#createvm-modal-body').html(success_msg);
-            }
-        });
-    }
-    /*
-    create_vm_form.submit(function () {
-        $('#btn-create-vm').prop('disabled', true);
-        $.ajax({
-            url: create_vm_form.attr('action'),
-            type: 'POST',
-            data: create_vm_form.serialize(),
-            init: function(){
-                ok_btn = $('#createvm-modal-done-btn');
-                close_btn = $('#createvm-modal-close-btn');
-                ok_btn.addClass('btn btn-success btn-ok btn-wide hide');
-                close_btn.addClass('btn btn-danger btn-ok btn-wide hide');
-            },
-            success: function (data) {
-                fa_icon = $('.modal-icon > .fa');
-                modal_btn = $('#createvm-modal-done-btn');
-                if (data.showSCA){
-                    console.log("Show SCA");
-                    var stripe = Stripe(data.STRIPE_PUBLISHABLE_KEY);
-                      stripe.confirmCardPayment(data.payment_intent_secret).then(function(result) {
-                        if (result.error) {
-                          // Display error.message in your UI.
-                            modal_btn.attr('href', data.error.redirect).removeClass('hide');
+    if (window.isSubscription) {
+        create_vm_form.submit(function () {
+            $('#btn-create-vm').prop('disabled', true);
+            $.ajax({
+                url: create_vm_form.attr('action'),
+                type: 'POST',
+                data: create_vm_form.serialize(),
+                init: function () {
+                    ok_btn = $('#createvm-modal-done-btn');
+                    close_btn = $('#createvm-modal-close-btn');
+                    ok_btn.addClass('btn btn-success btn-ok btn-wide hide');
+                    close_btn.addClass('btn btn-danger btn-ok btn-wide hide');
+                },
+                success: function (data) {
+                    fa_icon = $('.modal-icon > .fa');
+                    modal_btn = $('#createvm-modal-done-btn');
+                    if (data.showSCA) {
+                        console.log("Show SCA");
+                        var stripe = Stripe(data.STRIPE_PUBLISHABLE_KEY);
+                        stripe.confirmCardPayment(data.payment_intent_secret).then(function (result) {
+                            if (result.error) {
+                                // Display error.message in your UI.
+                                modal_btn.attr('href', data.error.redirect).removeClass('hide');
+                                fa_icon.attr('class', 'fa fa-close');
+                                modal_btn.attr('class', '').addClass('btn btn-danger btn-ok btn-wide');
+                                $('#createvm-modal-title').text(data.error.msg_title);
+                                $('#createvm-modal-body').html(data.error.msg_body);
+                            } else {
+                                // The payment has succeeded. Display a success message.
+                                modal_btn.attr('href', data.success.redirect).removeClass('hide');
+                                fa_icon.attr('class', 'checkmark');
+                                $('#createvm-modal-title').text(data.success.msg_title);
+                                $('#createvm-modal-body').html(data.success.msg_body);
+                            }
+                        });
+                        $('#3Dsecure-modal').show();
+                    } else {
+                        $('#createvm-modal-title').text(data.msg_title);
+                        $('#createvm-modal-body').html(data.msg_body);
+                        if (data.redirect) {
+                            modal_btn.attr('href', data.redirect).removeClass('hide');
+                        } else {
+                            modal_btn.attr('href', "");
+                        }
+                        if (data.status === true) {
+                            fa_icon.attr('class', 'checkmark');
+                        } else {
                             fa_icon.attr('class', 'fa fa-close');
                             modal_btn.attr('class', '').addClass('btn btn-danger btn-ok btn-wide');
-                            $('#createvm-modal-title').text(data.error.msg_title);
-                            $('#createvm-modal-body').html(data.error.msg_body);
-                        } else {
-                          // The payment has succeeded. Display a success message.
-                            modal_btn.attr('href', data.success.redirect).removeClass('hide');
-                            fa_icon.attr('class', 'checkmark');
-                            $('#createvm-modal-title').text(data.success.msg_title);
-                            $('#createvm-modal-body').html(data.success.msg_body);
                         }
-                      });
-                    $('#3Dsecure-modal').show();
-                } else {
-                    $('#createvm-modal-title').text(data.msg_title);
-                    $('#createvm-modal-body').html(data.msg_body);
-                    if (data.redirect) {
-                        modal_btn.attr('href', data.redirect).removeClass('hide');
-                    } else {
-                        modal_btn.attr('href', "");
                     }
-                    if (data.status === true) {
-                        fa_icon.attr('class', 'checkmark');
-                    } else {
-                        fa_icon.attr('class', 'fa fa-close');
-                        modal_btn.attr('class', '').addClass('btn btn-danger btn-ok btn-wide');
-                    }
-                }
-            },
-            error: function (xmlhttprequest, textstatus, message) {
+                },
+                error: function (xmlhttprequest, textstatus, message) {
                     fa_icon = $('.modal-icon > .fa');
                     fa_icon.attr('class', 'fa fa-close');
-                    if (typeof(create_vm_error_message) !== 'undefined') {
+                    if (typeof (create_vm_error_message) !== 'undefined') {
                         $('#createvm-modal-body').text(create_vm_error_message);
                     }
                     $('#btn-create-vm').prop('disabled', false);
                     $('#createvm-modal-close-btn').removeClass('hide');
-            }
+                }
+            });
+            return false;
         });
-        return false;
-    });*/
+    } else {
+        create_vm_form.submit(placeOrderPaymentIntent);
+        function placeOrderPaymentIntent(e) {
+            e.preventDefault();
+            var stripe = Stripe(window.stripeKey);
+            stripe.confirmCardPayment(
+              window.paymentIntentSecret,
+              {
+                payment_method: window.pm_id
+              }
+            ).then(function(result) {
+                window.result = result;
+                fa_icon = $('.modal-icon > .fa');
+                modal_btn = $('#createvm-modal-done-btn');
+                if (result.error) {
+                    // Display error.message in your UI.
+                    modal_btn.attr('href', error_url).removeClass('hide');
+                    fa_icon.attr('class', 'fa fa-close');
+                    modal_btn.attr('class', '').addClass('btn btn-danger btn-ok btn-wide');
+                    $('#createvm-modal-title').text(error_title);
+                    $('#createvm-modal-body').html(result.error.message + " " + error_msg);
+                } else {
+                    // The payment has succeeded
+                    // Display a success message
+                    modal_btn.attr('href', success_url).removeClass('hide');
+                    fa_icon.attr('class', 'checkmark');
+                    $('#createvm-modal-title').text(success_title);
+                    $('#createvm-modal-body').html(success_msg);
+                }
+            });
+        }
+    }
     $('#createvm-modal').on('hidden.bs.modal', function () {
         $(this).find('.modal-footer .btn').addClass('hide');
     });
