@@ -9,9 +9,9 @@ from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
-from datacenterlight.views import do_provisioning
+from datacenterlight.views import do_provisioning, do_provisioning_generic
 from membership.models import StripeCustomer
-from hosting.models import IncompleteSubscriptions
+from hosting.models import IncompleteSubscriptions, IncompletePaymentIntents
 
 from utils.models import BillingAddress, UserBillingAddress
 from utils.tasks import send_plain_email_task
@@ -135,6 +135,8 @@ def handle_webhook(request):
 
         if (invoice_obj.paid and
                 invoice_obj.billing_reason == "subscription_update"):
+            logger.debug("""invoice_obj.paid and
+                invoice_obj.billing_reason == subscription_update""")
             logger.debug("Start provisioning")
             try:
                 stripe_subscription_obj = stripe.Subscription.retrieve(
@@ -182,8 +184,6 @@ def handle_webhook(request):
                     logger.debug("6*******")
                     do_provisioning(
                         request=request,
-                        user={'name': incomplete_sub.name,
-                              'email': incomplete_sub.email},
                         stripe_api_cus_id=incomplete_sub.stripe_api_cus_id,
                         card_details_response=card_details_response,
                         stripe_subscription_obj=stripe_subscription_obj,
@@ -225,6 +225,59 @@ def handle_webhook(request):
         payment_intent_obj = event.data.object
         logger.debug("Webhook Event: payment_intent.succeeded")
         logger.debug("payment_intent_obj %s " % str(payment_intent_obj))
+
+        try:
+            incomplete_pm = IncompletePaymentIntents.objects.get(
+                payment_intent_obj.id)
+            request = ""
+            soc = ""
+            card_details_response = ""
+            gp_details = ""
+            template = ""
+            billing_address_data = ""
+            if incomplete_pm.request:
+                request = json.loads(incomplete_pm.request)
+            if incomplete_pm.stripe_onetime_charge:
+                soc = json.loads(incomplete_pm.stripe_onetime_charge)
+            if incomplete_pm.gp_details:
+                gp_details = json.loads(incomplete_pm.gp_details)
+            if incomplete_pm.card_details_response:
+                card_details_response = json.loads(
+                    incomplete_pm.card_details_response)
+            if incomplete_pm.billing_address_data:
+                billing_address_data = json.loads(
+                    incomplete_pm.billing_address_data)
+            logger.debug("1*******")
+            logger.debug(request)
+            logger.debug("2*******")
+            logger.debug(card_details_response)
+            logger.debug("3*******")
+            logger.debug(soc)
+            logger.debug("4*******")
+            logger.debug(gp_details)
+            logger.debug("5*******")
+            logger.debug(template)
+            logger.debug("6*******")
+            logger.debug(billing_address_data)
+            do_provisioning_generic(
+                request=request,
+                stripe_api_cus_id=incomplete_pm.stripe_api_cus_id,
+                card_details_response=card_details_response,
+                stripe_subscription_id=None,
+                stripe_charge_id=soc,
+                gp_details=gp_details,
+                billing_address_data=billing_address_data
+            )
+        except (IncompletePaymentIntents.DoesNotExist,
+                IncompletePaymentIntents.MultipleObjectsReturned) as ex:
+            logger.error(str(ex))
+            email_data = {
+                'subject': "IncompletePaymentIntents error",
+                'from_email': settings.DCL_SUPPORT_FROM_ADDRESS,
+                'to': settings.DCL_ERROR_EMAILS_TO_LIST,
+                'body': "Response = %s" % str(ex),
+            }
+            send_plain_email_task.delay(email_data)
     else:
         logger.error("Unhandled event : " + event.type)
     return HttpResponse(status=200)
