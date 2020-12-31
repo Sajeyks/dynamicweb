@@ -1552,7 +1552,7 @@ def do_provisioning(request, stripe_api_cus_id, card_details_response,
     }
 
     create_vm(
-        billing_address_data, stripe_customer_id, specs,
+        billing_address_data, custom_user.stripecustomer.id, specs,
         stripe_subscription_obj, card_details_dict, request,
         vm_template_id, template, user
     )
