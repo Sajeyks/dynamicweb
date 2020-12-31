@@ -1,7 +1,7 @@
-import logging
 import json
-import stripe
+import logging
 
+import stripe
 from django import forms
 from django.conf import settings
 from django.contrib import messages
@@ -312,7 +312,7 @@ class PaymentOrderView(FormView):
         request.session.pop('vat_validation_status')
         request.session.pop('card_id')
         request.session.pop('token')
-        request.session.pop('billing_address_data')
+        request.session.pop('id_payment_method')
         logger.debug("Session: %s" % str(request.session))
         for key, value in request.session.items():
             logger.debug("Session: %s %s" % (key, value))
