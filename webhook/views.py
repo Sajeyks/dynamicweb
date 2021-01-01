@@ -289,11 +289,11 @@ def handle_webhook(request):
                 billing_address_data=billing_address_data
             )
             incomplete_pm.save()
-        except (IncompletePaymentIntents.DoesNotExist,
-                IncompletePaymentIntents.MultipleObjectsReturned,
+        except IncompletePaymentIntents.DoesNotExist as ex:
+            logger.error(str(ex))
+        except (IncompletePaymentIntents.MultipleObjectsReturned,
                 Exception) as ex:
             logger.error(str(ex))
-            logger.debug(str(ex))
             email_data = {
                 'subject': "IncompletePaymentIntents error",
                 'from_email': settings.DCL_SUPPORT_FROM_ADDRESS,
