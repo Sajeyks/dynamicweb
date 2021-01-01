@@ -1027,6 +1027,14 @@ class OrderConfirmationView(DetailView, FormView):
                     latest_invoice.payment_intent
                 )
                 # TODO: requires_attention is probably wrong value to compare
+                if request.user.is_authenticated():
+                    if 'generic_payment_details' in request.session:
+                        redirect_url = reverse('hosting:invoices')
+                    else:
+                        redirect_url = reverse('hosting:virtual_machines')
+                else:
+                    redirect_url = reverse('datacenterlight:index')
+
                 if (pi.status == 'requires_attention' or
                         pi.status == 'requires_source_action'):
                     logger.debug("Display SCA authentication %s " % pi.status)
@@ -1037,11 +1045,7 @@ class OrderConfirmationView(DetailView, FormView):
                         'showSCA': True,
                         'success': {
                             'status': True,
-                            'redirect': (
-                                reverse('hosting:invoices')
-                                if request.user.is_authenticated()
-                                else reverse('datacenterlight:index')
-                            ),
+                            'redirect': redirect_url,
                             'msg_title': str(_('Thank you for the order.')),
                             'msg_body': str(
                                 _('Your product will be provisioned as soon as'
