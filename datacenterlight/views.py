@@ -598,7 +598,7 @@ class OrderConfirmationView(DetailView, FormView):
                 payment_method
             )
             if not card_details.get('response_object'):
-                return HttpResponseRedirect(reverse('hosting:payment'))
+                return HttpResponseRedirect(reverse('datacenterlight:payment'))
             card_details_response = card_details['response_object']
             context['cc_last4'] = card_details_response['last4']
             context['cc_brand'] = card_details_response['brand']
