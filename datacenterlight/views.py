@@ -471,7 +471,6 @@ class PaymentOrderView(FormView):
             id_payment_method = self.request.POST.get('id_payment_method',
                                                       None)
             if id_payment_method == 'undefined':
-                # Probably user chose one of the previously saved cards
                 id_payment_method = address_form.cleaned_data.get('card')
             request.session["id_payment_method"] = id_payment_method
             logger.debug("id_payment_method is %s" % id_payment_method)
@@ -1125,8 +1124,9 @@ class OrderConfirmationView(DetailView, FormView):
 
 def create_incomplete_intent_request(request):
     """
-    Persist session variables so that they could be pick up
-    in the webhook for processing.
+    Creates a dictionary of all session variables so that they could be
+    picked up in the webhook for processing.
+
     :param request:
     :return:
     """
@@ -1233,6 +1233,10 @@ def do_provisioning_generic(
         stripe_api_cus_id, request['id_payment_method'],
         set_as_default=True
     )
+    """
+    Identical to do_provisioning(), except for the fact that this
+    is specific to handling provisioning of the generic products
+    """
     logger.debug("Card %s associate result %s" % (
         request['id_payment_method'],
         acc_result.get('response_object')

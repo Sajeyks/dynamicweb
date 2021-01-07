@@ -677,7 +677,6 @@ class SettingsView(LoginRequiredMixin, FormView):
                     msg = _("Billing address updated successfully")
                     messages.add_message(request, messages.SUCCESS, msg)
             else:
-                # TODO : Test this flow
                 id_payment_method = request.POST.get('id_payment_method', None)
                 stripe_utils = StripeUtils()
                 card_details = stripe_utils.get_cards_details_from_payment_method(

@@ -111,7 +111,6 @@ class StripeUtils(object):
 
     @handleStripeError
     def update_customer_card(self, customer_id, token):
-        # TODO replace token with payment intent
         customer = stripe.Customer.retrieve(customer_id)
         current_card_token = customer.default_source
         customer.sources.retrieve(current_card_token).delete()
