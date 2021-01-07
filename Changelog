@@ -1,3 +1,6 @@
+3.0: 2021-01-07
+   * 8393: Implement SCA for stripe payments (MR!745)
+   * 8691: Implment check_vm_templates management command (MR!744)
 2.14: 2020-12-07
    * 8692: Create a script that fixes django db for the order after celery error (MR!743)
 2.13: 2020-12-02
