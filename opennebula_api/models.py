@@ -154,6 +154,8 @@ class OpenNebulaManager():
                     protocol=settings.OPENNEBULA_PROTOCOL)
             )
             raise ConnectionRefusedError
+        except Exception as ex:
+            logger.error(str(ex))
 
     def _get_user_pool(self):
         try:

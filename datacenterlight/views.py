@@ -593,6 +593,7 @@ class OrderConfirmationView(DetailView, FormView):
             return HttpResponseRedirect(reverse('datacenterlight:index'))
         if 'id_payment_method' in self.request.session:
             payment_method = self.request.session['id_payment_method']
+            logger.debug("id_payment_method: %s" % payment_method)
             stripe_utils = StripeUtils()
             card_details = stripe_utils.get_cards_details_from_payment_method(
                 payment_method
@@ -609,6 +610,7 @@ class OrderConfirmationView(DetailView, FormView):
         else:
             # TODO check when we go through this case (to me, it seems useless)
             card_id = self.request.session.get('card_id')
+            logger.debug("NO id_payment_method, using card: %s" % card_id)
             card_detail = UserCardDetail.objects.get(id=card_id)
             context['cc_last4'] = card_detail.last4
             context['cc_brand'] = card_detail.brand
@@ -1577,6 +1579,7 @@ def do_provisioning(request, stripe_api_cus_id, card_details_response,
 
 
 def get_error_response_dict(msg, request):
+    logger.error(msg)
     response = {
         'status': False,
         'redirect': "{url}#{section}".format(
@@ -1600,6 +1603,7 @@ def get_error_response_dict(msg, request):
 
 
 def show_error(msg, request):
+    logger.error(msg)
     messages.add_message(request, messages.ERROR, msg,
                          extra_tags='failed_payment')
     return JsonResponse(get_error_response_dict(msg,request))
