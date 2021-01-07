@@ -8,8 +8,9 @@ from django.contrib import messages
 from django.contrib.auth import login, authenticate
 from django.core.exceptions import ValidationError
 from django.core.urlresolvers import reverse
-from django.http import HttpResponseRedirect, JsonResponse, Http404, \
-    HttpResponse
+from django.http import (
+    HttpResponseRedirect, JsonResponse, Http404, HttpResponse
+)
 from django.shortcuts import render
 from django.utils.translation import get_language, ugettext_lazy as _
 from django.views.decorators.cache import cache_control
