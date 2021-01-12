@@ -1,3 +1,5 @@
+3.1: 2021-01-11
+   * 8781: Fix error is setting a default card (MR!746)
 3.0: 2021-01-07
    * 8393: Implement SCA for stripe payments (MR!745)
    * 8691: Implment check_vm_templates management command (MR!744)
