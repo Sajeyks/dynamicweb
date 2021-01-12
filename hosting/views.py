@@ -582,13 +582,23 @@ class SettingsView(LoginRequiredMixin, FormView):
             card_id = escape(request.POST['card'])
             UserCardDetail.set_default_card(
                 stripe_api_cus_id=request.user.stripecustomer.stripe_id,
-                stripe_source_id=user_card_detail.card_id
+                stripe_source_id=card_id
             )
+            stripe_utils = StripeUtils()
+            card_details = stripe_utils.get_cards_details_from_payment_method(
+                card_id
+            )
+            if not card_details.get('response_object'):
+                logger.debug("Could not find card %s in stripe" % card_id)
+                messages.add_message(request, messages.ERROR,
+                                     _("Could not set a default card."))
+                return HttpResponseRedirect(reverse_lazy('hosting:settings'))
+            card_details_response = card_details['response_object']
             msg = _(
                 ("Your {brand} card ending in {last4} set as "
                  "default card").format(
-                    brand=user_card_detail.brand,
-                    last4=user_card_detail.last4
+                    brand=card_details_response['brand'],
+                    last4=card_details_response['last4']
                 )
             )
             messages.add_message(request, messages.SUCCESS, msg)
