@@ -580,7 +580,6 @@ class SettingsView(LoginRequiredMixin, FormView):
     def post(self, request, *args, **kwargs):
         if 'card' in request.POST and request.POST['card'] is not '':
             card_id = escape(request.POST['card'])
-            user_card_detail = UserCardDetail.objects.get(id=card_id)
             UserCardDetail.set_default_card(
                 stripe_api_cus_id=request.user.stripecustomer.stripe_id,
                 stripe_source_id=user_card_detail.card_id
