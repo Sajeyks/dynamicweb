@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-11-15 16:40+0000\n"
+"POT-Creation-Date: 2021-02-07 10:19+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -211,6 +211,9 @@ msgstr "Bezahlbares VM Hosting in der Schweiz"
 msgid "My Dashboard"
 msgstr "Mein Dashboard"
 
+msgid "Welcome"
+msgstr ""
+
 msgid "My VMs"
 msgstr "Meine VMs"
 
@@ -364,6 +367,11 @@ msgstr "Abgelehnt"
 msgid "Billed to"
 msgstr "Rechnungsadresse"
 
+#, fuzzy
+#| msgid "Card Number"
+msgid "VAT Number"
+msgstr "Kreditkartennummer"
+
 msgid "Payment method"
 msgstr "Bezahlmethode"
 
@@ -390,6 +398,9 @@ msgstr "Festplattenkapazität"
 
 msgid "Subtotal"
 msgstr "Zwischensumme"
+
+msgid "VAT for"
+msgstr ""
 
 msgid "VAT"
 msgstr "Mehrwertsteuer"
@@ -424,17 +435,21 @@ msgstr "ZURÜCK ZUR LISTE"
 msgid "Some problem encountered. Please try again later."
 msgstr "Ein Problem ist aufgetreten. Bitte versuche es später noch einmal."
 
+#, fuzzy
+#| msgid "Description"
+msgid "Subscriptions"
+msgstr "Beschreibung"
+
+#, fuzzy
+#| msgid "One time payment"
+msgid "One-time payments"
+msgstr "Einmalzahlung"
+
 msgid "VM ID"
 msgstr ""
 
 msgid "IP Address"
 msgstr "IP-Adresse"
-
-msgid "See Invoice"
-msgstr "Siehe Rechnung"
-
-msgid "Page"
-msgstr "Seite"
 
 msgid "Log in"
 msgstr "Anmelden"
@@ -480,11 +495,13 @@ msgstr "Bestellungsübersicht"
 
 #, python-format
 msgid ""
-"By clicking \"Place order\" this plan will charge your credit card account "
-"with %(vm_price)s CHF/month"
+"By clicking \"Place order\" you agree to our <a href=\"https://"
+"datacenterlight.ch/en-us/cms/terms-of-service/\">Terms of Service</a> and "
+"this plan will charge your credit card account with %(vm_price)s CHF/month."
 msgstr ""
-"Wenn Du \"bestellen\" auswählst, wird Deine Kreditkarte mit %(vm_price)s CHF "
-"pro Monat belastet"
+"Indem Du auf "Bestellung aufgeben" klickst, erklärst Du dich mit unseren"
+" <a href=\"https://"
+"datacenterlight.ch/de/cms/terms-of-service/\">Nutzungsbedingungen</a> einverstanden und Dein Kreditkartenkonto wird mit %(vm_price)s CHF/Monat belastet."
 
 msgid "Place order"
 msgstr "Bestellen"
@@ -503,6 +520,12 @@ msgstr "Schliessen"
 
 msgid "Order Nr."
 msgstr "Bestellung Nr."
+
+msgid "See Invoice"
+msgstr "Siehe Rechnung"
+
+msgid "Page"
+msgstr "Seite"
 
 msgid "Your Order"
 msgstr "Deine Bestellung"
@@ -571,6 +594,19 @@ msgstr "Absenden"
 
 msgid "Password reset"
 msgstr "Passwort zurücksetzen"
+
+#, fuzzy
+#| msgid "Key name"
+msgid "My Username"
+msgstr "Key-Name"
+
+msgid "Your VAT number has been verified"
+msgstr ""
+
+msgid ""
+"Your VAT number is under validation. VAT will be adjusted, once the "
+"validation is complete."
+msgstr ""
 
 msgid "UPDATE"
 msgstr "AKTUALISIEREN"
@@ -773,20 +809,14 @@ msgstr "Dein Passwort konnte nicht zurückgesetzt werden."
 msgid "The reset password link is no longer valid."
 msgstr "Der Link zum Zurücksetzen Deines Passwortes ist nicht mehr gültig."
 
+msgid "Could not set a default card."
+msgstr ""
+
 msgid "Card deassociation successful"
 msgstr "Die Verbindung mit der Karte wurde erfolgreich aufgehoben"
 
-msgid "You are not permitted to do this operation"
-msgstr "Du hast keine Erlaubnis um diese Operation durchzuführen"
-
-msgid "The selected card does not exist"
-msgstr "Die ausgewählte Karte existiert nicht"
-
 msgid "Billing address updated successfully"
 msgstr "Die Rechnungsadresse wurde erfolgreich aktualisiert"
-
-msgid "You seem to have already added this card"
-msgstr "Es scheint, als hättest du diese Karte bereits hinzugefügt"
 
 #, python-brace-format
 msgid "An error occurred while associating the card. Details: {details}"
@@ -852,7 +882,8 @@ msgstr "Ungültige Speicher-Grösse"
 
 #, python-brace-format
 msgid "Incorrect pricing name. Please contact support{support_email}"
-msgstr "Ungültige Preisbezeichnung. Bitte kontaktiere den Support{support_email}"
+msgstr ""
+"Ungültige Preisbezeichnung. Bitte kontaktiere den Support{support_email}"
 
 msgid ""
 "We could not find the requested VM. Please                            "
@@ -871,7 +902,9 @@ msgstr "Fehler beenden VM"
 msgid ""
 "VM terminate action timed out. Please contact support@datacenterlight.ch for "
 "further information."
-msgstr "VM beendet wegen Zeitüberschreitung. Bitte kontaktiere support@datacenterlight.ch für weitere Informationen."
+msgstr ""
+"VM beendet wegen Zeitüberschreitung. Bitte kontaktiere "
+"support@datacenterlight.ch für weitere Informationen."
 
 #, python-format
 msgid "Virtual Machine %(vm_name)s Cancelled"
@@ -881,6 +914,15 @@ msgid "There was an error processing your request. Please try again."
 msgstr ""
 "Es gab einen Fehler bei der Bearbeitung Deine Anfrage. Bitte versuche es "
 "noch einmal."
+
+#~ msgid "You are not permitted to do this operation"
+#~ msgstr "Du hast keine Erlaubnis um diese Operation durchzuführen"
+
+#~ msgid "The selected card does not exist"
+#~ msgstr "Die ausgewählte Karte existiert nicht"
+
+#~ msgid "You seem to have already added this card"
+#~ msgstr "Es scheint, als hättest du diese Karte bereits hinzugefügt"
 
 #, python-format
 #~ msgid "This key exists already with the name \"%(name)s\""
