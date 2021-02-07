@@ -466,6 +466,7 @@ msgid ""
 "of Service</a> and this plan will charge your credit card account with "
 "%(total_price)s CHF/month"
 msgstr ""
+"\n"
 "Indem Du auf \"Bestellung aufgeben\" klickst, erklärst Du dich mit unseren <a href=\"https://"
 "datacenterlight.ch/en-us/cms/terms-of-service/\">Nutzungsbedingungen</a> einverstanden und Dein Kreditkartenkonto wird mit %(total_price)s CHF/Monat  belastet."
 
