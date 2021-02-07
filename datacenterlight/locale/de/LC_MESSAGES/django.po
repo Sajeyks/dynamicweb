@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-03-24 07:02+0000\n"
+"POT-Creation-Date: 2021-02-07 11:10+0000\n"
 "PO-Revision-Date: 2018-03-30 23:22+0000\n"
 "Last-Translator: b'Anonymous User <coder.purple+25@gmail.com>'\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -451,38 +451,42 @@ msgstr "Dein Gesamtpreis"
 
 #, python-format
 msgid ""
-"By clicking \"Place order\" this plan will charge your credit card account "
-"with %(total_price)s CHF/year"
+" By clicking \"Place order\" you agree to our <a href=\"https://"
+"datacenterlight.ch/en-us/cms/terms-of-service/\">Terms of Service</a> and "
+"this plan will charge your credit card account with %(total_price)s CHF/year"
 msgstr ""
-"Wenn Du \"bestellen\" auswählst, wird Deine Kreditkarte mit %(total_price)s "
-"CHF pro Jahr belastet"
+"Indem Du auf \"Bestellung aufgeben\" klickst, erklärst Du dich mit unseren <a href=\"https://"
+"datacenterlight.ch/en-us/cms/terms-of-service/\">Nutzungsbedingungen</a> einverstanden und Dein Kreditkartenkonto wird mit %(total_price)s CHF/Jahr  belastet."
 
 #, python-format
 msgid ""
-"By clicking \"Place order\" this plan will charge your credit card account "
-"with %(total_price)s CHF/month"
+"\n"
+"                                    By clicking \"Place order\" you agree to "
+"our <a href=\"https://datacenterlight.ch/en-us/cms/terms-of-service/\">Terms "
+"of Service</a> and this plan will charge your credit card account with "
+"%(total_price)s CHF/month"
 msgstr ""
-"Wenn Du \"bestellen\" auswählst, wird Deine Kreditkarte mit %(total_price)s "
-"CHF pro Monat belastet"
-
-#, fuzzy, python-format
-#| msgid ""
-#| "By clicking \"Place order\" this payment will charge your credit card "
-#| "account with a one time amount of %(total_price)s CHF"
-msgid ""
-"By clicking \"Place order\" this payment will charge your credit card "
-"account with a one time amount of %(total_price)s CHF"
-msgstr ""
-"Wenn Du \"bestellen\" auswählst, wird Deine Kreditkarte mit "
-"%(vm_total_price)s CHF pro Monat belastet"
+"Indem Du auf \"Bestellung aufgeben\" klickst, erklärst Du dich mit unseren <a href=\"https://"
+"datacenterlight.ch/en-us/cms/terms-of-service/\">Nutzungsbedingungen</a> einverstanden und Dein Kreditkartenkonto wird mit %(total_price)s CHF/Monat  belastet."
 
 #, python-format
 msgid ""
-"By clicking \"Place order\" this plan will charge your credit card account "
-"with %(vm_total_price)s CHF/month"
+"By clicking \"Place order\" you agree to our <a href=\"https://"
+"datacenterlight.ch/en-us/cms/terms-of-service/\">Terms of Service</a> and "
+"this plan will charge your credit card account with %(total_price)s CHF"
 msgstr ""
-"Wenn Du \"bestellen\" auswählst, wird Deine Kreditkarte mit "
-"%(vm_total_price)s CHF pro Monat belastet"
+"Indem Du auf \"Bestellung aufgeben\" klickst, erklärst Du dich mit unseren <a href=\"https://"
+"datacenterlight.ch/de/cms/terms-of-service/\">Nutzungsbedingungen</a> einverstanden und Dein Kreditkartenkonto wird mit %(total_price)s CHF belastet."
+
+#, python-format
+msgid ""
+"By clicking \"Place order\" you agree to our <a href=\"https://"
+"datacenterlight.ch/en-us/cms/terms-of-service/\">Terms of Service</a> and "
+"this plan will charge your credit card account with %(vm_total_price)s CHF/"
+"month"
+msgstr ""
+"Indem Du auf \"Bestellung aufgeben\" klickst, erklärst Du dich mit unseren <a href=\"https://"
+"datacenterlight.ch/de/cms/terms-of-service/\">Nutzungsbedingungen</a> einverstanden und Dein Kreditkartenkonto wird mit %(vm_total_price)s CHF/Monat belastet"
 
 msgid "Place order"
 msgstr "Bestellen"
@@ -601,15 +605,21 @@ msgid "Incorrect pricing name. Please contact support{support_email}"
 msgstr ""
 "Ungültige Preisbezeichnung. Bitte kontaktiere den Support{support_email}"
 
-#, python-brace-format
-msgid "{user} does not have permission to access the card"
-msgstr "{user} hat keine Erlaubnis auf diese Karte zuzugreifen"
-
-msgid "An error occurred. Details: {}"
-msgstr "Ein Fehler ist aufgetreten. Details: {}"
-
 msgid "Confirm Order"
 msgstr "Bestellung Bestätigen"
+
+#, fuzzy
+#| msgid "Thank you!"
+msgid "Thank you !"
+msgstr "Vielen Dank!"
+
+msgid "Your product will be provisioned as soon as we receive the payment."
+msgstr ""
+
+#, python-brace-format
+msgid "An error occurred while associating the card. Details: {details}"
+msgstr ""
+"Beim Verbinden der Karte ist ein Fehler aufgetreten. Details: {details}"
 
 msgid "Error."
 msgstr ""
@@ -621,10 +631,21 @@ msgstr ""
 "Es ist ein Fehler bei der Zahlung betreten. Du wirst nach dem Schliessen vom "
 "Popup zur Bezahlseite weitergeleitet."
 
-#, python-brace-format
-msgid "An error occurred while associating the card. Details: {details}"
+msgid "Thank you for the order."
+msgstr "Danke für Deine Bestellung."
+
+msgid ""
+"Your product will be provisioned as soon as we receive a payment "
+"confirmation from Stripe. We will send you a confirmation email. You can "
+"always contact us at support@datacenterlight.ch"
 msgstr ""
-"Beim Verbinden der Karte ist ein Fehler aufgetreten. Details: {details}"
+
+msgid ""
+"Your VM will be up and running in a few moments. We will send you a "
+"confirmation email as soon as it is ready."
+msgstr ""
+"Deine VM ist gleich bereit. Wir senden Dir eine Bestätigungsemail, sobald Du "
+"auf sie zugreifen kannst."
 
 msgid " This is a monthly recurring plan."
 msgstr "Dies ist ein monatlich wiederkehrender Plan."
@@ -664,15 +685,31 @@ msgstr ""
 "Du wirst bald eine Bestätigungs-E-Mail über die Zahlung erhalten. Du kannst "
 "jederzeit unter info@ungleich.ch kontaktieren."
 
-msgid "Thank you for the order."
-msgstr "Danke für Deine Bestellung."
+#, python-format
+#~ msgid ""
+#~ "By clicking \"Place order\" this plan will charge your credit card "
+#~ "account with %(total_price)s CHF/month"
+#~ msgstr ""
+#~ "Wenn Du \"bestellen\" auswählst, wird Deine Kreditkarte mit "
+#~ "%(total_price)s CHF pro Monat belastet"
 
-msgid ""
-"Your VM will be up and running in a few moments. We will send you a "
-"confirmation email as soon as it is ready."
-msgstr ""
-"Deine VM ist gleich bereit. Wir senden Dir eine Bestätigungsemail, sobald Du "
-"auf sie zugreifen kannst."
+#, fuzzy, python-format
+#~| msgid ""
+#~| "By clicking \"Place order\" this payment will charge your credit card "
+#~| "account with a one time amount of %(total_price)s CHF"
+#~ msgid ""
+#~ "By clicking \"Place order\" this payment will charge your credit card "
+#~ "account with a one time amount of %(total_price)s CHF"
+#~ msgstr ""
+#~ "Wenn Du \"bestellen\" auswählst, wird Deine Kreditkarte mit "
+#~ "%(vm_total_price)s CHF pro Monat belastet"
+
+#, python-brace-format
+#~ msgid "{user} does not have permission to access the card"
+#~ msgstr "{user} hat keine Erlaubnis auf diese Karte zuzugreifen"
+
+#~ msgid "An error occurred. Details: {}"
+#~ msgstr "Ein Fehler ist aufgetreten. Details: {}"
 
 #~ msgid "Price"
 #~ msgstr "Preise"
@@ -747,9 +784,6 @@ msgstr ""
 #~ msgstr ""
 #~ "Wir werden dann sobald als möglich Ihren Beta-Zugang erstellen und Sie "
 #~ "daraufhin kontaktieren.Bis dahin bitten wir Sie um etwas Geduld."
-
-#~ msgid "Thank you!"
-#~ msgstr "Vielen Dank!"
 
 #~ msgid "Thank you for order! Our team will contact you via email"
 #~ msgstr ""
