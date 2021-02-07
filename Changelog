@@ -1,3 +1,6 @@
+3.2: 2021-02-07
+   * 8816: Update order confirmation text to better prepared for payment dispute
+   * supportticket#22990: Fix: can't add a deleted card
 3.1: 2021-01-11
    * 8781: Fix error is setting a default card (MR!746)
 3.0: 2021-01-07
