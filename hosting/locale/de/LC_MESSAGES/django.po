@@ -499,7 +499,7 @@ msgid ""
 "datacenterlight.ch/en-us/cms/terms-of-service/\">Terms of Service</a> and "
 "this plan will charge your credit card account with %(vm_price)s CHF/month."
 msgstr ""
-"Indem Du auf "Bestellung aufgeben" klickst, erklärst Du dich mit unseren"
+"Indem Du auf \"Bestellung aufgeben\" klickst, erklärst Du dich mit unseren"
 " <a href=\"https://"
 "datacenterlight.ch/de/cms/terms-of-service/\">Nutzungsbedingungen</a> einverstanden und Dein Kreditkartenkonto wird mit %(vm_price)s CHF/Monat belastet."
 
