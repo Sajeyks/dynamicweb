@@ -698,39 +698,37 @@ class SettingsView(LoginRequiredMixin, FormView):
                     email=request.user.email, id_payment_method=id_payment_method
                 )
                 card = card_details['response_object']
-                if UserCardDetail.get_user_card_details(stripe_customer, card):
-                    msg = _('You seem to have already added this card')
-                    messages.add_message(request, messages.ERROR, msg)
-                else:
-                    acc_result = stripe_utils.associate_customer_card(
-                        request.user.stripecustomer.stripe_id, id_payment_method
-                    )
-                    if acc_result['response_object'] is None:
-                        msg = _(
-                            'An error occurred while associating the card.'
-                            ' Details: {details}'.format(
-                                details=acc_result['error']
-                            )
-                        )
-                        messages.add_message(request, messages.ERROR, msg)
-                        return self.render_to_response(self.get_context_data())
-                    preferred = False
-                    if stripe_customer.usercarddetail_set.count() == 0:
-                        preferred = True
-                    UserCardDetail.create(
-                        stripe_customer=stripe_customer,
-                        last4=card['last4'],
-                        brand=card['brand'],
-                        fingerprint=card['fingerprint'],
-                        exp_month=card['exp_month'],
-                        exp_year=card['exp_year'],
-                        card_id=card['card_id'],
-                        preferred=preferred
-                    )
+                acc_result = stripe_utils.associate_customer_card(
+                    request.user.stripecustomer.stripe_id,
+                    id_payment_method,
+                    set_as_default=True
+                )
+                if acc_result['response_object'] is None:
                     msg = _(
-                        "Successfully associated the card with your account"
+                        'An error occurred while associating the card.'
+                        ' Details: {details}'.format(
+                            details=acc_result['error']
+                        )
                     )
-                    messages.add_message(request, messages.SUCCESS, msg)
+                    messages.add_message(request, messages.ERROR, msg)
+                    return self.render_to_response(self.get_context_data())
+                preferred = False
+                if stripe_customer.usercarddetail_set.count() == 0:
+                    preferred = True
+                UserCardDetail.create(
+                    stripe_customer=stripe_customer,
+                    last4=card['last4'],
+                    brand=card['brand'],
+                    fingerprint=card['fingerprint'],
+                    exp_month=card['exp_month'],
+                    exp_year=card['exp_year'],
+                    card_id=card['card_id'],
+                    preferred=preferred
+                )
+                msg = _(
+                    "Successfully associated the card with your account"
+                )
+                messages.add_message(request, messages.SUCCESS, msg)
             return self.render_to_response(self.get_context_data())
         else:
             billing_address_data = form.cleaned_data
