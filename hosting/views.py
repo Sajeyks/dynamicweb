@@ -1315,7 +1315,8 @@ class InvoiceListView(LoginRequiredMixin, TemplateView):
                 logger.debug("User does not exist")
                 cu = self.request.user
             invs = stripe.Invoice.list(customer=cu.stripecustomer.stripe_id,
-                                       count=100)
+                                       count=100,
+                                       status='paid')
             paginator = Paginator(invs.data, 10)
             try:
                 invs_page = paginator.page(page)
