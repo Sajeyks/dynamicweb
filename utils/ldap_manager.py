@@ -3,6 +3,7 @@ import hashlib
 import random
 import ldap3
 import logging
+import unicodedata
 
 from django.conf import settings
 
@@ -101,7 +102,7 @@ class LdapManager:
                     "uidNumber": [str(uidNumber)],
                     "gidNumber": [str(settings.LDAP_CUSTOMER_GROUP_ID)],
                     "loginShell": ["/bin/bash"],
-                    "homeDirectory": ["/home/{}".format(user).encode("utf-8")],
+                    "homeDirectory": ["/home/{}".format(unicodedata.normalize('NFKD', user).encode('ascii','ignore'))],
                     "mail": email.encode("utf-8"),
                     "userPassword": [self._ssha_password(
                         password.encode("utf-8")
