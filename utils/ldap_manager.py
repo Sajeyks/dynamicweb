@@ -3,7 +3,7 @@ import hashlib
 import random
 import ldap3
 import logging
-import unidecode
+import unicodedata
 
 from django.conf import settings
 
