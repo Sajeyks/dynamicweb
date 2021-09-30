@@ -20,7 +20,7 @@ logger = logging.getLogger(__name__)
 
 eu_countries = ['at', 'be', 'bg', 'ch', 'cy', 'cz', 'hr', 'dk',
                 'ee', 'fi', 'fr', 'mc', 'de', 'gr', 'hu', 'ie', 'it',
-                'lv', 'lu', 'mt', 'nl', 'po', 'pt', 'ro','sk', 'si', 'es',
+                'lv', 'lu', 'mt', 'nl', 'pl', 'pt', 'ro','sk', 'si', 'es',
                 'se', 'gb']
 
 
