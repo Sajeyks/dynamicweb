@@ -83,7 +83,7 @@ stripe==2.41.0
 wheel==0.29.0
 django-admin-honeypot==1.0.0
 coverage==4.3.4
-git+https://github.com/ungleich/python-oca.git#egg=python-oca
+git+https://github.com/ungleich/python-oca.git#egg=oca
 djangorestframework==3.6.3
 flake8==3.3.0
 python-memcached==1.58
