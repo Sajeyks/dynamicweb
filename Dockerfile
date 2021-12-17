@@ -5,8 +5,9 @@ WORKDIR /usr/src/app
 RUN apk add --update --no-cache \
     git \
     build-base \
-    openldap-dev\
-    python3-dev\
+    openldap-dev \
+    python3-dev \
+    libpq-dev \
     && rm -rf /var/cache/apk/*
 
 # FIX https://github.com/python-ldap/python-ldap/issues/432

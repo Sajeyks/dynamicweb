@@ -14,6 +14,12 @@ help:
 	@echo '  make rsync_upload                         '
 	@echo '  make install_debian_packages              '
 
+buildimage:
+	 docker build -t dynamicweb:$$(git describe) .
+
+releaseimage: buildimage
+	./release.sh
+
 collectstatic:
 	$(PY?) $(BASEDIR)/manage.py collectstatic
 
