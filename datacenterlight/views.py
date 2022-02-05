@@ -1333,7 +1333,7 @@ def do_provisioning_generic(
         'subject': (settings.DCL_TEXT +
                     " Payment received from %s" % context['email']),
         'from_email': settings.DCL_SUPPORT_FROM_ADDRESS,
-        'to': ['info@ungleich.ch'],
+        'to': ['dcl-orders@ungleich.ch'],
         'body': "\n".join(
             ["%s=%s" % (k, v) for (k, v) in context.items()]),
         'reply_to': [context['email']],
@@ -1507,7 +1507,7 @@ def do_provisioning(request, stripe_api_cus_id, card_details_response,
             'subject': (settings.DCL_TEXT +
                         " Payment received from %s" % context['email']),
             'from_email': settings.DCL_SUPPORT_FROM_ADDRESS,
-            'to': ['info@ungleich.ch'],
+            'to': ['dcl-orders@ungleich.ch'],
             'body': "\n".join(
                 ["%s=%s" % (k, v) for (k, v) in context.items()]),
             'reply_to': [context['email']],
