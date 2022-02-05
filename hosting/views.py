@@ -1911,7 +1911,7 @@ class VirtualMachineView(LoginRequiredMixin, View):
             'subject': ("Deleted " if response['status']
                         else "ERROR deleting ") + admin_msg_sub,
             'from_email': settings.DCL_SUPPORT_FROM_ADDRESS,
-            'to': ['info@ungleich.ch'],
+            'to': ['dcl-orders@ungleich.ch'],
             'body': "\n".join(
                 ["%s=%s" % (k, v) for (k, v) in admin_email_body.items()]),
         }
