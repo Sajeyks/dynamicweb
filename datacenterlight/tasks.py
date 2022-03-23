@@ -195,7 +195,7 @@ def handle_metadata_and_emails(order_id, vm_id, manager, user, specs,
     email_data = {
         'subject': settings.DCL_TEXT + " Order from %s" % context['email'],
         'from_email': settings.DCL_SUPPORT_FROM_ADDRESS,
-        'to': ['info@ungleich.ch'],
+        'to': ['dcl-orders@ungleich.ch'],
         'body': "\n".join(
             ["%s=%s" % (k, v) for (k, v) in context.items()]),
         'reply_to': [context['email']],
