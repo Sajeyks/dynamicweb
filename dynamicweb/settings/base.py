@@ -631,8 +631,6 @@ GOOGLE_ANALYTICS_PROPERTY_IDS = {
     'datacenterlight.ch': 'UA-62285904-8',
     'devuanhosting.ch': 'UA-62285904-9',
     'devuanhosting.com': 'UA-62285904-9',
-    'ipv6onlyhosting.ch': 'UA-62285904-10',
-    'ipv6onlyhosting.net': 'UA-62285904-10',
     'ipv6onlyhosting.com': 'UA-62285904-10',
     'comic.ungleich.ch': 'UA-62285904-13',
     '127.0.0.1:8000': 'localhost',
