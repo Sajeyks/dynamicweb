@@ -1,3 +1,5 @@
+3.4: 2022-04-14
+   * 11566: Fix for ungleich.ch product section alignment
 3.2: 2021-02-07
    * 8816: Update order confirmation text to better prepared for payment dispute
    * supportticket#22990: Fix: can't add a deleted card
