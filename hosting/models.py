@@ -75,8 +75,8 @@ class GenericProduct(AssignPermissionsMixin, models.Model):
     )
     product_description = models.CharField(max_length=500, default="")
     created_at = models.DateTimeField(auto_now_add=True)
-    product_price = models.DecimalField(max_digits=6, decimal_places=2)
-    product_vat = models.DecimalField(max_digits=6, decimal_places=4, default=0)
+    product_price = models.DecimalField(max_digits=10, decimal_places=2)
+    product_vat = models.DecimalField(max_digits=10, decimal_places=4, default=0)
     product_is_subscription = models.BooleanField(default=True)
     product_subscription_interval = models.CharField(
         max_length=10, default="month",
