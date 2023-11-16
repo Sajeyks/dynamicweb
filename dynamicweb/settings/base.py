@@ -128,6 +128,7 @@ INSTALLED_APPS = (
     'djangocms_file',
     'djangocms_picture',
     'djangocms_video',
+    'django_recaptcha',
     # 'djangocms_flash',
     # 'djangocms_googlemap',
     # 'djangocms_inherit',
