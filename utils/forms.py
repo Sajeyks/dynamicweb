@@ -4,6 +4,8 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
 
+from captcha.fields import ReCaptchaField
+
 from membership.models import CustomUser
 from .models import ContactMessage, BillingAddress, UserBillingAddress
 
@@ -188,6 +190,7 @@ class UserBillingAddressForm(forms.ModelForm):
 
 class ContactUsForm(forms.ModelForm):
     error_css_class = 'autofocus'
+    captcha = ReCaptchaField()
 
     class Meta:
         model = ContactMessage

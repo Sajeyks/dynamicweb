@@ -56,6 +56,9 @@ dotenv.load_dotenv("{0}/.env".format(PROJECT_DIR))
 
 from multisite import SiteID
 
+RECAPTCHA_PUBLIC_KEY = env('RECAPTCHA_PUBLIC_KEY')
+RECAPTCHA_PRIVATE_KEY = env('RECAPTCHA_PRIVATE_KEY')
+
 UNGLEICH_BLOG_SITE_ID = int_env("UNGLEICH_BLOG_SITE_ID")
 SITE_ID = SiteID(default=(UNGLEICH_BLOG_SITE_ID if
                           UNGLEICH_BLOG_SITE_ID > 0 else 1))
