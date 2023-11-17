@@ -835,6 +835,7 @@ class ContactView(FormView):
     success_message = _('Message Successfully Sent')
 
     def form_valid(self, form):
+        print("digital glarus contactusform")
         #form.save()
         #form.send_email()
         #messages.add_message(self.request, messages.SUCCESS, self.success_message)

@@ -25,6 +25,7 @@ class ContactView(FormView):
     success_message = _('Message Successfully Sent')
 
     def form_valid(self, form):
+        print("ungleich_page contactusform")
         #form.save()
         #form.send_email()
         #messages.add_message(self.request, messages.SUCCESS, self.success_message)
