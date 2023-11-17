@@ -4,7 +4,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
 
-from captcha.fields import ReCaptchaField
+from django_recaptcha.fields import ReCaptchaField
 
 from membership.models import CustomUser
 from .models import ContactMessage, BillingAddress, UserBillingAddress
@@ -209,11 +209,12 @@ class ContactUsForm(forms.ModelForm):
         }
 
     def send_email(self, email_to='info@digitalglarus.ch'):
-        text_content = render_to_string(
-            'emails/contact.txt', {'data': self.cleaned_data})
-        html_content = render_to_string(
-            'emails/contact.html', {'data': self.cleaned_data})
-        email = EmailMultiAlternatives('Subject', text_content)
-        email.attach_alternative(html_content, "text/html")
-        email.to = [email_to]
-        email.send()
+        pass
+        #text_content = render_to_string(
+        #    'emails/contact.txt', {'data': self.cleaned_data})
+        #html_content = render_to_string(
+        #    'emails/contact.html', {'data': self.cleaned_data})
+        #email = EmailMultiAlternatives('Subject', text_content)
+        #email.attach_alternative(html_content, "text/html")
+        #email.to = [email_to]
+        #email.send()

@@ -31,9 +31,9 @@ class ContactView(FormView):
         return context
 
     def form_valid(self, form):
-        form.save()
-        form.send_email(email_to='info@alplora.ch')
-        messages.add_message(self.request, messages.SUCCESS, self.success_message)
+        #form.save()
+        #form.send_email(email_to='info@alplora.ch')
+        #messages.add_message(self.request, messages.SUCCESS, self.success_message)
         return render(self.request, 'alplora/contact_success.html', {})
 
 
