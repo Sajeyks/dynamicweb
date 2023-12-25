@@ -64,6 +64,44 @@ class Command(BaseCommand):
                     break
             logger.debug("There are %s ch subscription that need VAT rate update" % len(ch_subs))
 
+            # CSV column headers
+            csv_headers = [
+                "customer_name",
+                "subscription_id",
+                "subscription_name",
+                "amount",
+                "vat_rate"
+            ]
+            # CSV file name
+            csv_filename = "ch_subscriptions_change_2024.csv"
+            # Write subscription data to CSV file
+            with open(csv_filename, mode='w', newline='') as csv_file:
+                writer = csv.DictWriter(csv_file, fieldnames=csv_headers)
+                writer.writeheader()
+
+                for subscription in subscriptions:
+                    subscription_id = subscription["id"]
+                    customer_name = subscription.get("customer", "")
+                    items = subscription.get("items", {}).get("data", [])
+
+                    for item in items:
+                        subscription_name = item.get("plan", {}).get("id", "")
+                        amount = item.get("plan", {}).get("amount", "")
+                        vat_rates = item.get("tax_rates", [])
+
+                        # Convert amount to a proper format (e.g., cents to dollars)
+                        amount_in_chf = amount / 100  # Adjust this conversion as needed
+
+                        # Writing to CSV
+                        writer.writerow({
+                            "customer_name": customer_name,
+                            "subscription_id": subscription_id,
+                            "subscription_name": subscription_name,
+                            "amount": amount_in_chf,
+                            "vat_rate": ", ".join(vat_rates)  # Fill in VAT rate if available
+                        })
+
+
             if MAKE_MODIFS:
                 print("Making modifications now")
                 tax_rate_obj = stripe.TaxRate.create(
