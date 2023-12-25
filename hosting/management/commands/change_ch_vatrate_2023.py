@@ -89,7 +89,7 @@ class Command(BaseCommand):
                     c_user = CustomUser.objects.get(
                         id=StripeCustomer.objects.filter(stripe_id=stripe_customer_id)[0].id)
                     customer_name = c_user.name.encode('utf-8')
-                    customer_email = c_user.user_email
+                    customer_email = c_user.email
                     items = subscription.get("items", {}).get("data", [])
                     for item in items:
                         subscription_name = item.get("plan", {}).get("id", "")
