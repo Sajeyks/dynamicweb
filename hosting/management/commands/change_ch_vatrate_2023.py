@@ -70,6 +70,8 @@ class Command(BaseCommand):
             # CSV column headers
             csv_headers = [
                 "customer_name",
+                "customer_email",
+                "stripe_customer_id",
                 "subscription_id",
                 "subscription_name",
                 "amount",
