@@ -25,7 +25,7 @@ class Command(BaseCommand):
             vat_rate = VATRates.objects.get(
                 territory_codes=country_to_change, start_date__isnull=False, stop_date=None
             )
-            logger.debug("VAT rate for %s is %s" % (country, vat_rate.rate))
+            logger.debug("VAT rate for %s is %s" % (country_to_change, vat_rate.rate))
             logger.debug("vat_rate object = %s" % vat_rate)
             logger.debug("Create end date for the VATRate %s" % vat_rate.id)
             if MAKE_MODIFS:
