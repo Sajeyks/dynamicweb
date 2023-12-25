@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
 import datetime
 import csv
+import logging
 import stripe
 from hosting.models import VATRates
 from utils.hosting_utils import get_vat_rate_for_country
@@ -8,6 +9,7 @@ from django.conf import settings
 
 stripe.api_key = settings.STRIPE_API_PRIVATE_KEY
 
+logger = logging.getLogger(__name__)
 
 class Command(BaseCommand):
     help = '''CH vat rate changes on 2024-01-01 from 7.7% to 8.1%. This commands makes the necessary changes'''
