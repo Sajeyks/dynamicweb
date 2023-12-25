@@ -6,6 +6,7 @@ import stripe
 from hosting.models import VATRates
 from utils.hosting_utils import get_vat_rate_for_country
 from django.conf import settings
+from membership.models import CustomUser, StripeCustomer
 
 stripe.api_key = settings.STRIPE_API_PRIVATE_KEY
 
@@ -81,15 +82,17 @@ class Command(BaseCommand):
                 writer = csv.DictWriter(csv_file, fieldnames=csv_headers)
                 writer.writeheader()
 
-                for subscription in subscriptions:
+                for subscription in ch_subs:
                     subscription_id = subscription["id"]
-                    customer_name = subscription.get("customer", "")
+                    stripe_customer_id = subscription.get("customer", "")
+                    vat_rate = subscription.get("tax_percent", "")
+                    c_user = CustomUser.objects.get(
+                        id=StripeCustomer.objects.filter(stripe_id=stripe_customer_id)[0].id)
+                    customer_name = "%s - %s - %s" % (c_user.name, c_user.email, stripe_customer_id)
                     items = subscription.get("items", {}).get("data", [])
-
                     for item in items:
                         subscription_name = item.get("plan", {}).get("id", "")
                         amount = item.get("plan", {}).get("amount", "")
-                        vat_rates = item.get("tax_rates", [])
 
                         # Convert amount to a proper format (e.g., cents to dollars)
                         amount_in_chf = amount / 100  # Adjust this conversion as needed
@@ -100,7 +103,7 @@ class Command(BaseCommand):
                             "subscription_id": subscription_id,
                             "subscription_name": subscription_name,
                             "amount": amount_in_chf,
-                            "vat_rate": ", ".join(vat_rates)  # Fill in VAT rate if available
+                            "vat_rate": vat_rate  # Fill in VAT rate if available
                         })
 
 
