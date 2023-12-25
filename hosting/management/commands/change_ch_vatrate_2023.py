@@ -88,7 +88,8 @@ class Command(BaseCommand):
                     vat_rate = subscription.get("tax_percent", "")
                     c_user = CustomUser.objects.get(
                         id=StripeCustomer.objects.filter(stripe_id=stripe_customer_id)[0].id)
-                    customer_name = "%s - %s - %s" % (c_user.name, c_user.email, stripe_customer_id)
+                    customer_name = c_user.name.encode('utf-8')
+                    customer_email = c.user_email
                     items = subscription.get("items", {}).get("data", [])
                     for item in items:
                         subscription_name = item.get("plan", {}).get("id", "")
@@ -100,6 +101,8 @@ class Command(BaseCommand):
                         # Writing to CSV
                         writer.writerow({
                             "customer_name": customer_name,
+                            "customer_email": customer_email,
+                            "stripe_customer_id": stripe_customer_id,
                             "subscription_id": subscription_id,
                             "subscription_name": subscription_name,
                             "amount": amount_in_chf,
