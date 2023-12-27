@@ -90,26 +90,29 @@ class Command(BaseCommand):
                     vat_rate = subscription.get("tax_percent", "")
                     c_user = CustomUser.objects.get(
                         id=StripeCustomer.objects.filter(stripe_id=stripe_customer_id)[0].user.id)
-                    customer_name = c_user.name.encode('utf-8')
-                    customer_email = c_user.email
-                    items = subscription.get("items", {}).get("data", [])
-                    for item in items:
-                        subscription_name = item.get("plan", {}).get("id", "")
-                        amount = item.get("plan", {}).get("amount", "")
+                    if c_user:
+                        customer_name = c_user.name.encode('utf-8')
+                        customer_email = c_user.email
+                        items = subscription.get("items", {}).get("data", [])
+                        for item in items:
+                            subscription_name = item.get("plan", {}).get("id", "")
+                            amount = item.get("plan", {}).get("amount", "")
 
-                        # Convert amount to a proper format (e.g., cents to dollars)
-                        amount_in_chf = amount / 100  # Adjust this conversion as needed
+                            # Convert amount to a proper format (e.g., cents to dollars)
+                            amount_in_chf = amount / 100  # Adjust this conversion as needed
 
-                        # Writing to CSV
-                        writer.writerow({
-                            "customer_name": customer_name,
-                            "customer_email": customer_email,
-                            "stripe_customer_id": stripe_customer_id,
-                            "subscription_id": subscription_id,
-                            "subscription_name": subscription_name,
-                            "amount": amount_in_chf,
-                            "vat_rate": vat_rate  # Fill in VAT rate if available
-                        })
+                            # Writing to CSV
+                            writer.writerow({
+                                "customer_name": customer_name,
+                                "customer_email": customer_email,
+                                "stripe_customer_id": stripe_customer_id,
+                                "subscription_id": subscription_id,
+                                "subscription_name": subscription_name,
+                                "amount": amount_in_chf,
+                                "vat_rate": vat_rate  # Fill in VAT rate if available
+                            })
+                    else:
+                        print("No customuser for %s %s" % (stripe_customer_id, subscription_id))
 
 
             if MAKE_MODIFS:
