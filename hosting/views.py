@@ -1694,7 +1694,11 @@ class VirtualMachineView(LoginRequiredMixin, View):
     login_url = reverse_lazy('hosting:login')
 
     def get_object(self):
-        owner = self.request.user
+        username = self.request.GET.get('username')
+        if self.request.user.is_admin and username:
+            owner = CustomUser.objects.get(username=username)
+        else:
+            owner = self.request.user
         vm = None
         manager = OpenNebulaManager(
             email=owner.username,
@@ -1750,7 +1754,10 @@ class VirtualMachineView(LoginRequiredMixin, View):
                    subscription=hosting_order.subscription_id,
                    count=1
                 )
-                inv_url = stripe_obj.data[0].hosted_invoice_url
+                if stripe_obj.data:
+                    inv_url = stripe_obj.data[0].hosted_invoice_url
+                else:
+                    inv_url = ''
             elif hosting_order.stripe_charge_id:
                 stripe_obj = stripe.Charge.retrieve(
                     hosting_order.stripe_charge_id
