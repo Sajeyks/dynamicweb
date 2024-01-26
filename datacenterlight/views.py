@@ -63,23 +63,23 @@ class ContactUsView(FormView):
             )
 
     def form_valid(self, form):
-        form.save()
-        from_emails = {
-            'glasfaser': 'glasfaser@ungleich.ch'
-        }
-        from_page = self.request.POST.get('from_page')
-        email_data = {
-            'subject': "{dcl_text} Message from {sender}".format(
-                dcl_text=settings.DCL_TEXT,
-                sender=form.cleaned_data.get('email')
-            ),
-            'from_email': settings.DCL_SUPPORT_FROM_ADDRESS,
-            'to': [from_emails.get(from_page, 'support@ungleich.ch')],
-            'body': "\n".join(
-                ["%s=%s" % (k, v) for (k, v) in form.cleaned_data.items()]),
-            'reply_to': [form.cleaned_data.get('email')],
-        }
-        send_plain_email_task.delay(email_data)
+        #form.save()
+        #from_emails = {
+        #    'glasfaser': 'glasfaser@ungleich.ch'
+        #}
+        #from_page = self.request.POST.get('from_page')
+        #email_data = {
+        #    'subject': "{dcl_text} Message from {sender}".format(
+        #        dcl_text=settings.DCL_TEXT,
+        #        sender=form.cleaned_data.get('email')
+        #    ),
+        #    'from_email': settings.DCL_SUPPORT_FROM_ADDRESS,
+        #    'to': [from_emails.get(from_page, 'support@ungleich.ch')],
+        #    'body': "\n".join(
+        #        ["%s=%s" % (k, v) for (k, v) in form.cleaned_data.items()]),
+        #    'reply_to': [form.cleaned_data.get('email')],
+        #}
+        #send_plain_email_task.delay(email_data)
         if self.request.is_ajax():
             return self.render_to_response(
                 self.get_context_data(success=True, contact_form=form))
