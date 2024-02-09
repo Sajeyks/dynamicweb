@@ -29,25 +29,25 @@ class Command(BaseCommand):
             logger.debug("VAT rate for %s is %s" % (country_to_change, vat_rate.rate))
             logger.debug("vat_rate object = %s" % vat_rate)
             logger.debug("Create end date for the VATRate %s" % vat_rate.id)
-            if MAKE_MODIFS:
-                vat_rate.stop_date = datetime.date(2023, 12, 31)
-                vat_rate.save()
-                print("Creating a new VATRate for CH")
-                obj, created = VATRates.objects.get_or_create(
-                    start_date=datetime.date(2024, 1, 1),
-                    stop_date=None,
-                    territory_codes=country_to_change,
-                    currency_code=currency_to_change,
-                    rate=new_rate,
-                    rate_type="standard",
-                    description="Switzerland standard VAT (added manually on %s)" % datetime.datetime.now()
-                )
-                if created:
-                    logger.debug("Created new VAT Rate for %s with the new rate %s" % (country_to_change, new_rate))
-                    logger.debug(obj)
-                else:
-                    logger.debug("VAT Rate for %s already exists with the rate %s" % (country_to_change, new_rate))
-
+            #            if MAKE_MODIFS:
+            #                vat_rate.stop_date = datetime.date(2023, 12, 31)
+            #                vat_rate.save()
+            #                print("Creating a new VATRate for CH")
+            #                obj, created = VATRates.objects.get_or_create(
+            #                    start_date=datetime.date(2024, 1, 1),
+            #                    stop_date=None,
+            #                    territory_codes=country_to_change,
+            #                    currency_code=currency_to_change,
+            #                    rate=new_rate,
+            #                    rate_type="standard",
+            #                    description="Switzerland standard VAT (added manually on %s)" % datetime.datetime.now()
+            #                )
+            #                if created:
+            #                    logger.debug("Created new VAT Rate for %s with the new rate %s" % (country_to_change, new_rate))
+            #                    logger.debug(obj)
+            #                else:
+            #                    logger.debug("VAT Rate for %s already exists with the rate %s" % (country_to_change, new_rate))
+            #
             logger.debug("Getting all subscriptions of %s that need a VAT Rate change")
             subscriptions = stripe.Subscription.list(limit=100)  # Increase the limit to 100 per page (maximum)
             ch_subs = []
