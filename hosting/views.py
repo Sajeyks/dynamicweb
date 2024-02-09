@@ -554,14 +554,23 @@ class SettingsView(LoginRequiredMixin, FormView):
         Check if the user already saved contact details. If so, then show
         the form populated with those details, to let user change them.
         """
+        username = self.request.GET.get('username')
+        if self.request.user.is_admin and username:
+            user = CustomUser.objects.get(username=username)
+        else:
+            user = self.request.user
         return form_class(
-            instance=self.request.user.billing_addresses.first(),
+            instance=user.billing_addresses.first(),
             **self.get_form_kwargs())
 
     def get_context_data(self, **kwargs):
         context = super(SettingsView, self).get_context_data(**kwargs)
         # Get user
-        user = self.request.user
+        username = self.request.GET.get('username')
+        if self.request.user.is_admin and username:
+            user = CustomUser.objects.get(username=username)
+        else:
+            user = self.request.user
         stripe_customer = None
         if hasattr(user, 'stripecustomer'):
             stripe_customer = user.stripecustomer
