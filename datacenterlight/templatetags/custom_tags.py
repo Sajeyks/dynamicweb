@@ -160,8 +160,7 @@ def get_product_name(plan_name):
     product_name = ""
     if plan_name and plan_name.startswith("generic-"):
         first_index_hyphen = plan_name.index("-") + 1
-        product_id = plan_name[first_index_hyphen:
-        (plan_name[first_index_hyphen:].index("-")) + first_index_hyphen]
+        product_id = plan_name[first_index_hyphen:(plan_name[first_index_hyphen:].index("-")) + first_index_hyphen]
         try:
             product = GenericProduct.objects.get(id=product_id)
             product_name = product.product_name
