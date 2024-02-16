@@ -144,7 +144,7 @@ def get_line_item_from_stripe_invoice(invoice):
         """.format(
             vm_id=vm_id if vm_id > 0 else "",
             ip_addresses=mark_safe(get_ip_addresses(vm_id)) if vm_id > 0 else
-            mark_safe(get_product_name(plan_name)),
+            mark_safe(get_product_name(plan_name)) if plan_name.startswith("generic-") else plan_name,
             period=mark_safe("%s &mdash; %s" % (
                 datetime.datetime.fromtimestamp(start_date).strftime('%Y-%m-%d'),
                 datetime.datetime.fromtimestamp(end_date).strftime('%Y-%m-%d'))),
