@@ -1544,7 +1544,12 @@ class VirtualMachinesPlanListView(LoginRequiredMixin, ListView):
     ordering = '-id'
 
     def get_queryset(self):
-        owner = self.request.user
+        username = self.request.GET.get('username')
+        if self.request.user.is_admin and username:
+            user = CustomUser.objects.get(username=username)
+        else:
+            user = self.request.user
+        owner = user
         manager = OpenNebulaManager(email=owner.username,
                                     password=owner.password)
         try:
