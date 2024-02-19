@@ -8,7 +8,12 @@ RUN apk add --update --no-cache \
     build-base \
     openldap-dev \
     python3-dev \
-    libpq-dev \
+    postgresql-dev \
+    jpeg-dev \
+    libxml2-dev \
+    libxslt-dev \
+    libmemcached-dev \
+    zlib-dev \
     && rm -rf /var/cache/apk/*
 
 # FIX https://github.com/python-ldap/python-ldap/issues/432
