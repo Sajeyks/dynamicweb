@@ -22,5 +22,8 @@ RUN apk add --update --no-cache \
 RUN echo 'INPUT ( libldap.so )' > /usr/lib/libldap_r.so
 
 COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+
+# Pillow seems to need LIBRARY_PATH set as follows:  (see: https://github.com/python-pillow/Pillow/issues/1763#issuecomment-222383534)
+RUN LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "pip install --no-cache-dir -r requirements.txt"
+
 COPY ./ .
