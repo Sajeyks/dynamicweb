@@ -16,6 +16,8 @@ RUN apk add --update --no-cache \
     zlib-dev \
     && rm -rf /var/cache/apk/*
 
+## For alpine 3.15 replace postgresql-dev with libpq-dev
+
 # FIX https://github.com/python-ldap/python-ldap/issues/432
 RUN echo 'INPUT ( libldap.so )' > /usr/lib/libldap_r.so
 
