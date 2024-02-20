@@ -777,3 +777,9 @@ if DEBUG:
     from .local import *  # flake8: noqa
 else:
     from .prod import *  # flake8: noqa
+
+# Try to load dynamic configuration, if it exists
+try:
+    from .dynamic import * # flake8: noqa
+except ImportError:
+    pass

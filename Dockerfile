@@ -27,3 +27,6 @@ COPY requirements.txt ./
 RUN LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "pip install --no-cache-dir -r requirements.txt"
 
 COPY ./ .
+COPY entrypoint.sh /
+
+ENTRYPOINT ["/entrypoint.sh" ]
