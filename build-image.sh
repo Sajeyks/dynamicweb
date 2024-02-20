@@ -15,4 +15,9 @@ tag=${tagprefix}:${version}
 set -ex
 
 docker build -t "${tag}" .
-docker push "${tag}"
+
+push=$1; shift
+
+if [ "$push" ]; then
+    docker push "${tag}"
+fi
