@@ -42,6 +42,8 @@ from .utils import (
     get_cms_integration, create_vm, clear_all_session_vars, validate_vat_number
 )
 
+from datacenterlight.templatetags.custom_tags import get_product_name
+
 logger = logging.getLogger(__name__)
 
 
@@ -900,15 +902,21 @@ class OrderConfirmationView(DetailView, FormView):
                         2
                     )
                 )
-                plan_name = "generic-{0}-{1:.2f}".format(
+                stripe_plan_id = "generic-{0}-{1:.2f}".format(
                     request.session['generic_payment_details']['product_id'],
                     amount_to_be_charged
                 )
-                stripe_plan_id = plan_name
+                try:
+                    product = GenericProduct.objects.get(id=request.session['generic_payment_details']['product_id'])
+                    plan_name = product.product_name
+                except Exception as ex:
+                    logger.debug("Error {}" % str(ex))
+                    plan_name = get_product_name(stripe_plan_id)
                 recurring_interval = request.session['generic_payment_details']['recurring_interval']
                 if recurring_interval == "year":
-                    plan_name = "{}-yearly".format(plan_name)
-                    stripe_plan_id = plan_name
+                    stripe_plan_id = "{}-yearly".format(stripe_plan_id)
+                    plan_name = "{} (yearly)".format(plan_name)
+                logger.debug("Plan name = {}, Stripe Plan id = {}".format(plan_name, stripe_plan_id))
             else:
                 template = request.session.get('template')
                 specs = request.session.get('specs')

@@ -144,7 +144,7 @@ def get_line_item_from_stripe_invoice(invoice):
         """.format(
             vm_id=vm_id if vm_id > 0 else "",
             ip_addresses=mark_safe(get_ip_addresses(vm_id)) if vm_id > 0 else
-            mark_safe(get_product_name(plan_name)),
+            mark_safe(get_product_name(plan_name)) if plan_name.startswith("generic-") else plan_name,
             period=mark_safe("%s &mdash; %s" % (
                 datetime.datetime.fromtimestamp(start_date).strftime('%Y-%m-%d'),
                 datetime.datetime.fromtimestamp(end_date).strftime('%Y-%m-%d'))),
@@ -160,8 +160,7 @@ def get_product_name(plan_name):
     product_name = ""
     if plan_name and plan_name.startswith("generic-"):
         first_index_hyphen = plan_name.index("-") + 1
-        product_id = plan_name[first_index_hyphen:
-        (plan_name[first_index_hyphen:].index("-")) + first_index_hyphen]
+        product_id = plan_name[first_index_hyphen:(plan_name[first_index_hyphen:].index("-")) + first_index_hyphen]
         try:
             product = GenericProduct.objects.get(id=product_id)
             product_name = product.product_name
