@@ -87,7 +87,7 @@
         <tbody>
             {% for ho, stripe_charge_data in invs_charge %}
                 <tr>
-                    {{ ho | get_line_item_from_hosting_order_charge }}
+                    {{ ho.id | get_line_item_from_hosting_order_charge }}
                 </tr>
             {% endfor %}
         </tbody>
