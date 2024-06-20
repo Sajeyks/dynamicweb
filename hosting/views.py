@@ -1339,7 +1339,7 @@ class InvoiceListView(LoginRequiredMixin, TemplateView):
             ).order_by('-created_at')
             stripe_chgs = []
             for ho in hosting_orders:
-                stripe_chgs.append({ho.id: stripe.Charge.retrieve(ho.stripe_charge_id)})
+                stripe_chgs.append({ho: stripe.Charge.retrieve(ho.stripe_charge_id)})
 
             paginator_charges = Paginator(stripe_chgs, 10)
             try:
