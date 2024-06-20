@@ -910,7 +910,7 @@ class OrderConfirmationView(DetailView, FormView):
                     product = GenericProduct.objects.get(id=request.session['generic_payment_details']['product_id'])
                     plan_name = product.product_name
                 except Exception as ex:
-                    logger.debug("Error {}" % str(ex))
+                    logger.debug("Errori {}" % str(ex))
                     plan_name = get_product_name(stripe_plan_id)
                 recurring_interval = request.session['generic_payment_details']['recurring_interval']
                 if recurring_interval == "year":
@@ -1009,6 +1009,8 @@ class OrderConfirmationView(DetailView, FormView):
                 # due to some reason. So, we would want to dissociate this card
                 # here.
                 # ...
+                logger.debug("In 1 ***")
+                logger.debug("stripe_subscription_obj == %s" % stripe_subscription_obj) 
                 msg = subscription_result.get('error')
                 return show_error(msg, self.request)
             elif stripe_subscription_obj.status == 'incomplete':
@@ -1222,6 +1224,7 @@ def set_user_card(card_id, stripe_api_cus_id, custom_user,
             stripe_customer=custom_user.stripecustomer,
             card_details=card_details_response
         )
+        logger.debug("ucd = %s" % ucd)
         UserCardDetail.save_default_card_local(
             custom_user.stripecustomer.stripe_id,
             ucd.card_id
@@ -1231,6 +1234,7 @@ def set_user_card(card_id, stripe_api_cus_id, custom_user,
             'brand': ucd.brand,
             'card_id': ucd.card_id
         }
+        logger.debug("card_detail_dict = %s" % card_details_dict)
     return card_details_dict
 
 
@@ -1435,6 +1439,7 @@ def do_provisioning(request, stripe_api_cus_id, card_details_response,
 
     card_details_dict = set_user_card(card_id, stripe_api_cus_id, custom_user,
                   card_details_response)
+    logger.debug("after set_user_card %s" % card_details_dict)
 
     # Save billing address
     billing_address_data.update({
@@ -1457,6 +1462,7 @@ def do_provisioning(request, stripe_api_cus_id, card_details_response,
             vat_number=billing_address_data['vat_number']
         )
         billing_address.save()
+        logger.debug("billing_address saved")
 
         order = HostingOrder.create(
             price=request['generic_payment_details']['amount'],
@@ -1464,6 +1470,7 @@ def do_provisioning(request, stripe_api_cus_id, card_details_response,
             billing_address=billing_address,
             vm_pricing=VMPricing.get_default_pricing()
         )
+        logger.debug("hosting order created")
 
         # Create a Hosting Bill
         HostingBill.create(customer=stripe_cus,
@@ -1520,7 +1527,9 @@ def do_provisioning(request, stripe_api_cus_id, card_details_response,
                 ["%s=%s" % (k, v) for (k, v) in context.items()]),
             'reply_to': [context['email']],
         }
+        logger.debug("Sending email")
         send_plain_email_task.delay(email_data)
+        logger.debug("After Sending email")
         recurring_text = _(" This is a monthly recurring plan.")
         if gp_details['recurring_interval'] == "year":
             recurring_text = _(" This is an yearly recurring plan.")
@@ -1544,6 +1553,7 @@ def do_provisioning(request, stripe_api_cus_id, card_details_response,
                     ),
             'reply_to': ['info@ungleich.ch'],
         }
+        logger.debug("Before Sending customer email")
         send_plain_email_task.delay(email_data)
         redirect_url = reverse('datacenterlight:index')
         logger.debug("Sent user/admin emails")

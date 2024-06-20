@@ -73,6 +73,7 @@ def get_line_item_from_hosting_order_charge(hosting_order_id):
     :return:
     """
     try:
+        print("Hositng order id = %s" % hosting_order_id)
         hosting_order = HostingOrder.objects.get(id = hosting_order_id)
         if hosting_order.stripe_charge_id:
             return mark_safe("""
