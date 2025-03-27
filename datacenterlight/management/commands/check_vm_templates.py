@@ -69,11 +69,12 @@ class Command(BaseCommand):
                       'w',
                       encoding='utf-8') as f:
                 f.write(json.dumps(result_dict))
-        email_data = {
-            'subject': 'Check VM Templates ERROR',
-            'from_email': settings.DCL_SUPPORT_FROM_ADDRESS,
-            'to': [settings.ADMIN_EMAIL],
-            'body': json.dumps(error_dict),
-        }
-        send_plain_email_task.delay(email_data)
+        if error_dict:
+            email_data = {
+                'subject': 'Check VM Templates ERROR',
+                'from_email': settings.DCL_SUPPORT_FROM_ADDRESS,
+                'to': [settings.ADMIN_EMAIL],
+                'body': json.dumps(error_dict),
+            }
+            send_plain_email_task.delay(email_data)
         self.stdout.write(self.style.SUCCESS("Done"))
