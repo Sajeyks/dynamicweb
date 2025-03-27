@@ -3,7 +3,7 @@ from opennebula_api.models import OpenNebulaManager
 from datacenterlight.models import VMTemplate
 from datacenterlight.cms_models import DCLCalculatorPluginModel
 from membership.models import CustomUser
-
+from utils.tasks import send_plain_email_task
 from django.conf import settings
 from time import sleep
 import datetime
@@ -22,6 +22,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         result_dict = {}
+        error_dict = {}
         user_email = options['user_email'] if 'user_email' in options else ""
 
         if user_email:
@@ -37,7 +38,7 @@ class Command(BaseCommand):
             templates = public_templates_plugin.vm_templates_to_show + ipv6_templates_plugin.vm_templates_to_show
             vm_templates = VMTemplate.objects.filter(opennebula_vm_template_id__in=templates)
             for vm_template in vm_templates:
-                vm_name = 'test-%s' % vm_template.name
+                vm_name = 'test-%s-%s' % (vm_template.vm_type, vm_template.name)
                 vm_id = manager.create_vm(
                     template_id=vm_template.opennebula_vm_template_id,
                     specs=specs,
@@ -57,6 +58,7 @@ class Command(BaseCommand):
                     %s %s''' % (vm_name,
                                 vm_template.opennebula_vm_template_id,
                                 vm_template.vm_type)
+                    error_dict[vm_name] = result_dict[vm_name]
                     self.stdout.write(self.style.ERROR(result_dict[vm_name]))
                 sleep(1)
             date_str = datetime.datetime.strftime(
@@ -67,4 +69,11 @@ class Command(BaseCommand):
                       'w',
                       encoding='utf-8') as f:
                 f.write(json.dumps(result_dict))
+        email_data = {
+            'subject': 'Check VM Templates ERROR',
+            'from_email': settings.DCL_SUPPORT_FROM_ADDRESS,
+            'to': [settings.ADMIN_EMAIL],
+            'body': json.dumps(error_dict),
+        }
+        send_plain_email_task.delay(email_data)
         self.stdout.write(self.style.SUCCESS("Done"))
