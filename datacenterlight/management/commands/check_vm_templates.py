@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
 from opennebula_api.models import OpenNebulaManager
 from datacenterlight.models import VMTemplate
+from datacenterlight.cms_models import DCLCalculatorPluginModel
 from membership.models import CustomUser
 
 from django.conf import settings
@@ -31,7 +32,11 @@ class Command(BaseCommand):
             PROJECT_PATH = os.path.abspath(os.path.dirname(__name__))
             if not os.path.exists("%s/outputs" % PROJECT_PATH):
                 os.mkdir("%s/outputs" % PROJECT_PATH)
-            for vm_template in VMTemplate.objects.all():
+            public_templates_plugin = DCLCalculatorPluginModel.objects.filter(cmsplugin_ptr_id=23356).first()
+            ipv6_templates_plugin = DCLCalculatorPluginModel.objects.filter(cmsplugin_ptr_id=21943).first()
+            templates = public_templates_plugin.vm_templates_to_show + ipv6_templates_plugin.vm_templates_to_show
+            vm_templates = VMTemplate.objects.filter(opennebula_vm_template_id__in=templates)
+            for vm_template in vm_templates:
                 vm_name = 'test-%s' % vm_template.name
                 vm_id = manager.create_vm(
                     template_id=vm_template.opennebula_vm_template_id,
