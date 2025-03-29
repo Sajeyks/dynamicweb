@@ -44,3 +44,6 @@ secret-key
 !.gitkeep
 *.orig
 .vscode/settings.json
+2024-*
+2025-*
+2023-*
