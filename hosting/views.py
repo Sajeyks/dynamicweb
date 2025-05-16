@@ -810,7 +810,7 @@ class PaymentVMView(LoginRequiredMixin, FormView):
                 card_id = form.cleaned_data.get('card')
                 customer = owner.stripecustomer
                 try:
-                    user_card_detail = UserCardDetail.objects.get(id=card_id)
+                    user_card_detail = UserCardDetail.get_ucd_from_card_id(card_id=card_id)
                     if not request.user.has_perm(
                             'view_usercarddetail', user_card_detail
                     ):
@@ -1014,7 +1014,7 @@ class OrdersHostingDetailView(LoginRequiredMixin, DetailView, FormView):
                 context['cc_exp_month'] = card_details_response['exp_month']
             else:
                 card_id = self.request.session.get('card_id')
-                card_detail = UserCardDetail.objects.get(id=card_id)
+                card_detail = UserCardDetail.get_ucd_from_card_id(card_id=card_id)
                 context['cc_last4'] = card_detail.last4
                 context['cc_brand'] = card_detail.brand
                 context['cc_exp_year'] = card_detail.exp_year
@@ -1128,7 +1128,7 @@ class OrdersHostingDetailView(LoginRequiredMixin, DetailView, FormView):
                     return JsonResponse(response)
         else:
             card_id = request.session.get('card_id')
-            user_card_detail = UserCardDetail.objects.get(id=card_id)
+            user_card_detail = UserCardDetail.get_ucd_from_card_id(card_id=card_id)
             card_details_dict = {
                 'last4': user_card_detail.last4,
                 'brand': user_card_detail.brand,

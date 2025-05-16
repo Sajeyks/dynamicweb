@@ -613,7 +613,7 @@ class OrderConfirmationView(DetailView, FormView):
             # TODO check when we go through this case (to me, it seems useless)
             card_id = self.request.session.get('card_id')
             logger.debug("NO id_payment_method, using card: %s" % card_id)
-            card_detail = UserCardDetail.objects.get(id=card_id)
+            card_detail = UserCardDetail.get_ucd_from_card_id(card_id=card_id)
             context['cc_last4'] = card_detail.last4
             context['cc_brand'] = card_detail.brand
             context['cc_exp_year'] = card_detail.exp_year
@@ -852,7 +852,7 @@ class OrderConfirmationView(DetailView, FormView):
                     return show_error(msg, self.request)
         elif 'card_id' in request.session:
             card_id = request.session.get('card_id')
-            user_card_detail = UserCardDetail.objects.get(id=card_id)
+            user_card_detail = UserCardDetail.get_ucd_from_card_id(card_id=card_id)
             card_details_dict = {
                 'last4': user_card_detail.last4,
                 'brand': user_card_detail.brand,
@@ -1206,7 +1206,7 @@ def set_user_card(card_id, stripe_api_cus_id, custom_user,
                   card_details_response):
     if card_id:
         logger.debug("card_id %s was in request" % card_id)
-        user_card_detail = UserCardDetail.objects.get(id=card_id)
+        user_card_detail = UserCardDetail.get_ucd_from_card_id(card_id=card_id)
         card_details_dict = {
             'last4': user_card_detail.last4,
             'brand': user_card_detail.brand,

@@ -700,7 +700,7 @@ class UserCardDetail(AssignPermissionsMixin, models.Model):
     @staticmethod
     def save_default_card_local(stripe_api_cus_id, card_id):
         stripe_cust = StripeCustomer.objects.get(stripe_id=stripe_api_cus_id)
-        user_card_detail = UserCardDetail.objects.get(
+        user_card_detail = UserCardDetail.get_ucd_from_stripe_cust_n_card_id(
             stripe_customer=stripe_cust, card_id=card_id
         )
         for card in stripe_cust.usercarddetail_set.all():
@@ -708,6 +708,92 @@ class UserCardDetail(AssignPermissionsMixin, models.Model):
             card.save()
         user_card_detail.preferred = True
         user_card_detail.save()
+
+    @staticmethod
+    def get_ucd_from_card_id(card_id):
+        try:
+            user_card_details = UserCardDetail.objects.filter(
+                card_id=card_id
+            ).order_by('-id')
+
+            if user_card_details.count() > 1:
+                # Log a warning about the duplicate entries
+                logger.warning(
+                    f"Multiple UserCardDetail objects found for card_id={card_id}. "
+                    f"Found {user_card_details.count()} objects. Using the latest one."
+                )
+                # Use the first object found
+                user_card_detail = user_card_details.first()
+            elif user_card_details.count() == 1:
+                # Exactly one object found, proceed as intended
+                user_card_detail = user_card_details.first()
+            else:
+                # No object found for the given customer and card_id.
+                # Depending on expected behavior, you might want to raise an error or handle this case.
+                # If the original get() call happened here, it would raise DoesNotExist.
+                logger.error(
+                    f"No UserCardDetail found for card_id={card_id}."
+                )
+                raise UserCardDetail.DoesNotExist(f"No UserCardDetail found for card {card_id}")
+            if user_card_details.count() > 1:
+                # Log a warning about the duplicate entries
+                logger.warning(
+                    f"Multiple UserCardDetail objects found for card_id={card_id}. "
+                    f"Found {user_card_details.count()} objects. Using the first one."
+                )
+                # Use the first object found
+                user_card_detail = user_card_details.first()
+            elif user_card_details.count() == 1:
+                # Exactly one object found, proceed as intended
+                user_card_detail = user_card_details.first()
+            else:
+                # No object found for the given customer and card_id.
+                # Depending on expected behavior, you might want to raise an error or handle this case.
+                # If the original get() call happened here, it would raise DoesNotExist.
+                logger.error(
+                    f"No UserCardDetail found for card_id={card_id}."
+                )
+                raise UserCardDetail.DoesNotExist(f"No UserCardDetail found for card {card_id}")
+        except Exception as e:
+            # Catch other potential exceptions during the filter/get process if necessary
+            logger.error(f"An unexpected error occurred while fetching UserCardDetail: {e}")
+            raise
+        return user_card_detail
+
+
+    @staticmethod
+    def get_ucd_from_stripe_cust_n_card_id(stripe_cust, card_id):
+        try:
+            user_card_details = UserCardDetail.objects.filter(
+                stripe_customer=stripe_cust, card_id=card_id
+            ).order_by('-id')
+
+            if user_card_details.count() > 1:
+                # Log a warning about the duplicate entries
+                logger.warning(
+                    f"Multiple UserCardDetail objects found for stripe_customer_id={stripe_cust.id} and card_id={card_id}. "
+                    f"Found {user_card_details.count()} objects. Using the first one."
+                )
+                # Use the first object found
+                user_card_detail = user_card_details.first()
+            elif user_card_details.count() == 1:
+                # Exactly one object found, proceed as intended
+                user_card_detail = user_card_details.first()
+            else:
+                # No object found for the given customer and card_id.
+                # Depending on expected behavior, you might want to raise an error or handle this case.
+                # If the original get() call happened here, it would raise DoesNotExist.
+                logger.error(
+                    f"No UserCardDetail found for stripe_customer_id={stripe_cust.id} and card_id={card_id}."
+                )
+                raise UserCardDetail.DoesNotExist(f"No UserCardDetail found for customer {stripe_cust.id}, card {card_id}")
+
+        except Exception as e:
+            # Catch other potential exceptions during the filter/get process if necessary
+            logger.error(f"An unexpected error occurred while fetching UserCardDetail: {e}")
+            raise
+        return user_card_detail
+
 
     @staticmethod
     def get_user_card_details(stripe_customer, card_details):
