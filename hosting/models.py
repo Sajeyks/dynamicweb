@@ -719,8 +719,10 @@ class UserCardDetail(AssignPermissionsMixin, models.Model):
             if user_card_details.count() > 1:
                 # Log a warning about the duplicate entries
                 logger.warning(
-                    f"Multiple UserCardDetail objects found for card_id={card_id}. "
-                    f"Found {user_card_details.count()} objects. Using the latest one."
+                    "Multiple UserCardDetail objects found for card_id={}. "
+                    "Found {} objects. Using the latest one.".format(
+                        card_id, user_card_details.count()
+                    )
                 )
                 # Use the first object found
                 user_card_detail = user_card_details.first()
@@ -732,14 +734,16 @@ class UserCardDetail(AssignPermissionsMixin, models.Model):
                 # Depending on expected behavior, you might want to raise an error or handle this case.
                 # If the original get() call happened here, it would raise DoesNotExist.
                 logger.error(
-                    f"No UserCardDetail found for card_id={card_id}."
+                    "No UserCardDetail found for card_id={}.".format(card_id)
                 )
-                raise UserCardDetail.DoesNotExist(f"No UserCardDetail found for card {card_id}")
+                raise UserCardDetail.DoesNotExist("No UserCardDetail found for card {}".format(card_id))
             if user_card_details.count() > 1:
                 # Log a warning about the duplicate entries
                 logger.warning(
-                    f"Multiple UserCardDetail objects found for card_id={card_id}. "
-                    f"Found {user_card_details.count()} objects. Using the first one."
+                    "Multiple UserCardDetail objects found for card_id={}. "
+                    "Found {} objects. Using the first one.".format(
+                        card_id, user_card_details.count()
+                    )
                 )
                 # Use the first object found
                 user_card_detail = user_card_details.first()
@@ -751,15 +755,14 @@ class UserCardDetail(AssignPermissionsMixin, models.Model):
                 # Depending on expected behavior, you might want to raise an error or handle this case.
                 # If the original get() call happened here, it would raise DoesNotExist.
                 logger.error(
-                    f"No UserCardDetail found for card_id={card_id}."
+                    "No UserCardDetail found for card_id={}.".format(card_id)
                 )
-                raise UserCardDetail.DoesNotExist(f"No UserCardDetail found for card {card_id}")
+                raise UserCardDetail.DoesNotExist("No UserCardDetail found for card {}".format(card_id))
         except Exception as e:
             # Catch other potential exceptions during the filter/get process if necessary
-            logger.error(f"An unexpected error occurred while fetching UserCardDetail: {e}")
+            logger.error("An unexpected error occurred while fetching UserCardDetail: {}".format(e))
             raise
         return user_card_detail
-
 
     @staticmethod
     def get_ucd_from_stripe_cust_n_card_id(stripe_cust, card_id):
