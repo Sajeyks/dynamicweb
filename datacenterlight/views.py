@@ -1428,6 +1428,30 @@ def do_provisioning(request, stripe_api_cus_id, card_details_response,
     """
 
     logger.debug("do_provisioning")
+
+    try:
+        params = {
+            'request': request,
+            'stripe_api_cus_id': stripe_api_cus_id,
+            'card_details_response': card_details_response,
+            'stripe_subscription_obj': stripe_subscription_obj,
+            'stripe_onetime_charge': stripe_onetime_charge,
+            'gp_details': gp_details,
+            'specs': specs,
+            'vm_template_id': vm_template_id,
+            'template': template,
+            'billing_address_data': billing_address_data,
+            'real_request': real_request
+        }
+        print("Input Parameters:")
+        for key, value in params.items():
+            try:
+                print("{}: {}".format(key, value))
+            except Exception as e:
+                print("{}: [Error printing value: {}]".format(key, str(e)))
+    except Exception as e:
+        print("Error printing parameters: {}".format(str(e)))
+
     user = request.get('user', None)
 
     # Create user if the user is not logged in and if he is not already
