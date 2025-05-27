@@ -703,9 +703,9 @@ class UserCardDetail(AssignPermissionsMixin, models.Model):
         stripe_cust = StripeCustomer.objects.get(stripe_id=stripe_api_cus_id)
         print("  stripe_cust={}".format(stripe_cust))
         user_card_detail = UserCardDetail.get_ucd_from_stripe_cust_n_card_id(
-            stripe_customer=stripe_cust, card_id=card_id
+            stripe_cust, card_id
         )
-        print("  user_card_detail={}".format(user_card_detail))
+        print("  user_card_detail={}".format(user_card_detail.__dict__))
         for card in stripe_cust.usercarddetail_set.all():
             card.preferred = False
             card.save()
