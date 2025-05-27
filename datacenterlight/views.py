@@ -201,6 +201,12 @@ class IndexView(CreateView):
             ssd_size=storage,
             pricing_name=vm_pricing_name
         )
+        if request.user.id == 51:
+            print("User is test")
+            price = 0
+            vat = 0
+            vat_percent = 0
+            discount = 0
         specs = {
             'cpu': cores,
             'memory': memory,
@@ -588,6 +594,9 @@ class OrderConfirmationView(DetailView, FormView):
         context = {}
         # this is amount to be charge/subscribed before VAT and discount
         # and expressed in chf. To convert to cents, multiply by 100
+        print("******************************")
+        print("User = {}, ID = {}".format(request.user, request.user.id))
+        print("******************************")
         amount_to_charge = 0
         vm_specs = None
         if (('specs' not in request.session or 'user' not in request.session)
@@ -1621,7 +1630,7 @@ def do_provisioning(request, stripe_api_cus_id, card_details_response,
 
 
 def get_error_response_dict(msg, request):
-    logger.error(msg)
+    logger.debug("Init get_error_response_dict {}".format(msg))
     response = {
         'status': False,
         'redirect': "{url}#{section}".format(
