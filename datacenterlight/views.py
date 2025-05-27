@@ -1219,6 +1219,7 @@ def get_or_create_custom_user(request, stripe_api_cus_id):
 
 def set_user_card(card_id, stripe_api_cus_id, custom_user,
                   card_details_response):
+    logger.debug(":: set_user_card")
     if card_id:
         logger.debug("card_id %s was in request" % card_id)
         user_card_detail = UserCardDetail.get_ucd_from_card_id(card_id=card_id)
@@ -1233,17 +1234,18 @@ def set_user_card(card_id, stripe_api_cus_id, custom_user,
             stripe_source_id=user_card_detail.card_id
         )
     else:
-        logger.debug("card_id was NOT in request, using "
+        logger.debug("  card_id was NOT in request, using "
                      "card_details_response")
         ucd = UserCardDetail.get_or_create_user_card_detail(
             stripe_customer=custom_user.stripecustomer,
             card_details=card_details_response
         )
-        logger.debug("ucd = %s" % ucd)
+        logger.debug("  ucd = %s" % ucd)
         UserCardDetail.save_default_card_local(
             custom_user.stripecustomer.stripe_id,
             ucd.card_id
         )
+        logger.debug("  after save_default_card_local")
         card_details_dict = {
             'last4': ucd.last4,
             'brand': ucd.brand,

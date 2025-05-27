@@ -699,15 +699,19 @@ class UserCardDetail(AssignPermissionsMixin, models.Model):
 
     @staticmethod
     def save_default_card_local(stripe_api_cus_id, card_id):
+        print("save_default_card_local {}, {}".format(stripe_api_cus_id, card_id))
         stripe_cust = StripeCustomer.objects.get(stripe_id=stripe_api_cus_id)
+        print("  stripe_cust={}".format(stripe_cust))
         user_card_detail = UserCardDetail.get_ucd_from_stripe_cust_n_card_id(
             stripe_customer=stripe_cust, card_id=card_id
         )
+        print("  user_card_detail={}".format(user_card_detail))
         for card in stripe_cust.usercarddetail_set.all():
             card.preferred = False
             card.save()
         user_card_detail.preferred = True
         user_card_detail.save()
+        print("  save_default_card_local DONE")
 
     @staticmethod
     def get_ucd_from_card_id(card_id):
