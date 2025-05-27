@@ -203,10 +203,6 @@ class IndexView(CreateView):
         )
         if request.user.id == 51:
             print("User is test")
-            price = 0
-            vat = 0
-            vat_percent = 0
-            discount = 0
         specs = {
             'cpu': cores,
             'memory': memory,
@@ -658,10 +654,6 @@ class OrderConfirmationView(DetailView, FormView):
             )
             if request.user.id == 51:
                 print("User is test")
-                price = 0
-                vat = 0
-                vat_percent = 0
-                discount = {"amount": 0}
             vm_specs["price"] = price
             vm_specs["price_after_discount"] = price - discount["amount"]
             amount_to_charge = price
