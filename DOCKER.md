@@ -70,12 +70,21 @@ Open **`/dev-sites/`** on any host for a page of clickable links
 Use `?site=` (empty) to clear the choice. To add a site, add it to
 `UNGLEICH_SITE_CONFIGS` in `.env.docker` (a `Site` row is created on start).
 
-## Loading data (optional)
+## Dummy data
 
-The database starts empty, so the sites are mostly blank. To load a dump, put a
-plain-SQL `*.sql` or `*.sql.gz` file in `db-init/` **before the first start**; Postgres
-restores it automatically. To reload: `docker compose down -v` (this deletes the
-volumes) and start again. Dumps are git-ignored because they contain personal data.
+With `SEED_DUMMY_DATA=True` (the default in `.env.docker`), every start creates,
+if missing, one dummy CMS page per site (so each site visibly differs) plus a dummy
+admin and a dummy customer. It is idempotent, and only touches what it created.
+
+- The dummy admin is `dummy-admin@example.com`. Its password is random and printed
+  once in `docker compose logs web` on the first start; set `DUMMY_ADMIN_PASSWORD`
+  in `.env` to choose it. Log in at `/en-us/admin/login/`.
+- Turn it off with `SEED_DUMMY_DATA=False` in `.env`.
+- Remove it at any time: `docker compose exec web python manage.py seed_dummy_data --purge`.
+
+Real data can also be restored from a plain-SQL `*.sql` / `*.sql.gz` dump in `db-init/`
+before the first start. To reload: `docker compose down -v` (deletes volumes) and start
+again. Dumps are git-ignored because they contain personal data.
 
 ## Useful commands
 
