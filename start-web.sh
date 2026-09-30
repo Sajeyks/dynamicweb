@@ -18,4 +18,8 @@ for domain in json.loads(os.environ.get('UNGLEICH_SITE_CONFIGS') or '{}'):
     Site.objects.get_or_create(domain=domain, defaults={'name': domain})
 PYEOF
 
+if [ "${SEED_DUMMY_DATA:-False}" = "True" ]; then
+    python manage.py seed_dummy_data || echo 'seed_dummy_data failed, continuing'
+fi
+
 exec python manage.py runserver 0.0.0.0:8000
