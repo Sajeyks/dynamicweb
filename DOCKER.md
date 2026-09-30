@@ -78,10 +78,13 @@ To add a site, add it to
 
 ## Dummy data
 
-With `SEED_DUMMY_DATA=True` (the default in `.env.docker`), every start creates,
-if missing, dummy content that mimics production: per site a home page with four child
-pages (About, Services, Pricing, Contact), plus a dummy admin and 12 dummy customers.
-It is idempotent and only touches what it created.
+With `SEED_DUMMY_DATA=True` (the default in `.env.docker`), a start on a database
+without page content creates sample content that mimics production: per site a home page
+in that site's own template with four child pages (About, Services, Pricing, Contact),
+plus an admin and 12 customers. The text is written to look like a real site, and only
+hidden markers (page `reverse_id` starting with `dummy-`, `dummy-*@example.com` users)
+identify it. If the database already has page content (for example the owner's own Postgres)
+nothing is added. It is idempotent and only touches what it created.
 
 - Admin login (fixed): `dummy-admin@example.com` / `dummy-admin` at `/en-us/admin/login/`.
   Change the password with `DUMMY_ADMIN_PASSWORD` in `.env` (applies when the admin is first created).

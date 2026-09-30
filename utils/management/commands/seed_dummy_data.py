@@ -1,6 +1,7 @@
 """
-Creates dummy data for test environments so that every site shows something
-different, or (with --purge) removes exactly what this command created.
+Creates sample data for test environments so that every site shows realistic
+content of its own (only into a database without page content), or, with
+--purge, removes exactly what this command created.
 
 Everything it creates is recognisable and self-contained:
   - per site, a published home page (reverse_id "dummy-home") with four
@@ -29,12 +30,29 @@ ADMIN_EMAIL = 'dummy-admin@example.com'
 CUSTOMER_EMAIL_FORMAT = 'dummy-customer-{}@example.com'
 CUSTOMER_COUNT = 12
 DEFAULT_ADMIN_PASSWORD = 'dummy-admin'
+# domain -> (name, tagline); other domains are named after their domain
+SITE_TEXTS = {
+    'ungleich.ch': ('ungleich', 'Swiss IT infrastructure, hosting and open source.'),
+    'blog.ungleich.ch': ('ungleich blog', 'Notes from running data centers, networks and free software.'),
+    'comic.ungleich.ch': ('ungleich comic', 'Life in the data center, one panel at a time.'),
+    'digitalglarus.ch': ('Digital Glarus', 'The Swiss IT valley in Schwanden, Glarus.'),
+    'datacenterlight.ch': ('Data Center Light', 'Virtual machines from a Swiss, ecological data center.'),
+    'rails-hosting.ch': ('Rails Hosting', 'Managed hosting for Ruby on Rails applications.'),
+    'django-hosting.ch': ('Django Hosting', 'Managed hosting for Django applications.'),
+    'node-hosting.ch': ('Node.js Hosting', 'Managed hosting for Node.js applications.'),
+    'devuanhosting.ch': ('Devuan Hosting', 'Hosting on Devuan, the systemd-free Linux.'),
+    'devuanhosting.com': ('Devuan Hosting', 'Hosting on Devuan, the systemd-free Linux.'),
+}
 # (slug, title, text) for the pages below each site's home page
 SUB_PAGES = [
-    ('about', 'About', 'Who we are and what we do.'),
-    ('services', 'Services', 'Hosting, servers and managed infrastructure.'),
-    ('pricing', 'Pricing', 'Simple monthly plans, billed per resource.'),
-    ('contact', 'Contact', 'Write to us, we answer within one working day.'),
+    ('about', 'About', '{name} is operated by ungleich GmbH in Switzerland. '
+     'We run our own hardware and publish what we build as free software.'),
+    ('services', 'Services', 'Virtual machines, managed hosting and '
+     'consulting, all running in our own data centers.'),
+    ('pricing', 'Pricing', 'Simple monthly plans, billed per resource '
+     'with no minimum term.'),
+    ('contact', 'Contact', 'Write to support@ungleich.ch and we will '
+     'answer within one working day.'),
 ]
 FIRST_NAMES = ['Anna', 'Luca', 'Marta', 'Jonas', 'Sofia', 'Noah', 'Elena',
                'Felix', 'Nina', 'Paul', 'Clara', 'Ivan']
@@ -79,6 +97,15 @@ class Command(BaseCommand):
             count, user_count))
 
     def seed(self):
+        # the app itself leaves a few empty pages; only pages with content
+        # mean the database holds real data
+        real = Page.objects.filter(
+            publisher_is_draft=True, placeholders__cmsplugin__isnull=False
+        ).exclude(reverse_id__startswith='dummy-')
+        if real.exists():
+            self.stdout.write(
+                "Found existing page content, not adding dummy data")
+            return
         self.seed_users()
         for domain in self.site_domains():
             site = Site.objects.filter(domain=domain).first()
@@ -125,17 +152,19 @@ class Command(BaseCommand):
         if Page.objects.filter(reverse_id=REVERSE_ID, site=site).exists():
             return
         template = SITE_TEMPLATES.get(site.domain, TEMPLATE)
+        name, tagline = SITE_TEXTS.get(
+            site.domain, (site.domain, 'Welcome to {}.'.format(site.domain)))
         home = create_page(
-            '{} (dummy)'.format(site.domain), template, LANGUAGE,
-            slug='dummy-home', published=True, in_navigation=True,
-            site=site, reverse_id=REVERSE_ID)
-        self.add_text(home, '<h1>{0}</h1><p>Dummy page for {0}.</p>'.format(
-            site.domain))
+            name, template, LANGUAGE, slug='home', meta_description=tagline,
+            published=True, in_navigation=True, site=site,
+            reverse_id=REVERSE_ID)
+        self.add_text(home, '<h1>{}</h1><p>{}</p>'.format(name, tagline))
         for slug, title, text in SUB_PAGES:
             child = create_page(
-                title, template, LANGUAGE, slug=slug, published=True,
+                title, template, LANGUAGE, slug=slug,
+                meta_description=text.format(name=name), published=True,
                 in_navigation=True, site=site, parent=home,
                 reverse_id='dummy-' + slug)
             self.add_text(
-                child, '<h1>{}</h1><p>{} ({})</p>'.format(
-                    title, text, site.domain))
+                child, '<h1>{}</h1><p>{}</p>'.format(
+                    title, text.format(name=name)))
