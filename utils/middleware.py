@@ -73,9 +73,13 @@ class DevSiteSwitcherMiddleware(object):
             request.META.pop('HTTP_X_FORWARDED_HOST', None)
 
     def process_response(self, request, response):
+        site = request.META.get('DEV_SITE_SWITCH', '')
+        # dev only: never let a browser reuse a page or redirect from another
+        # site, and show which site the server picked (see browser dev tools)
+        response['Cache-Control'] = 'no-store'
+        response['X-Dev-Site'] = site or '(default)'
         if 'site' not in request.GET:
             return response
-        site = request.META.get('DEV_SITE_SWITCH', '')
         if site:
             response.set_cookie(self.COOKIE, site)
             location = response.get('Location', '')
