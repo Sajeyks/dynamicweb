@@ -1,0 +1,42 @@
+x-app: &app
+  build: .
+  env_file:
+    - .env.docker
+    - path: .env          # optional local overrides
+      required: false
+  volumes:
+    - appdata:/data       # generated secret key
+    - media:/usr/src/app/media
+    - logs:/usr/src/app/logs
+  depends_on: [db, redis]
+
+services:
+  db:
+    image: postgres:12-alpine
+    environment:
+      POSTGRES_DB: app
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: app
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      # any *.sql / *.sql.gz here is restored on the first start (empty pgdata)
+      - ./db-init:/docker-entrypoint-initdb.d:ro
+
+  redis:
+    image: redis:6-alpine
+
+  web:
+    <<: *app
+    command: sh start-web.sh
+    ports:
+      - "8000:8000"
+
+  celery:
+    <<: *app
+    command: celery -A dynamicweb worker -l info
+
+volumes:
+  pgdata:
+  appdata:
+  media:
+  logs:

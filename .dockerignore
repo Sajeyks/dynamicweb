@@ -1,2 +1,5 @@
 .git
 .env
+*.pyc
+__pycache__
+dynamicweb/settings/dynamic.py

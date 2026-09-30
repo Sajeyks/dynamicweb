@@ -47,3 +47,10 @@ secret-key
 2024-*
 2025-*
 2023-*
+
+.env
+dynamicweb/settings/dynamic.py
+
+# database dumps are kept out of git (personal data)
+db-init/*.sql
+db-init/*.sql.gz
