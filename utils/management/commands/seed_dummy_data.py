@@ -3,8 +3,10 @@ Creates dummy data for test environments so that every site shows something
 different, or (with --purge) removes exactly what this command created.
 
 Everything it creates is recognisable and self-contained:
-  - one published CMS page per site, with reverse_id "dummy-home"
-  - a dummy admin and a dummy customer, with the emails below
+  - per site, a published home page (reverse_id "dummy-home") with four
+    child pages (reverse_id "dummy-<slug>")
+  - a dummy admin (fixed login, see DUMMY_ADMIN_PASSWORD) and several dummy
+    customers, all with dummy-*@example.com emails
 so it can be removed at any time without touching other data.
 
 Run automatically on start-up when SEED_DUMMY_DATA=True (see start-web.sh).
@@ -24,7 +26,18 @@ from membership.models import CustomUser
 
 REVERSE_ID = 'dummy-home'
 ADMIN_EMAIL = 'dummy-admin@example.com'
-CUSTOMER_EMAIL = 'dummy-customer@example.com'
+CUSTOMER_EMAIL_FORMAT = 'dummy-customer-{}@example.com'
+CUSTOMER_COUNT = 12
+DEFAULT_ADMIN_PASSWORD = 'dummy-admin'
+# (slug, title, text) for the pages below each site's home page
+SUB_PAGES = [
+    ('about', 'About', 'Who we are and what we do.'),
+    ('services', 'Services', 'Hosting, servers and managed infrastructure.'),
+    ('pricing', 'Pricing', 'Simple monthly plans, billed per resource.'),
+    ('contact', 'Contact', 'Write to us, we answer within one working day.'),
+]
+FIRST_NAMES = ['Anna', 'Luca', 'Marta', 'Jonas', 'Sofia', 'Noah', 'Elena',
+               'Felix', 'Nina', 'Paul', 'Clara', 'Ivan']
 LANGUAGE = 'en-us'
 TEMPLATE = 'one_column.html'
 
@@ -43,14 +56,19 @@ class Command(BaseCommand):
             self.seed()
 
     def purge(self):
-        pages = Page.objects.filter(reverse_id=REVERSE_ID)
-        count = pages.count()
-        for page in pages:
+        count = Page.objects.filter(reverse_id__startswith='dummy-').count()
+        # deleting a home page also deletes its children and public copy
+        for page in Page.objects.filter(reverse_id=REVERSE_ID,
+                                        publisher_is_draft=True):
+            page.delete()
+        for page in Page.objects.filter(reverse_id__startswith='dummy-'):
             page.delete()
         users = CustomUser.objects.filter(
-            email__in=[ADMIN_EMAIL, CUSTOMER_EMAIL]).delete()
-        self.stdout.write("Removed {} dummy pages and {} user rows".format(
-            count, users[0] if isinstance(users, tuple) else users))
+            email__startswith='dummy-', email__endswith='@example.com')
+        user_count = users.count()
+        users.delete()
+        self.stdout.write("Removed {} dummy pages and {} users".format(
+            count, user_count))
 
     def seed(self):
         self.seed_users()
@@ -69,9 +87,8 @@ class Command(BaseCommand):
         # built directly on the model: the user manager also creates LDAP
         # accounts, which don't exist in the test environment
         if not CustomUser.objects.filter(email=ADMIN_EMAIL).exists():
-            password = os.environ.get('DUMMY_ADMIN_PASSWORD') or ''.join(
-                random.SystemRandom().choice(string.ascii_letters + string.digits)
-                for _ in range(16))
+            password = os.environ.get(
+                'DUMMY_ADMIN_PASSWORD') or DEFAULT_ADMIN_PASSWORD
             admin = CustomUser(
                 email=ADMIN_EMAIL, name='Dummy Admin', validated=1,
                 is_admin=True, is_superuser=True)
@@ -79,24 +96,37 @@ class Command(BaseCommand):
             admin.save()
             self.stdout.write(
                 "Dummy admin: {} / {}".format(ADMIN_EMAIL, password))
-        if not CustomUser.objects.filter(email=CUSTOMER_EMAIL).exists():
+        for number in range(1, CUSTOMER_COUNT + 1):
+            email = CUSTOMER_EMAIL_FORMAT.format(number)
+            if CustomUser.objects.filter(email=email).exists():
+                continue
             customer = CustomUser(
-                email=CUSTOMER_EMAIL, name='Dummy Customer', validated=1)
+                email=email, validated=1 if number % 4 else 0,
+                name='{} Dummy'.format(FIRST_NAMES[number - 1]))
             customer.set_password('dummy-customer')
             customer.save()
+
+    def add_text(self, page, body):
+        placeholder = page.placeholders.first()
+        if placeholder is not None:
+            add_plugin(placeholder, 'TextPlugin', LANGUAGE, body=body)
+            # publish again so the public copy contains the plugin
+            page.publish(LANGUAGE)
 
     def seed_page(self, site):
         if Page.objects.filter(reverse_id=REVERSE_ID, site=site).exists():
             return
-        page = create_page(
+        home = create_page(
             '{} (dummy)'.format(site.domain), TEMPLATE, LANGUAGE,
             slug='dummy-home', published=True, in_navigation=True,
             site=site, reverse_id=REVERSE_ID)
-        placeholder = page.placeholders.first()
-        if placeholder is not None:
-            add_plugin(
-                placeholder, 'TextPlugin', LANGUAGE,
-                body='<h1>{0}</h1><p>Dummy page for {0}.</p>'.format(
-                    site.domain))
-            # publish again so the public copy contains the plugin
-            page.publish(LANGUAGE)
+        self.add_text(home, '<h1>{0}</h1><p>Dummy page for {0}.</p>'.format(
+            site.domain))
+        for slug, title, text in SUB_PAGES:
+            child = create_page(
+                title, TEMPLATE, LANGUAGE, slug=slug, published=True,
+                in_navigation=True, site=site, parent=home,
+                reverse_id='dummy-' + slug)
+            self.add_text(
+                child, '<h1>{}</h1><p>{} ({})</p>'.format(
+                    title, text, site.domain))
