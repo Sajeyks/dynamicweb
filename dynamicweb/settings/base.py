@@ -19,8 +19,10 @@ def gettext(s):
     return s
 
 
-def env(env_name):
-    return os.environ.get(env_name)
+def env(env_name, default=None):
+    """Returns the environment value, or default if it is unset or empty"""
+    value = os.environ.get(env_name)
+    return default if value is None or value == '' else value
 
 
 def bool_env(val):
@@ -560,7 +562,7 @@ STRIPE_API_PRIVATE_KEY_TEST = env('STRIPE_API_PRIVATE_KEY_TEST')
 ANONYMOUS_USER_NAME = 'anonymous@ungleich.ch'
 GUARDIAN_GET_INIT_ANONYMOUS_USER = 'membership.models.get_anonymous_user_instance'
 
-UNGLEICH_SITE_CONFIGS = env('UNGLEICH_SITE_CONFIGS')
+UNGLEICH_SITE_CONFIGS = env('UNGLEICH_SITE_CONFIGS', '')
 
 MULTISITE_CMS_URLS = {}
 if UNGLEICH_SITE_CONFIGS == "":
@@ -579,9 +581,7 @@ else:
 
 MULTISITE_CMS_ALIASES = {
 }
-MULTISITE_CMS_FALLBACK = env('MULTISITE_CMS_FALLBACK')
-if MULTISITE_CMS_FALLBACK == '':
-    MULTISITE_CMS_FALLBACK = 'datacenterlight.ch'
+MULTISITE_CMS_FALLBACK = env('MULTISITE_CMS_FALLBACK', 'datacenterlight.ch')
 MULTISITE_FALLBACK = 'django.views.generic.base.RedirectView'
 MULTISITE_FALLBACK_KWARGS = {
     'url': 'https://{}/'.format(MULTISITE_CMS_FALLBACK), 'permanent': False
@@ -735,11 +735,11 @@ LDAP_ADMIN_PASSWORD = env('LDAP_ADMIN_PASSWORD')
 AUTH_LDAP_SERVER = env('LDAPSERVER')
 
 LDAP_CUSTOMER_DN = env('LDAP_CUSTOMER_DN')
-LDAP_CUSTOMER_GROUP_ID = int(env('LDAP_CUSTOMER_GROUP_ID'))
+LDAP_CUSTOMER_GROUP_ID = int(env('LDAP_CUSTOMER_GROUP_ID', 0))
 LDAP_MAX_UID_FILE_PATH = os.environ.get('LDAP_MAX_UID_FILE_PATH',
                                         os.path.join(os.path.abspath(os.path.dirname(__file__)), 'ldap_max_uid_file')
 )
-LDAP_DEFAULT_START_UID = int(env('LDAP_DEFAULT_START_UID'))
+LDAP_DEFAULT_START_UID = int(env('LDAP_DEFAULT_START_UID', 10000))
 
 # Search union over OUs
 AUTH_LDAP_START_TLS = bool(os.environ.get('LDAP_USE_TLS', False))
@@ -761,9 +761,9 @@ OTP_SERVER = env('OTP_SERVER')
 OTP_VERIFY_ENDPOINT = env('OTP_VERIFY_ENDPOINT')
 
 FIRST_VM_ID_AFTER_EU_VAT = int_env('FIRST_VM_ID_AFTER_EU_VAT')
-PRE_EU_VAT_RATE = float(env('PRE_EU_VAT_RATE'))
+PRE_EU_VAT_RATE = float(env('PRE_EU_VAT_RATE', 0))
 
-VM_BASE_PRICE = float(env('VM_BASE_PRICE'))
+VM_BASE_PRICE = float(env('VM_BASE_PRICE', 0))
 
 UPDATED_TEMPLATES_STR = env('UPDATED_TEMPLATES')
 UPDATED_TEMPLATES_DICT = {}
