@@ -40,6 +40,14 @@ FIRST_NAMES = ['Anna', 'Luca', 'Marta', 'Jonas', 'Sofia', 'Noah', 'Elena',
                'Felix', 'Nina', 'Paul', 'Clara', 'Ivan']
 LANGUAGE = 'en-us'
 TEMPLATE = 'one_column.html'
+# each site gets the CMS template it uses in production
+SITE_TEMPLATES = {
+    'ungleich.ch': 'page.html',
+    'blog.ungleich.ch': 'page.html',
+    'comic.ungleich.ch': 'page.html',
+    'datacenterlight.ch': 'datacenterlight/cms/base.html',
+    'digitalglarus.ch': 'home_digitalglarus.html',
+}
 
 
 class Command(BaseCommand):
@@ -116,15 +124,16 @@ class Command(BaseCommand):
     def seed_page(self, site):
         if Page.objects.filter(reverse_id=REVERSE_ID, site=site).exists():
             return
+        template = SITE_TEMPLATES.get(site.domain, TEMPLATE)
         home = create_page(
-            '{} (dummy)'.format(site.domain), TEMPLATE, LANGUAGE,
+            '{} (dummy)'.format(site.domain), template, LANGUAGE,
             slug='dummy-home', published=True, in_navigation=True,
             site=site, reverse_id=REVERSE_ID)
         self.add_text(home, '<h1>{0}</h1><p>Dummy page for {0}.</p>'.format(
             site.domain))
         for slug, title, text in SUB_PAGES:
             child = create_page(
-                title, TEMPLATE, LANGUAGE, slug=slug, published=True,
+                title, template, LANGUAGE, slug=slug, published=True,
                 in_navigation=True, site=site, parent=home,
                 reverse_id='dummy-' + slug)
             self.add_text(
