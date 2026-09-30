@@ -95,6 +95,12 @@ class DevSiteSwitcherMiddleware(object):
         """A page listing every configured site as a link, on any host"""
         host, _, port = request.get_host().partition(':')
         port = ':' + port if port else ''
+        # opened on a site's own address (e.g. blog.ungleich.ch.localhost):
+        # drop that site's prefix so links are not nested
+        for domain in self.domains():
+            if host.lower().startswith(domain + '.'):
+                host = host[len(domain) + 1:]
+                break
         if re.match(r'^\d+\.\d+\.\d+\.\d+$', host):
             # an IP has no subdomains; sslip.io resolves <anything>.<ip>.sslip.io
             base = host + '.sslip.io'
