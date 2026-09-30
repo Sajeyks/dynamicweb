@@ -79,6 +79,13 @@ EMAIL_PORT = int_env("EMAIL_PORT", 25)
 EMAIL_USE_TLS = bool_env("EMAIL_USE_TLS")
 
 SECRET_KEY = env('DJANGO_SECRET_KEY')
+if not SECRET_KEY:
+    # the docker entrypoint persists a generated key here; this lets
+    # "docker compose exec" commands, which skip the entrypoint, find it
+    _key_file = env('SECRET_KEY_FILE', '/data/secret-key')
+    if os.path.exists(_key_file):
+        with open(_key_file) as _f:
+            SECRET_KEY = _f.read().strip()
 
 # Application definition
 
