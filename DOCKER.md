@@ -45,40 +45,46 @@ docker compose up -d --build --no-deps web celery redis
 
 The project serves many websites from one app and chooses the site from the
 hostname. In this test setup you don't need DNS or `/etc/hosts`: a dev-only
-switcher picks the site from `?site=<domain>` and remembers it in a cookie.
+switcher (active when `DEBUG=True`) reads the site from the address, so every site
+is its own browser origin and you can open several at once.
 
-Open **`/dev-sites/`** on any host for a page of clickable links
-(`http://<server-ip>:8000/dev-sites/`). On a machine running the stack locally:
+- On the machine running the stack, browsers resolve `<domain>.localhost` to
+  the local machine, so the links below just work.
+- On a remote server, open **`http://<server-ip>:8000/dev-sites/`**: it lists every site as a
+  link of the form `http://<domain>.<server-ip>.sslip.io:8000/` (sslip.io is a public wildcard DNS
+  service, so the server needs internet access from your browser, not from itself).
+- Fallback without wildcard names: `http://<server>:8000/?site=<domain>` remembers the
+  site in a cookie (shared by all tabs, so prefer the addresses above).
 
 | Site | Link |
 |---|---|
-| ungleich.ch | http://localhost:8000/?site=ungleich.ch |
-| blog.ungleich.ch | http://localhost:8000/?site=blog.ungleich.ch |
-| comic.ungleich.ch | http://localhost:8000/?site=comic.ungleich.ch |
-| digitalglarus.ch | http://localhost:8000/?site=digitalglarus.ch |
-| datacenterlight.ch | http://localhost:8000/?site=datacenterlight.ch |
-| rails-hosting.ch | http://localhost:8000/?site=rails-hosting.ch |
-| django-hosting.ch | http://localhost:8000/?site=django-hosting.ch |
-| node-hosting.ch | http://localhost:8000/?site=node-hosting.ch |
-| devuanhosting.ch | http://localhost:8000/?site=devuanhosting.ch |
-| devuanhosting.com | http://localhost:8000/?site=devuanhosting.com |
-| ipv6onlyhosting.com | http://localhost:8000/?site=ipv6onlyhosting.com |
-| digitalezukunft.ch | http://localhost:8000/?site=digitalezukunft.ch |
-| hack4glarus.ch | http://localhost:8000/?site=hack4glarus.ch |
-| xn--nglarus-n2a.ch | http://localhost:8000/?site=xn--nglarus-n2a.ch |
+| ungleich.ch | http://ungleich.ch.localhost:8000/ |
+| blog.ungleich.ch | http://blog.ungleich.ch.localhost:8000/ |
+| comic.ungleich.ch | http://comic.ungleich.ch.localhost:8000/ |
+| digitalglarus.ch | http://digitalglarus.ch.localhost:8000/ |
+| datacenterlight.ch | http://datacenterlight.ch.localhost:8000/ |
+| rails-hosting.ch | http://rails-hosting.ch.localhost:8000/ |
+| django-hosting.ch | http://django-hosting.ch.localhost:8000/ |
+| node-hosting.ch | http://node-hosting.ch.localhost:8000/ |
+| devuanhosting.ch | http://devuanhosting.ch.localhost:8000/ |
+| devuanhosting.com | http://devuanhosting.com.localhost:8000/ |
+| ipv6onlyhosting.com | http://ipv6onlyhosting.com.localhost:8000/ |
+| digitalezukunft.ch | http://digitalezukunft.ch.localhost:8000/ |
+| hack4glarus.ch | http://hack4glarus.ch.localhost:8000/ |
+| xn--nglarus-n2a.ch | http://xn--nglarus-n2a.ch.localhost:8000/ |
 
-Use `?site=` (empty) to clear the choice. To add a site, add it to
+To add a site, add it to
 `UNGLEICH_SITE_CONFIGS` in `.env.docker` (a `Site` row is created on start).
 
 ## Dummy data
 
 With `SEED_DUMMY_DATA=True` (the default in `.env.docker`), every start creates,
-if missing, one dummy CMS page per site (so each site visibly differs) plus a dummy
-admin and a dummy customer. It is idempotent, and only touches what it created.
+if missing, dummy content that mimics production: per site a home page with four child
+pages (About, Services, Pricing, Contact), plus a dummy admin and 12 dummy customers.
+It is idempotent and only touches what it created.
 
-- The dummy admin is `dummy-admin@example.com`. Its password is random and printed
-  once in `docker compose logs web` on the first start; set `DUMMY_ADMIN_PASSWORD`
-  in `.env` to choose it. Log in at `/en-us/admin/login/`.
+- Admin login (fixed): `dummy-admin@example.com` / `dummy-admin` at `/en-us/admin/login/`.
+  Change the password with `DUMMY_ADMIN_PASSWORD` in `.env` (applies when the admin is first created).
 - Turn it off with `SEED_DUMMY_DATA=False` in `.env`.
 - Remove it at any time: `docker compose exec web python manage.py seed_dummy_data --purge`.
 
