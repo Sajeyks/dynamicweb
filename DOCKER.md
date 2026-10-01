@@ -13,7 +13,7 @@ docker compose logs -f web      # ready when it prints "Starting development ser
 The first start takes a few minutes (image build, migrations, secret key, sample data).
 Open port **8000** in the server firewall, then in your browser go to:
 
-- **VPS:** `http://<server-ip>:8000/dev-sites/`
+- **VPS:** `http://185.203.114.159:8000/dev-sites/`
 - **Local machine:** `http://localhost:8000/dev-sites/`
 
 That page lists all 14 sites as links. Each opens as its own site, so you can keep several
