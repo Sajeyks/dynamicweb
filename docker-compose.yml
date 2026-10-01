@@ -1,5 +1,7 @@
 x-app: &app
-  build: .
+  build:
+    context: .
+    network: host
   env_file:
     - .env.docker
     - path: .env          # optional local overrides
