@@ -15,11 +15,11 @@ CACHES = {
     }
 }
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     'utils.middleware.DevSiteSwitcherMiddleware',
-) + MIDDLEWARE_CLASSES
+) + MIDDLEWARE
 
-MIDDLEWARE_CLASSES += ("debug_toolbar.middleware.DebugToolbarMiddleware",)
+MIDDLEWARE += ("debug_toolbar.middleware.DebugToolbarMiddleware",)
 
 INSTALLED_APPS += (
     'django_extensions',

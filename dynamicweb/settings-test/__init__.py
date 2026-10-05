@@ -85,7 +85,6 @@ INSTALLED_APPS = (
     'taggit_autosuggest',
     'django_select2',
     'meta',
-    'meta_mixin',
     # 'admin_enhancer',
     'djangocms_blog',
     'bootstrap3',
@@ -96,12 +95,11 @@ INSTALLED_APPS = (
     'digitalglarus',
 )
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
@@ -137,13 +135,13 @@ WSGI_APPLICATION = 'dynamicweb.wsgi.application'
 # items to be merged into the context.
 TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.auth.context_processors.auth",
-    "django.core.context_processors.debug",
-    "django.core.context_processors.i18n",
-    "django.core.context_processors.media",
-    "django.core.context_processors.static",
-    "django.core.context_processors.tz",
+    "django.template.context_processors.debug",
+    "django.template.context_processors.i18n",
+    "django.template.context_processors.media",
+    "django.template.context_processors.static",
+    "django.template.context_processors.tz",
     "django.contrib.messages.context_processors.messages",
-    "django.core.context_processors.request",
+    "django.template.context_processors.request",
     'sekizai.context_processors.sekizai',
     'cms.context_processors.cms_settings',
 )
@@ -283,31 +281,6 @@ TEMPLATE_DIRS = (
 
 META_SITE_PROTOCOL = 'http'
 META_USE_SITES = True
-
-MIGRATION_MODULES = {
-    'cms': 'cms.migrations',
-    'filer': 'filer.migrations_django',
-    'menus': 'menus.migrations_django',
-    'djangocms_flash': 'djangocms_flash.migrations_django',
-    'djangocms_googlemap': 'djangocms_googlemap.migrations_django',
-    'djangocms_inherit': 'djangocms_inherit.migrations_django',
-    'djangocms_link': 'djangocms_link.migrations_django',
-    'djangocms_snippet': 'djangocms_snippet.migrations_django',
-    'djangocms_teaser': 'djangocms_teaser.migrations_django',
-    'djangocms_column': 'djangocms_column.migrations_django',
-    'djangocms_flash': 'djangocms_flash.migrations_django',
-    'djangocms_googlemap': 'djangocms_googlemap.migrations_django',
-    'djangocms_inherit': 'djangocms_inherit.migrations_django',
-    'djangocms_style': 'djangocms_style.migrations_django',
-    'cmsplugin_filer_image': 'cmsplugin_filer_image.migrations_django',
-    'cmsplugin_filer_file': 'cmsplugin_filer_file.migrations_django',
-    'cmsplugin_filer_folder': 'cmsplugin_filer_folder.migrations_django',
-    'cmsplugin_filer_link': 'cmsplugin_filer_link.migrations_django',
-    'cmsplugin_filer_teaser': 'cmsplugin_filer_teaser.migrations_django',
-    'cmsplugin_filer_utils': 'cmsplugin_filer_utils.migrations_django',
-    'cmsplugin_filer_video': 'cmsplugin_filer_video.migrations_django',
-    'djangocms_text_ckeditor': 'djangocms_text_ckeditor.migrations',
-}
 
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',

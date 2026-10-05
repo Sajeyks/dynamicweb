@@ -4,7 +4,7 @@ from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
 
-from django_recaptcha.fields import ReCaptchaField
+from captcha.fields import ReCaptchaField
 
 from membership.models import CustomUser
 from .models import ContactMessage, BillingAddress, UserBillingAddress

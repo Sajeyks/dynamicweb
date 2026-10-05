@@ -113,7 +113,6 @@ INSTALLED_APPS = (
     'taggit_autosuggest',
     # 'django_select2',
     'meta',
-    'meta_mixin',
     'bootstrap3',
     'compressor',
     'filer',
@@ -125,7 +124,6 @@ INSTALLED_APPS = (
     'aldryn_common',
     'aldryn_newsblog',
     'aldryn_people',
-    'aldryn_reversion',
     'aldryn_translation_tools',
     'treebeard',  # utilities for implementing a tree
     'sekizai',  # for javascript and css management
@@ -137,7 +135,7 @@ INSTALLED_APPS = (
     'djangocms_file',
     'djangocms_picture',
     'djangocms_video',
-    'django_recaptcha',
+    'captcha',
     # 'djangocms_flash',
     # 'djangocms_googlemap',
     # 'djangocms_inherit',
@@ -169,13 +167,12 @@ INSTALLED_APPS = (
     'webhook',
 )
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE = (
     'django.contrib.sessions.middleware.SessionMiddleware',
     'utils.middleware.MultipleProxyMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'django.middleware.locale.LocaleMiddleware',
@@ -185,7 +182,7 @@ MIDDLEWARE_CLASSES = (
     'cms.middleware.toolbar.ToolbarMiddleware',
     'cms.middleware.language.LanguageCookieMiddleware',
     'multisite.middleware.DynamicSiteMiddleware',
-    'djangocms_multisite.middleware.CMSMultiSiteMiddleware',
+    'utils.middleware.CMSMultiSiteMiddleware',
 )
 
 CSRF_FAILURE_VIEW = 'hosting.views.forbidden_view'
@@ -217,9 +214,9 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
-                "django.core.context_processors.media",
-                "django.core.context_processors.static",
-                "django.core.context_processors.tz",
+                "django.template.context_processors.media",
+                "django.template.context_processors.static",
+                "django.template.context_processors.tz",
                 "django.contrib.messages.context_processors.messages",
                 'sekizai.context_processors.sekizai',
                 'cms.context_processors.cms_settings',
@@ -415,27 +412,6 @@ MEDIA_ROOT = os.path.join(PROJECT_DIR, 'media')
 MEDIA_URL = APP_ROOT_ENDPOINT + 'media/'
 FILE_UPLOAD_PERMISSIONS = 0o644
 
-MIGRATION_MODULES = {
-    'cms': 'cms.migrations',
-    # 'filer': 'filer.migrations_django',
-    # 'menus': 'menus.migrations_django',
-    'djangocms_flash': 'djangocms_flash.migrations_django',
-    'djangocms_googlemap': 'djangocms_googlemap.migrations_django',
-    'djangocms_inherit': 'djangocms_inherit.migrations_django',
-    'djangocms_link': 'djangocms_link.migrations_django',
-    'djangocms_teaser': 'djangocms_teaser.migrations_django',
-    'djangocms_column': 'djangocms_column.migrations_django',
-    'djangocms_style': 'djangocms_style.migrations_django',
-    'cmsplugin_filer_image': 'cmsplugin_filer_image.migrations_django',
-    'cmsplugin_filer_file': 'cmsplugin_filer_file.migrations_django',
-    'cmsplugin_filer_folder': 'cmsplugin_filer_folder.migrations_django',
-    'cmsplugin_filer_link': 'cmsplugin_filer_link.migrations_django',
-    'cmsplugin_filer_teaser': 'cmsplugin_filer_teaser.migrations_django',
-    'cmsplugin_filer_utils': 'cmsplugin_filer_utils.migrations_django',
-    'cmsplugin_filer_video': 'cmsplugin_filer_video.migrations_django',
-    'djangocms_text_ckeditor': 'djangocms_text_ckeditor.migrations',
-}
-
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
@@ -468,19 +444,14 @@ BOOTSTRAP3 = {
     # The URL to the jQuery JavaScript file
     'jquery_url': '%sdatacenterlight/js/jquery-1.11.1.min.js' % STATIC_URL,
 
-    # The Bootstrap base URL
-    'base_url': '%sdatacenterlight/bootstrap-3.3.4/' % STATIC_URL,
-
     # The complete URL to the Bootstrap CSS file
-    # (None means derive it from base_url)
-    'css_url': None,
+    'css_url': '%sdatacenterlight/bootstrap-3.3.4/css/bootstrap.min.css' % STATIC_URL,
 
     # The complete URL to the Bootstrap CSS file (None means no theme)
     'theme_url': None,
 
     # The complete URL to the Bootstrap JavaScript file
-    # (None means derive it from base_url)
-    'javascript_url': None,
+    'javascript_url': '%sdatacenterlight/bootstrap-3.3.4/js/bootstrap.min.js' % STATIC_URL,
 
     # Put JavaScript in the HEAD section of the HTML document
     # (only relevant if you use bootstrap3.html)

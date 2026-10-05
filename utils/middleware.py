@@ -3,9 +3,16 @@ import re
 
 from django.conf import settings
 from django.http import HttpResponse
+from django.utils.deprecation import MiddlewareMixin
+
+from djangocms_multisite.middleware import CMSMultiSiteMiddleware as _CMSMultiSite
 
 
-class MultipleProxyMiddleware(object):
+class CMSMultiSiteMiddleware(MiddlewareMixin, _CMSMultiSite):
+    """The package's middleware is old-style (no get_response); adapt it"""
+
+
+class MultipleProxyMiddleware(MiddlewareMixin):
     FORWARDED_FOR_FIELDS = [
         'HTTP_X_FORWARDED_FOR',
         'HTTP_X_FORWARDED_HOST',
@@ -24,7 +31,7 @@ class MultipleProxyMiddleware(object):
                     request.META[field] = parts[-1].strip()
 
 
-class DevSiteSwitcherMiddleware(object):
+class DevSiteSwitcherMiddleware(MiddlewareMixin):
     """
     Dev/test only (enabled from settings/local.py, i.e. DEBUG=True).
 
