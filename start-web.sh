@@ -10,7 +10,25 @@ import json, os
 import django
 django.setup()
 from django.core.management import call_command
-# system checks import urls.py, which queries the DB, so skip them here
+from django.db.migrations.loader import MigrationLoader
+
+# Databases created by older package versions can have a migration applied
+# before the (newer) migrations it now depends on. Django refuses to migrate
+# then, so apply those dependencies first with the history check switched off.
+from django.db import connection
+from django.db.migrations.recorder import MigrationRecorder
+
+recorder = MigrationRecorder(connection)
+recorder.ensure_schema()
+legacy = recorder.migration_qs.filter(app='cmsplugin_filer_image').exists()
+check = MigrationLoader.check_consistent_history
+if legacy:
+    MigrationLoader.check_consistent_history = lambda *args, **kwargs: None
+try:
+    if legacy:
+        call_command('migrate', 'cmsplugin_filer_image', interactive=False, skip_checks=True)
+finally:
+    MigrationLoader.check_consistent_history = check
 call_command('migrate', interactive=False, skip_checks=True)
 
 from django.contrib.sites.models import Site
