@@ -11,6 +11,7 @@ docker compose logs -f web      # ready when it prints "Starting development ser
 ```
 
 The first start takes a few minutes (image build, migrations, secret key, sample data).
+`docker compose ps` shows "Up" about 1.5 minutes before the site answers, so wait for the log line.
 Open port **8000** in the server firewall, then in your browser go to:
 
 - **VPS:** `http://185.203.114.159:8000/dev-sites/`
@@ -30,8 +31,8 @@ Admin login: `dummy-admin@example.com` / `dummy-admin` at `/en-us/admin/login/`
   design. **The templates of the other 9 sites are not known**, so they show the plain
   Digital Glarus page. That is a test-data limit, not a bug: in production every site's
   pages and template come from the CMS database.
-- OpenNebula (VM creation), LDAP login and Stripe payments are placeholders and will not
-  work. Email is printed in the web log.
+- OpenNebula (VM creation), LDAP accounts and Stripe payments are placeholders and will not
+  work (logins use plain Django authentication when no LDAP server is set). Email is printed in the web log.
 
 ## Deploying with your own Postgres (production-like)
 
@@ -71,6 +72,14 @@ Checklist:
   `docker compose exec web python manage.py seed_dummy_data --purge`.
 - Restore a real dump: put a `.sql` or `.sql.gz` file in `db-init/`, then
   `docker compose down -v` and start again (dumps are git-ignored).
+
+## Checking that everything works
+
+```sh
+docker compose exec web python smoke_test.py
+```
+
+Opens all sites, their pages and the admin login, and exits non-zero on any failure.
 
 ## Useful commands
 
