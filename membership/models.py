@@ -202,9 +202,6 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
     def get_random_password(cls):
         return get_random_string(24)
 
-    def is_superuser(self):
-        return False
-
     def get_full_name(self):
         # The user is identified by their email address
         return self.email

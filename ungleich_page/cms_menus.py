@@ -2,7 +2,6 @@ from menus.base import NavigationNode
 from menus.menu_pool import menu_pool
 from django.utils.translation import ugettext_lazy as _
 from cms.menu_bases import CMSAttachMenu
-from cms.templatetags.cms_tags import _get_placeholder
 from cms.utils.plugins import get_plugins
 
 
@@ -15,9 +14,6 @@ class GlasfaserMenu(CMSAttachMenu):
         glasfaser_cms = 'ungleich_page/glasfaser_cms_page.html'
         if (request and request.current_page and
                 request.current_page.get_template() == glasfaser_cms):
-            template_context = {
-                "request": request,
-            }
             placeholder_name_list = [
                 'Top Section', 'Middle Section',  'Glasfaser Services',
                 'Glasfaser About', 'Contact Section'
@@ -27,10 +23,8 @@ class GlasfaserMenu(CMSAttachMenu):
                 'UngelichTextSection', 'Service', 'About'
             ]
             for placeholder_name in placeholder_name_list:
-                placeholder = _get_placeholder(
-                    request.current_page, request.current_page,
-                    template_context, placeholder_name
-                )
+                placeholder = request.current_page.get_placeholders().filter(
+                    slot=placeholder_name).first()
                 plugins = get_plugins(
                     request, placeholder, request.current_page.get_template()
                 )

@@ -41,9 +41,14 @@ urlpatterns += i18n_patterns(
 )
 
 # note the django CMS URLs included via i18n_patterns
-REDIRECT_TO_CMS = False
-if Page.objects.filter(site_id=Site.objects.get_current().id).count():
-    REDIRECT_TO_CMS = True
+
+
+def home_view(request, *args, **kwargs):
+    # decided per request so that importing the urlconf needs no database
+    if Page.objects.filter(node__site_id=Site.objects.get_current().id).exists():
+        return RedirectView.as_view(url='/cms')(request, *args, **kwargs)
+    return LandingView.as_view()(request, *args, **kwargs)
+
 
 urlpatterns += i18n_patterns(
     url(r'^admin/', include(admin.site.urls)),
@@ -64,8 +69,7 @@ urlpatterns += i18n_patterns(
     url(r'^cms/', include('cms.urls')),
     url(r'^blog/', include('djangocms_blog.urls', namespace='djangocms_blog')),
     url(r'^webhooks/', webhook_views.handle_webhook),
-    url(r'^$', RedirectView.as_view(url='/cms') if REDIRECT_TO_CMS
-        else LandingView.as_view()),
+    url(r'^$', home_view),
     url(r'^', include('ungleich_page.urls', namespace='ungleich_page')),
 )
 

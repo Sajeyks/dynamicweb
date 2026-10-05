@@ -137,7 +137,7 @@ class Command(BaseCommand):
             page.publish(LANGUAGE)
 
     def seed_page(self, site):
-        if Page.objects.filter(reverse_id=REVERSE_ID, site=site).exists():
+        if Page.objects.filter(reverse_id=REVERSE_ID, node__site=site).exists():
             return
         template = SITE_TEMPLATES.get(site.domain, TEMPLATE)
         name, tagline = SITE_TEXTS.get(
@@ -146,6 +146,8 @@ class Command(BaseCommand):
             name, template, LANGUAGE, slug='home', meta_description=tagline,
             published=True, in_navigation=True, site=site,
             reverse_id=REVERSE_ID)
+        # django CMS >= 3.5 serves /cms/ from the page flagged as home
+        home.set_as_homepage()
         self.add_text(home, '<h1>{}</h1><p>{}</p>'.format(name, tagline))
         for slug, title, text in SUB_PAGES:
             child = create_page(
