@@ -24,25 +24,13 @@ from django.contrib.sites.models import Site
 from django.core.management.base import BaseCommand
 
 from membership.models import CustomUser
+from utils.sample_sites import SITE_TEXTS
 
 REVERSE_ID = 'dummy-home'
 ADMIN_EMAIL = 'dummy-admin@example.com'
 CUSTOMER_EMAIL_FORMAT = 'dummy-customer-{}@example.com'
 CUSTOMER_COUNT = 12
 DEFAULT_ADMIN_PASSWORD = 'dummy-admin'
-# domain -> (name, tagline); other domains are named after their domain
-SITE_TEXTS = {
-    'ungleich.ch': ('ungleich', 'Swiss IT infrastructure, hosting and open source.'),
-    'blog.ungleich.ch': ('ungleich blog', 'Notes from running data centers, networks and free software.'),
-    'comic.ungleich.ch': ('ungleich comic', 'Life in the data center, one panel at a time.'),
-    'digitalglarus.ch': ('Digital Glarus', 'The Swiss IT valley in Schwanden, Glarus.'),
-    'datacenterlight.ch': ('Data Center Light', 'Virtual machines from a Swiss, ecological data center.'),
-    'rails-hosting.ch': ('Rails Hosting', 'Managed hosting for Ruby on Rails applications.'),
-    'django-hosting.ch': ('Django Hosting', 'Managed hosting for Django applications.'),
-    'node-hosting.ch': ('Node.js Hosting', 'Managed hosting for Node.js applications.'),
-    'devuanhosting.ch': ('Devuan Hosting', 'Hosting on Devuan, the systemd-free Linux.'),
-    'devuanhosting.com': ('Devuan Hosting', 'Hosting on Devuan, the systemd-free Linux.'),
-}
 # (slug, title, text) for the pages below each site's home page
 SUB_PAGES = [
     ('about', 'About', '{name} is operated by ungleich GmbH in Switzerland. '
