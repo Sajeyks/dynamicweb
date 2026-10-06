@@ -17,8 +17,6 @@ liblcms2-dev
 liblzma-dev
 libmagickcore-dev
 libmagickwand-dev
-libmemcached
-libmemcached-dev
 libncurses-dev
 libpq-dev
 libreadline-dev

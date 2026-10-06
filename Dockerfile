@@ -10,7 +10,6 @@ RUN apk add --update --no-cache \
     jpeg-dev \
     libxml2-dev \
     libxslt-dev \
-    libmemcached-dev \
     zlib-dev \
     libffi-dev \
     && rm -rf /var/cache/apk/*

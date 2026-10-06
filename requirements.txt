@@ -95,11 +95,9 @@ pyasn1==0.6.4
 pycodestyle==2.15.0
 pycryptodome==3.24.0
 pyflakes==4.0.2
-pylibmc==1.6.3
 pyotp==2.10.0
 python-dateutil==2.9.0.post0
 python-dotenv==1.2.4
-python-memcached==1.62
 python-slugify==9.1.2
 pytz==2026.5
 rcssmin==1.2.2
