@@ -102,7 +102,6 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'multisite',
-    'djangocms_multisite',
     'easy_thumbnails',
     'utils',
     'stored_messages',

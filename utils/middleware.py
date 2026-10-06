@@ -3,13 +3,47 @@ import re
 
 from django.conf import settings
 from django.http import HttpResponse
+from django.urls import set_urlconf
+from django.utils.cache import patch_vary_headers
 from django.utils.deprecation import MiddlewareMixin
+from urllib import parse as urlparse
 
-from djangocms_multisite.middleware import CMSMultiSiteMiddleware as _CMSMultiSite
+from cms.utils.apphook_reload import reload_urlconf
 
 
-class CMSMultiSiteMiddleware(MiddlewareMixin, _CMSMultiSite):
-    """The package's middleware is old-style (no get_response); adapt it"""
+class CMSMultiSiteMiddleware(MiddlewareMixin):
+    """
+    Picks the urlconf for the requested host (MULTISITE_CMS_URLS, with
+    MULTISITE_CMS_ALIASES and MULTISITE_CMS_FALLBACK). Derived from
+    djangocms-multisite (BSD, Copyright (c) 2013, Iacopo Spalletti), whose
+    ungleich fork is no longer installed.
+    """
+
+    def process_request(self, request):
+        urls = getattr(settings, 'MULTISITE_CMS_URLS', {})
+        aliases = getattr(settings, 'MULTISITE_CMS_ALIASES', {})
+        fallback = getattr(settings, 'MULTISITE_CMS_FALLBACK', '')
+        host = urlparse.urlparse(
+            request.build_absolute_uri()).hostname.split(':')[0]
+        urlconf = urls.get(host)
+        if not urlconf:
+            for domain, hosts in aliases.items():
+                if host in hosts and domain in urls:
+                    urlconf = urls[domain]
+                    break
+        if not urlconf and fallback in urls:
+            urlconf = urls[fallback]
+        if urlconf:
+            request.urlconf = urlconf
+        # for code that does not know about the request (get_absolute_url())
+        set_urlconf(urlconf)
+        reload_urlconf()
+
+    def process_response(self, request, response):
+        patch_vary_headers(response, ('Host',))
+        # back to the default urlconf
+        set_urlconf(None)
+        return response
 
 
 class MultipleProxyMiddleware(MiddlewareMixin):
