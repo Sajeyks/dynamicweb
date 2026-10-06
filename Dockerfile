@@ -5,7 +5,6 @@ WORKDIR /usr/src/app
 RUN apk add --update --no-cache \
     git \
     build-base \
-    openldap-dev \
     python3-dev \
     libpq-dev \
     jpeg-dev \
@@ -15,10 +14,6 @@ RUN apk add --update --no-cache \
     zlib-dev \
     libffi-dev \
     && rm -rf /var/cache/apk/*
-
-# FIX https://github.com/python-ldap/python-ldap/issues/432
-# (remove the symlink first, otherwise the echo overwrites the real libldap_r shared library)
-RUN rm -f /usr/lib/libldap_r.so && echo 'INPUT ( libldap.so )' > /usr/lib/libldap_r.so
 
 COPY requirements.txt ./
 
