@@ -87,3 +87,16 @@ class CompatConfig(AppConfig):
             return response
 
         BasePageAdmin.changelist_view = changelist_view_with_cl
+
+        # django-treebeard 7 renamed the form fields "_position" and
+        # "_ref_node_id" to "treebeard_position" and "treebeard_ref_node";
+        # aldryn-categories still lists the old names in its admin.
+        from aldryn_categories.admin import CategoryAdmin
+        from parler.admin import TranslatableAdmin
+
+        CategoryAdmin.fieldsets = (
+            (None, {'fields': ('name', 'slug')}),
+            (' ', {'fields': ('treebeard_position', 'treebeard_ref_node')}),
+        )
+        CategoryAdmin.get_form = lambda self, request, obj=None, **kwargs: (
+            TranslatableAdmin.get_form(self, request, obj, **kwargs))
