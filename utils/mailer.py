@@ -1,4 +1,3 @@
-import six
 from django.core.mail import send_mail
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
@@ -45,7 +44,7 @@ class BaseMailer(object):
 
     @slug.setter
     def slug(self, val):
-        assert isinstance(val, six.string_types), "slug is not string: %r" % val
+        assert isinstance(val, str), "slug is not string: %r" % val
         self._slug = val
 
     @property
@@ -59,7 +58,7 @@ class BaseMailer(object):
         assert val.get('subject') and val.get('message'), msg
         self._message, self._subject, self._from = (
             val.get('message'), val.get('subject'), val.get('from'))
-        assert isinstance(self.slug, six.string_types), 'slug not set'
+        assert isinstance(self.slug, str), 'slug not set'
 
     def send_mail(self, to=None):
         if not to:
