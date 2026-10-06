@@ -16,7 +16,6 @@ from membership import urls as membership_urls
 from ungleich_page.views import LandingView
 from django.views.generic import RedirectView
 from django.urls import reverse_lazy
-import debug_toolbar
 
 urlpatterns = [
     re_path(r'^index.html$', LandingView.as_view()),
@@ -79,6 +78,3 @@ urlpatterns += [
             'document_root': settings.MEDIA_ROOT,
         }),
 ]
-
-if settings.DEBUG:
-    urlpatterns += [re_path(r'^__debug__/', include(debug_toolbar.urls))]

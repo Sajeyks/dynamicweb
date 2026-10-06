@@ -19,12 +19,8 @@ MIDDLEWARE = (
     'utils.middleware.DevSiteSwitcherMiddleware',
 ) + MIDDLEWARE
 
-MIDDLEWARE += ("debug_toolbar.middleware.DebugToolbarMiddleware",)
-
 INSTALLED_APPS += (
     'django_extensions',
-    # debug_toolbar seems to conflict with multisite (and djangocms_multisite)
-    #   'debug_toolbar'
     )
 
 # Without an LDAP server (e.g. the docker test stack) log in with plain Django
