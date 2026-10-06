@@ -1,0 +1,57 @@
+"""
+Aliases for helpers that newer Django versions removed.
+
+The unmaintained aldryn-* packages (and similar) still import them. Imported
+first thing from the settings, before any app code is loaded.
+"""
+import django.utils.encoding
+import django.utils.translation
+
+if not hasattr(django.utils.encoding, 'python_2_unicode_compatible'):
+    django.utils.encoding.python_2_unicode_compatible = lambda cls: cls
+
+for _name in ('gettext', 'gettext_lazy', 'gettext_noop',
+              'ngettext', 'ngettext_lazy'):
+    if not hasattr(django.utils.translation, 'u' + _name):
+        setattr(django.utils.translation, 'u' + _name,
+                getattr(django.utils.translation, _name))
+
+import sys
+
+import six
+from django.conf import urls
+from django.db import models
+from django.http import HttpRequest
+from django.urls import re_path
+from django.utils import encoding
+
+for _name, _target in (('force_text', 'force_str'), ('smart_text', 'smart_str'),
+                       ('force_unicode', 'force_str')):
+    if not hasattr(encoding, _name):
+        setattr(encoding, _name, getattr(encoding, _target))
+
+if not hasattr(urls, 'url'):
+    urls.url = re_path
+
+if 'django.utils.six' not in sys.modules:
+    import django.utils
+    django.utils.six = six
+    sys.modules['django.utils.six'] = six
+    sys.modules['django.utils.six.moves'] = six.moves
+
+if not hasattr(models, 'NullBooleanField'):
+    class NullBooleanField(models.BooleanField):
+        def __init__(self, *args, **kwargs):
+            kwargs['null'] = True
+            kwargs['blank'] = True
+            super().__init__(*args, **kwargs)
+
+        def deconstruct(self):
+            name, path, args, kwargs = super().deconstruct()
+            del kwargs['null'], kwargs['blank']
+            return name, path, args, kwargs
+
+    models.NullBooleanField = NullBooleanField
+
+if not hasattr(HttpRequest, 'is_ajax'):
+    HttpRequest.is_ajax = lambda self: self.headers.get('x-requested-with') == 'XMLHttpRequest'
