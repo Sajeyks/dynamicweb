@@ -123,6 +123,7 @@ INSTALLED_APPS = (
     'cms',  # django CMS itself
     'aldryn_apphooks_config',
     'aldryn_boilerplates',
+    'sortedm2m',
     'aldryn_categories',
     'aldryn_common',
     'aldryn_newsblog',
