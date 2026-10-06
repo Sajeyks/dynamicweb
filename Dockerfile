@@ -1,5 +1,5 @@
 # FROM python:3.10.0-alpine3.15
-FROM python:3.5-alpine3.12
+FROM python:3.8-alpine3.12
 
 WORKDIR /usr/src/app
 
@@ -14,6 +14,7 @@ RUN apk add --update --no-cache \
     libxslt-dev \
     libmemcached-dev \
     zlib-dev \
+    libffi-dev \
     && rm -rf /var/cache/apk/*
 
 ## For alpine 3.15 replace postgresql-dev with libpq-dev
