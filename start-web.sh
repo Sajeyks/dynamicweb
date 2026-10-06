@@ -12,23 +12,12 @@ django.setup()
 from django.core.management import call_command
 from django.db.migrations.loader import MigrationLoader
 
-# Databases created by older package versions can have a migration applied
-# before the (newer) migrations it now depends on. Django refuses to migrate
-# then, so apply those dependencies first with the history check switched off.
 from django.db import connection
 from django.db.migrations.recorder import MigrationRecorder
 
 recorder = MigrationRecorder(connection)
 recorder.ensure_schema()
 legacy = recorder.migration_qs.filter(app='cmsplugin_filer_image').exists()
-check = MigrationLoader.check_consistent_history
-if legacy:
-    MigrationLoader.check_consistent_history = lambda *args, **kwargs: None
-try:
-    if legacy:
-        call_command('migrate', 'cmsplugin_filer_image', interactive=False, skip_checks=True)
-finally:
-    MigrationLoader.check_consistent_history = check
 # django-reversion 1.x tables: 3.x only ships one squashed migration that would
 # re-create them, so bring the old tables to its schema and record it as applied.
 squash = '0001_squashed_0004_auto_20160611_1202'
@@ -46,6 +35,10 @@ if (recorder.migration_qs.filter(app='reversion', name='0002_auto_20141216_1509'
         ):
             cursor.execute(sql)
     recorder.record_applied('reversion', squash)
+# Old databases can have a migration applied before the (newer) migrations it now
+# depends on, which Django refuses; for them migrate with that check switched off.
+if legacy:
+    MigrationLoader.check_consistent_history = lambda *args, **kwargs: None
 call_command('migrate', interactive=False, skip_checks=True)
 
 from django.contrib.sites.models import Site
