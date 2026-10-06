@@ -104,8 +104,8 @@ class HostingOrder(AssignPermissionsMixin, models.Model):
     ORDER_DECLINED_STATUS = 'Declined'
 
     vm_id = models.IntegerField(default=0)
-    customer = models.ForeignKey(StripeCustomer)
-    billing_address = models.ForeignKey(BillingAddress)
+    customer = models.ForeignKey(StripeCustomer, on_delete=models.CASCADE)
+    billing_address = models.ForeignKey(BillingAddress, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     approved = models.BooleanField(default=False)
     last4 = models.CharField(max_length=4)
@@ -113,7 +113,7 @@ class HostingOrder(AssignPermissionsMixin, models.Model):
     stripe_charge_id = models.CharField(max_length=100, null=True)
     price = models.FloatField()
     subscription_id = models.CharField(max_length=100, null=True)
-    vm_pricing = models.ForeignKey(VMPricing)
+    vm_pricing = models.ForeignKey(VMPricing, on_delete=models.CASCADE)
     order_detail = models.ForeignKey(
         OrderDetail, null=True, blank=True, default=None,
         on_delete=models.SET_NULL
@@ -126,11 +126,6 @@ class HostingOrder(AssignPermissionsMixin, models.Model):
         max_length=500, null=True
     )
     permissions = ('view_hostingorder',)
-
-    class Meta:
-        permissions = (
-            ('view_hostingorder', 'View Hosting Order'),
-        )
 
     def __str__(self):
         hosting_order_str = ("Order Nr: #{} - VM_ID: {} - {} - {} - "
@@ -202,7 +197,7 @@ class HostingOrder(AssignPermissionsMixin, models.Model):
 
 
 class UserHostingKey(models.Model):
-    user = models.ForeignKey(CustomUser, blank=True, null=True)
+    user = models.ForeignKey(CustomUser, blank=True, null=True, on_delete=models.CASCADE)
     public_key = models.TextField()
     private_key = models.FileField(upload_to='private_keys', blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -238,16 +233,11 @@ class UserHostingKey(models.Model):
 
 
 class HostingBill(AssignPermissionsMixin, models.Model):
-    customer = models.ForeignKey(StripeCustomer)
-    billing_address = models.ForeignKey(BillingAddress)
+    customer = models.ForeignKey(StripeCustomer, on_delete=models.CASCADE)
+    billing_address = models.ForeignKey(BillingAddress, on_delete=models.CASCADE)
     total_price = models.FloatField(default=0.0)
 
     permissions = ('view_hostingbill',)
-
-    class Meta:
-        permissions = (
-            ('view_hostingbill', 'View Hosting Bill'),
-        )
 
     def __str__(self):
         return "%s" % (self.customer.user.email)
@@ -263,8 +253,8 @@ class MonthlyHostingBill(AssignPermissionsMixin, models.Model):
     """
     Corresponds to Invoice object of Stripe
     """
-    customer = models.ForeignKey(StripeCustomer)
-    order = models.ForeignKey(HostingOrder)
+    customer = models.ForeignKey(StripeCustomer, on_delete=models.CASCADE)
+    order = models.ForeignKey(HostingOrder, on_delete=models.CASCADE)
     created = models.DateTimeField(help_text="When the invoice was created")
     receipt_number = models.CharField(
         help_text="The receipt number that is generated on Stripe",
@@ -286,11 +276,6 @@ class MonthlyHostingBill(AssignPermissionsMixin, models.Model):
     subscription_ids_csv = models.TextField(default="")
 
     permissions = ('view_monthlyhostingbill',)
-
-    class Meta:
-        permissions = (
-            ('view_monthlyhostingbill', 'View Monthly Hosting'),
-        )
 
     @classmethod
     def create(cls, args):
@@ -498,11 +483,6 @@ class HostingBillLineItem(AssignPermissionsMixin, models.Model):
     unit_amount = models.PositiveIntegerField()
     permissions = ('view_hostingbilllineitem',)
 
-    class Meta:
-        permissions = (
-            ('view_hostingbilllineitem', 'View Monthly Hosting Bill Line Item'),
-        )
-
     def amount_in_chf(self):
         """
         Returns amount in chf. The amount in this model is in cents (as in
@@ -554,7 +534,7 @@ class HostingBillLineItem(AssignPermissionsMixin, models.Model):
 
 
 class VMDetail(models.Model):
-    user = models.ForeignKey(CustomUser)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
     vm_id = models.IntegerField(default=0)
     disk_size = models.FloatField(default=0.0)
     cores = models.FloatField(default=0.0)
@@ -574,7 +554,7 @@ class VMDetail(models.Model):
 
 class UserCardDetail(AssignPermissionsMixin, models.Model):
     permissions = ('view_usercarddetail',)
-    stripe_customer = models.ForeignKey(StripeCustomer)
+    stripe_customer = models.ForeignKey(StripeCustomer, on_delete=models.CASCADE)
     last4 = models.CharField(max_length=4)
     brand = models.CharField(max_length=128)
     card_id = models.CharField(max_length=100, blank=True, default='')
@@ -582,11 +562,6 @@ class UserCardDetail(AssignPermissionsMixin, models.Model):
     exp_month = models.IntegerField(null=False)
     exp_year = models.IntegerField(null=False)
     preferred = models.BooleanField(default=False)
-
-    class Meta:
-        permissions = (
-            ('view_usercarddetail', 'View User Card'),
-        )
 
     @classmethod
     def create(cls, stripe_customer=None, last4=None, brand=None,
