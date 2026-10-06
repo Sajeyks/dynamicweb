@@ -100,3 +100,20 @@ class CompatConfig(AppConfig):
         )
         CategoryAdmin.get_form = lambda self, request, obj=None, **kwargs: (
             TranslatableAdmin.get_form(self, request, obj, **kwargs))
+
+        # Django 6 removed LogEntry.objects.log_action(), which django-cms still
+        # calls when pages are published or unpublished.
+        import json
+        from django.contrib.admin.models import LogEntryManager
+
+        def log_action(self, user_id, content_type_id, object_id, object_repr,
+                       action_flag, change_message=''):
+            if isinstance(change_message, list):
+                change_message = json.dumps(change_message)
+            return self.model.objects.create(
+                user_id=user_id, content_type_id=content_type_id,
+                object_id=str(object_id), object_repr=object_repr[:200],
+                action_flag=action_flag, change_message=change_message)
+
+        if not hasattr(LogEntryManager, 'log_action'):
+            LogEntryManager.log_action = log_action
