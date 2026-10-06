@@ -7,7 +7,7 @@ import xml
 from django import forms
 from django.conf import settings
 from django.contrib.auth import authenticate
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from membership.models import CustomUser
 from .models import UserHostingKey, GenericProduct

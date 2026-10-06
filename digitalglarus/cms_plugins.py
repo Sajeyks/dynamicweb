@@ -1,7 +1,7 @@
 from cms.plugin_base import CMSPluginBase
 from cms.plugin_pool import plugin_pool
 from .models import DGGalleryPlugin, DGSupportersPlugin, Supporter
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 
 
 class CMSGalleryPlugin(CMSPluginBase):

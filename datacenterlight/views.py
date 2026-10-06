@@ -12,7 +12,7 @@ from django.http import (
     HttpResponseRedirect, JsonResponse, Http404, HttpResponse
 )
 from django.shortcuts import render
-from django.utils.translation import get_language, ugettext_lazy as _
+from django.utils.translation import get_language, gettext_lazy as _
 from django.views.decorators.cache import cache_control
 from django.views.generic import FormView, CreateView, DetailView
 
@@ -55,7 +55,7 @@ class ContactUsView(FormView):
         return HttpResponseRedirect(reverse('datacenterlight:index'))
 
     def form_invalid(self, form):
-        if self.request.is_ajax():
+        if (self.request.headers.get('x-requested-with') == 'XMLHttpRequest'):
             return self.render_to_response(
                 self.get_context_data(contact_form=form))
         else:
@@ -82,7 +82,7 @@ class ContactUsView(FormView):
         #    'reply_to': [form.cleaned_data.get('email')],
         #}
         #send_plain_email_task.delay(email_data)
-        if self.request.is_ajax():
+        if (self.request.headers.get('x-requested-with') == 'XMLHttpRequest'):
             return self.render_to_response(
                 self.get_context_data(success=True, contact_form=form))
         else:

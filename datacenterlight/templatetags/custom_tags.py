@@ -4,7 +4,7 @@ import logging
 from django import template
 from django.urls import resolve, reverse
 from django.utils.safestring import mark_safe
-from django.utils.translation import activate, get_language, ugettext_lazy as _
+from django.utils.translation import activate, get_language, gettext_lazy as _
 
 from hosting.models import GenericProduct, HostingOrder
 from utils.hosting_utils import get_ip_addresses

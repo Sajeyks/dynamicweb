@@ -1,18 +1,18 @@
 from django.conf import settings
-from django.conf.urls import include, url
+from django.urls import include, re_path
 from django.conf.urls.i18n import i18n_patterns
 from django.contrib import admin
 from django.views import static as static_view
 from django.views.generic import RedirectView
 
 urlpatterns = i18n_patterns(
-    url(r'^admin/', admin.site.urls),
-    url(r'^cms/', include('cms.urls')),
-    url(r'^$', RedirectView.as_view(url='/cms')),
+    re_path(r'^admin/', admin.site.urls),
+    re_path(r'^cms/', include('cms.urls')),
+    re_path(r'^$', RedirectView.as_view(url='/cms')),
 )
 
 urlpatterns += [
-    url(r'^media/(?P<path>.*)$',
+    re_path(r'^media/(?P<path>.*)$',
         static_view.serve, {
             'document_root': settings.MEDIA_ROOT,
         }),

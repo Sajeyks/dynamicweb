@@ -1,4 +1,4 @@
-from django.utils.translation import ugettext as _
+from django.utils.translation import gettext as _
 from django.db import models
 
 # Old: http://xml.coverpages.org/country3166.html

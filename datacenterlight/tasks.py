@@ -7,7 +7,7 @@ from django.conf import settings
 from django.core.mail import EmailMessage
 from django.urls import reverse
 from django.utils import translation
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 
 from dynamicweb.celery import app
 from hosting.models import HostingOrder

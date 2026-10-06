@@ -1,7 +1,7 @@
 from __future__ import unicode_literals
 
 from django.utils import timezone
-from django.utils.encoding import force_text
+from django.utils.encoding import force_str
 from django.core.serializers.json import DjangoJSONEncoder
 
 import json
@@ -43,7 +43,7 @@ class RedisBackend(StoredMessagesBackend):
         """
         Return a Message instance built from data contained in a JSON string
         """
-        return Message(**json.loads(force_text(json_msg)))
+        return Message(**json.loads(force_str(json_msg)))
 
     def _list_key(self, key):
         """

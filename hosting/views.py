@@ -23,8 +23,8 @@ from django.utils.decorators import method_decorator
 from django.utils.html import escape
 from django.utils.http import urlsafe_base64_decode
 from django.utils.safestring import mark_safe
-from django.utils.translation import get_language, ugettext_lazy as _
-from django.utils.translation import ugettext
+from django.utils.translation import get_language, gettext_lazy as _
+from django.utils.translation import gettext
 from django.views.decorators.cache import never_cache
 from django.views.generic import (
     View, CreateView, FormView, ListView, DetailView, DeleteView,
@@ -587,7 +587,7 @@ class SettingsView(LoginRequiredMixin, FormView):
         return context
 
     def post(self, request, *args, **kwargs):
-        if 'card' in request.POST and request.POST['card'] is not '':
+        if 'card' in request.POST and request.POST['card'] != '':
             card_id = escape(request.POST['card'])
             UserCardDetail.set_default_card(
                 stripe_api_cus_id=request.user.stripecustomer.stripe_id,
@@ -806,7 +806,7 @@ class PaymentVMView(LoginRequiredMixin, FormView):
             billing_address_data = form.cleaned_data
             token = form.cleaned_data.get('token')
             owner = self.request.user
-            if token is '':
+            if token == '':
                 card_id = form.cleaned_data.get('card')
                 customer = owner.stripecustomer
                 try:
@@ -1746,15 +1746,15 @@ class VirtualMachineView(LoginRequiredMixin, View):
     def get(self, request, *args, **kwargs):
         vm = self.get_object()
         if vm is None:
-            if self.request.is_ajax():
+            if (self.request.headers.get('x-requested-with') == 'XMLHttpRequest'):
                 storage = messages.get_messages(request)
                 for m in storage:
                     pass
                 storage.used = True
-                return JsonResponse({'text': ugettext('Terminated')})
+                return JsonResponse({'text': gettext('Terminated')})
             else:
                 return redirect(reverse('hosting:virtual_machines'))
-        elif self.request.is_ajax():
+        elif (self.request.headers.get('x-requested-with') == 'XMLHttpRequest'):
             return HttpResponse()
         context = None
         try:
@@ -1860,7 +1860,7 @@ class VirtualMachineView(LoginRequiredMixin, View):
                         "VM {} not found. So, its terminated.".format(vm.id)
                     )
                     response['status'] = True
-                    response['text'] = ugettext('Terminated')
+                    response['text'] = gettext('Terminated')
                     vm_detail_obj = VMDetail.objects.filter(
                         vm_id=vm.id
                     ).first()
