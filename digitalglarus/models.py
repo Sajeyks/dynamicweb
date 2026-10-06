@@ -7,7 +7,7 @@ from django.db import models
 from django.db.models import Q
 from cms.models import CMSPlugin
 from filer.fields.image import FilerImageField
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.utils.functional import cached_property
 from .mixins import Ordereable
 
@@ -72,7 +72,7 @@ class MembershipType(models.Model):
 
 
 class Membership(models.Model):
-    type = models.ForeignKey(MembershipType)
+    type = models.ForeignKey(MembershipType, on_delete=models.CASCADE)
     active = models.BooleanField(default=True)
     start_date = models.DateField()
     end_date = models.DateField()
@@ -141,7 +141,7 @@ class Membership(models.Model):
 
 
 class MembershipOrder(Ordereable, models.Model):
-    membership = models.ForeignKey(Membership)
+    membership = models.ForeignKey(Membership, on_delete=models.CASCADE)
     start_date = models.DateField()
     end_date = models.DateField()
     stripe_subscription_id = models.CharField(max_length=100, null=True)
@@ -268,7 +268,7 @@ class BookingOrder(Ordereable, models.Model):
         (CANCELLED, 'Cancelled')
     )
 
-    booking = models.OneToOneField(Booking)
+    booking = models.OneToOneField(Booking, on_delete=models.CASCADE)
     original_price = models.FloatField()
     special_month_price = models.FloatField()
     status = models.PositiveIntegerField(choices=STATUS_CHOICES, default=1)
@@ -297,7 +297,7 @@ class BookingOrder(Ordereable, models.Model):
 
 class BookingCancellation(models.Model):
 
-    order = models.ForeignKey(BookingOrder)
+    order = models.ForeignKey(BookingOrder, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now=True)
     required_refund = models.BooleanField(default=True)
     refund = models.BooleanField(default=False)
@@ -323,7 +323,7 @@ class Supporter(models.Model):
 
 
 class DGGallery(models.Model):
-    parent = models.ForeignKey('self', blank=True, null=True)
+    parent = models.ForeignKey('self', blank=True, null=True, on_delete=models.CASCADE)
     name = models.CharField(max_length=30)
 
     def __str__(self):
@@ -337,8 +337,8 @@ class DGGallery(models.Model):
 
 
 class DGPicture(models.Model):
-    gallery = models.ForeignKey(DGGallery)
-    image = FilerImageField(related_name='dg_gallery')
+    gallery = models.ForeignKey(DGGallery, on_delete=models.CASCADE)
+    image = FilerImageField(related_name='dg_gallery', on_delete=models.CASCADE)
     description = models.CharField(max_length=60)
 
     def __str__(self):
@@ -346,7 +346,7 @@ class DGPicture(models.Model):
 
 
 class DGGalleryPlugin(CMSPlugin):
-    dgGallery = models.ForeignKey(DGGallery)
+    dgGallery = models.ForeignKey(DGGallery, on_delete=models.CASCADE)
 
 
 class DGSupportersPlugin(CMSPlugin):

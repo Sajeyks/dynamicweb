@@ -2,7 +2,7 @@ from django.contrib import admin
 from .models import DGGallery, DGPicture, Booking, BookingPrice,\
     MembershipOrder, Membership, MembershipType, BookingOrder, BookingCancellation
 
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from utils.models import ContactMessage
 from django.utils.html import format_html
 

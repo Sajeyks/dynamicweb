@@ -11,7 +11,7 @@ class DonatorStatus(models.Model):
         (ACTIVE, 'Active'),
         (CANCELED, 'Canceled')
     )
-    user = models.OneToOneField(CustomUser)
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     status = models.CharField(choices=STATUS_CHOICES, max_length=10, default=ACTIVE)
 
     def __str__(self):
@@ -29,9 +29,9 @@ class DonatorStatus(models.Model):
 class Donation(models.Model):
 
     donation = models.FloatField()
-    donator = models.ForeignKey(StripeCustomer)
+    donator = models.ForeignKey(StripeCustomer, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
-    billing_address = models.ForeignKey(BillingAddress)
+    billing_address = models.ForeignKey(BillingAddress, on_delete=models.CASCADE)
     last4 = models.CharField(max_length=4)
     cc_brand = models.CharField(max_length=10)
     stripe_charge_id = models.CharField(max_length=100, null=True)

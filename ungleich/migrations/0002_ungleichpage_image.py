@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='ungleichpage',
             name='image',
-            field=filer.fields.image.FilerImageField(null=True, related_name='ungleinch_page_image', to='filer.Image', blank=True),
+            field=filer.fields.image.FilerImageField(null=True, related_name='ungleinch_page_image', to='filer.Image', blank=True, on_delete=models.CASCADE),
             preserve_default=True,
         ),
     ]

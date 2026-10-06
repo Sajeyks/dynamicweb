@@ -2,6 +2,8 @@ from django.conf.urls import url
 from . import views
 from .views import PostDetailViewUngleich
 
+app_name = 'ungleich'
+
 urlpatterns = [
     url(r'^$', views.PostListViewUngleich.as_view(), name="post-list"),
     # url(r'^$',views.PostListView.as_view()),

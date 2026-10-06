@@ -7,6 +7,8 @@ from .views import (
     WhyDataCenterLightView, ContactUsView
 )
 
+app_name = 'datacenterlight'
+
 urlpatterns = [
     url(r'^$', IndexView.as_view(), name='index'),
     url(r'^t/$', IndexView.as_view(), name='index_t'),

@@ -1,4 +1,4 @@
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import UpdateView
 from django.db import models
@@ -33,9 +33,9 @@ class IsNotMemberMixin(object):
 
 
 class Ordereable(models.Model):
-    customer = models.ForeignKey(StripeCustomer)
+    customer = models.ForeignKey(StripeCustomer, on_delete=models.CASCADE)
     amount = models.FloatField()
-    billing_address = models.ForeignKey(BillingAddress)
+    billing_address = models.ForeignKey(BillingAddress, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
     approved = models.BooleanField(default=False)
     last4 = models.CharField(max_length=4, blank=True)

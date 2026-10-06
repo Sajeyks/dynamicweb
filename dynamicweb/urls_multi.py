@@ -6,7 +6,7 @@ from django.views import static as static_view
 from django.views.generic import RedirectView
 
 urlpatterns = i18n_patterns(
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/', admin.site.urls),
     url(r'^cms/', include('cms.urls')),
     url(r'^$', RedirectView.as_view(url='/cms')),
 )

@@ -8,7 +8,7 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager, \
     PermissionsMixin
 from django.contrib.sites.models import Site
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 from django.core.validators import RegexValidator
 from django.db import models, IntegrityError
 from django.utils.crypto import get_random_string
@@ -113,7 +113,7 @@ def validate_name(value):
 
 class CustomUser(AbstractBaseUser, PermissionsMixin):
     VALIDATED_CHOICES = ((0, 'Not validated'), (1, 'Validated'))
-    site = models.ForeignKey(Site, default=1)
+    site = models.ForeignKey(Site, default=1, on_delete=models.CASCADE)
     name = models.CharField(max_length=50, validators=[validate_name])
     email = models.EmailField(unique=True)
     username = models.CharField(max_length=60, unique=True, null=True)
@@ -267,7 +267,7 @@ class CustomUser(AbstractBaseUser, PermissionsMixin):
 
 
 class StripeCustomer(models.Model):
-    user = models.OneToOneField(CustomUser)
+    user = models.OneToOneField(CustomUser, on_delete=models.CASCADE)
     stripe_id = models.CharField(unique=True, max_length=100)
 
     def __str__(self):
@@ -359,7 +359,7 @@ class DeletedUser(models.Model):
 
 class Calendar(models.Model):
     datebooked = models.DateField()
-    user = models.ForeignKey(CustomUser)
+    user = models.ForeignKey(CustomUser, on_delete=models.CASCADE)
 
     def __init__(self, *args, **kwargs):
         if kwargs.get('datebooked'):

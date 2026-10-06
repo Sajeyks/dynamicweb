@@ -33,7 +33,7 @@ class CMSIntegration(models.Model):
         'datacenterlight_calculator',
         related_name='dcl-calculator-placeholder+'
     )
-    domain = models.ForeignKey(Site, null=True, blank=True)
+    domain = models.ForeignKey(Site, null=True, blank=True, on_delete=models.CASCADE)
 
     class Meta:
         unique_together = ('name', 'domain')
@@ -43,7 +43,7 @@ class CMSIntegration(models.Model):
 
 
 class CMSFaviconExtension(PageExtension):
-    favicon = FilerFileField(related_name="cms_favicon_image")
+    favicon = FilerFileField(related_name="cms_favicon_image", on_delete=models.CASCADE)
 
 
 extension_pool.register(CMSFaviconExtension)
@@ -340,6 +340,7 @@ class DCLCalculatorPluginModel(CMSPlugin):
         related_name="dcl_custom_pricing_vm_pricing",
         help_text='Choose a pricing that will be associated with this '
                   'Calculator'
+    , on_delete=models.CASCADE
     )
     vm_type = models.CharField(
         max_length=50, choices=VMTemplate.VM_TYPE_CHOICES,

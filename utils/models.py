@@ -40,7 +40,7 @@ class BillingAddress(BaseBillingAddress):
 
 
 class UserBillingAddress(BaseBillingAddress):
-    user = models.ForeignKey(CustomUser, related_name='billing_addresses')
+    user = models.ForeignKey(CustomUser, related_name='billing_addresses', on_delete=models.CASCADE)
     current = models.BooleanField(default=True)
 
     def __str__(self):

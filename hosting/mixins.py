@@ -1,6 +1,6 @@
 from django.shortcuts import redirect
 from django.conf import settings
-from django.core.urlresolvers import reverse
+from django.urls import reverse
 
 from opennebula_api.serializers import VirtualMachineTemplateSerializer
 from opennebula_api.models import OpenNebulaManager

@@ -36,7 +36,7 @@ class Migration(migrations.Migration):
                 ('expiry_date', models.CharField(validators=[django.core.validators.RegexValidator('\\d{2}\\/\\d{4}', 'Use this pattern(MM/YYYY).')], max_length=50)),
                 ('ccv', models.CharField(validators=[django.core.validators.RegexValidator('\\d{3,4}', 'Wrong CCV number.')], max_length=4)),
                 ('payment_type', models.CharField(max_length=5, default='N')),
-                ('user_id', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+                ('user_id', models.ForeignKey(to=settings.AUTH_USER_MODEL, on_delete=models.CASCADE)),
             ],
         ),
     ]

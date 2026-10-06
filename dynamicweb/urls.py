@@ -15,7 +15,7 @@ from webhook import views as webhook_views
 from membership import urls as membership_urls
 from ungleich_page.views import LandingView
 from django.views.generic import RedirectView
-from django.core.urlresolvers import reverse_lazy
+from django.urls import reverse_lazy
 import debug_toolbar
 
 urlpatterns = [
@@ -30,7 +30,7 @@ urlpatterns = [
         name="django.hosting"),
     url(r'^nosystemd/', include('nosystemd.urls', namespace="nosystemd")),
     url(r'^taggit_autosuggest/', include('taggit_autosuggest.urls')),
-    url(r'^jsi18n/(?P<packages>\S+?)/$', i18n.javascript_catalog),
+    url(r'^jsi18n/(?P<packages>\S+?)/$', i18n.JavaScriptCatalog.as_view()),
     url(r'^product/(?P<product_slug>[\w-]+)/$',
         PaymentOrderView.as_view(),
         name='show_product'),
@@ -51,7 +51,7 @@ def home_view(request, *args, **kwargs):
 
 
 urlpatterns += i18n_patterns(
-    url(r'^admin/', include(admin.site.urls)),
+    url(r'^admin/', admin.site.urls),
     url(r'^datacenterlight/',
         include('datacenterlight.urls', namespace="datacenterlight")),
     url(r'^hosting/', RedirectView.as_view(url=reverse_lazy('hosting:login')),

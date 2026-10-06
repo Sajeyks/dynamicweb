@@ -16,8 +16,8 @@ class Migration(migrations.Migration):
             fields=[
                 ('id', models.AutoField(serialize=False, primary_key=True, auto_created=True, verbose_name='ID')),
                 ('image_header', models.ImageField(upload_to='image_header')),
-                ('extended_object', models.OneToOneField(editable=False, to='cms.Page')),
-                ('public_extension', models.OneToOneField(editable=False, related_name='draft_extension', null=True, to='ungleich.UngleichPage')),
+                ('extended_object', models.OneToOneField(editable=False, to='cms.Page', on_delete=models.CASCADE)),
+                ('public_extension', models.OneToOneField(editable=False, related_name='draft_extension', null=True, to='ungleich.UngleichPage', on_delete=models.CASCADE)),
             ],
             options={
                 'abstract': False,

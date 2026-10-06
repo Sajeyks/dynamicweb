@@ -2,6 +2,8 @@ from django.conf.urls import url
 from .views import ContactView, LandingView
 from django.utils.translation import ugettext_lazy as _
 
+app_name = 'ungleich_page'
+
 urlpatterns = [
     url(r'^$', LandingView.as_view(), name='landing'),
     # url(r'^ungleich_page/?$', LandingView.as_view(), name='landing'),

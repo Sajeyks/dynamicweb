@@ -1,6 +1,6 @@
 from django.test import TestCase
-from django.core.urlresolvers import reverse
-from django.core.urlresolvers import resolve
+from django.urls import reverse
+from django.urls import resolve
 
 
 class ContactViewTest(TestCase):

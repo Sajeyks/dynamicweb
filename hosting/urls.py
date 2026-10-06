@@ -14,6 +14,8 @@ from .views import (
     InvoiceListView, InvoiceDetailView, CheckUserVM
 )
 
+app_name = 'hosting'
+
 urlpatterns = [
     url(r'index/?$', IndexView.as_view(), name='index'),
     url(r'django/?$', DjangoHostingView.as_view(), name='djangohosting'),
@@ -69,8 +71,8 @@ urlpatterns = [
         name='reset_password'),
     url(r'reset-password-confirm/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$',
         PasswordResetConfirmView.as_view(), name='reset_password_confirm'),
-    url(r'^logout/?$', auth_views.logout,
-        {'next_page': '/hosting/login?logged_out=true'}, name='logout'),
+    url(r'^logout/?$', auth_views.LogoutView.as_view(
+        next_page='/hosting/login?logged_out=true'), name='logout'),
     url(r'^validate/(?P<validate_slug>.*)/$',
         SignupValidatedView.as_view(), name='validate')
 ]

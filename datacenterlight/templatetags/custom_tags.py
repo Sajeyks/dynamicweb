@@ -2,7 +2,7 @@ import datetime
 import logging
 
 from django import template
-from django.core.urlresolvers import resolve, reverse
+from django.urls import resolve, reverse
 from django.utils.safestring import mark_safe
 from django.utils.translation import activate, get_language, ugettext_lazy as _
 

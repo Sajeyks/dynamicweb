@@ -2,6 +2,8 @@ from django.conf.urls import url, include
 from rest_framework.urlpatterns import format_suffix_patterns
 from .views import VmCreateView, VmDetailsView
 
+app_name = 'opennebula_api'
+
 urlpatterns = {
     url(r'^auth/', include('rest_framework.urls', namespace='rest_framework')),
 
