@@ -1,5 +1,4 @@
-# FROM python:3.10.0-alpine3.15
-FROM python:3.8-alpine3.12
+FROM python:3.10-alpine3.15
 
 WORKDIR /usr/src/app
 
@@ -8,7 +7,7 @@ RUN apk add --update --no-cache \
     build-base \
     openldap-dev \
     python3-dev \
-    postgresql-dev \
+    libpq-dev \
     jpeg-dev \
     libxml2-dev \
     libxslt-dev \
@@ -16,8 +15,6 @@ RUN apk add --update --no-cache \
     zlib-dev \
     libffi-dev \
     && rm -rf /var/cache/apk/*
-
-## For alpine 3.15 replace postgresql-dev with libpq-dev
 
 # FIX https://github.com/python-ldap/python-ldap/issues/432
 # (remove the symlink first, otherwise the echo overwrites the real libldap_r shared library)
