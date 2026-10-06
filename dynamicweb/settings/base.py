@@ -92,6 +92,7 @@ if not SECRET_KEY:
 # Application definition
 
 INSTALLED_APPS = (
+    'dynamicweb.compat.CompatConfig',
     # 1st migrate
     'membership',
     'djangocms_admin_style',
@@ -103,6 +104,7 @@ INSTALLED_APPS = (
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django.contrib.sites',
+    'django.contrib.postgres',
     'multisite',
     'easy_thumbnails',
     'utils',

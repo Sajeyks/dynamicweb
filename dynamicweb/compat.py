@@ -55,3 +55,20 @@ if not hasattr(models, 'NullBooleanField'):
 
 if not hasattr(HttpRequest, 'is_ajax'):
     HttpRequest.is_ajax = lambda self: self.headers.get('x-requested-with') == 'XMLHttpRequest'
+
+
+from django.apps import AppConfig
+
+
+class CompatConfig(AppConfig):
+    """Shims that need the app registry; listed first in INSTALLED_APPS so
+    they are in place before the admin modules of other apps are imported."""
+    name = 'dynamicweb'
+    label = 'dynamicweb_compat'
+
+    def ready(self):
+        from django.contrib.admin import options
+        from django.contrib.auth import admin as auth_admin
+
+        if not hasattr(auth_admin, 'csrf_protect_m'):
+            auth_admin.csrf_protect_m = options.csrf_protect_m
