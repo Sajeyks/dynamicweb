@@ -1,6 +1,6 @@
 # Running dynamicweb with Docker Compose
 
-Postgres, Redis, the web app and a Celery worker in one stack. Only Docker is needed.
+Postgres 16, Redis, the web app (Django 6.1, Python 3.12) and a Celery worker in one stack. Only Docker is needed.
 
 ## Quick start (VPS or local)
 
@@ -39,7 +39,7 @@ Admin login: `dummy-admin@example.com` / `dummy-admin` at `/en-us/admin/login/`
 Create `.env` next to `docker-compose.yml`; values there override `.env.docker`:
 
 ```
-POSTGRES_HOST=<host>
+POSTGRES_HOST=<host>      # PostgreSQL 14 or newer
 POSTGRES_PORT=5432
 POSTGRES_DB=<db>
 POSTGRES_USER=<user>
