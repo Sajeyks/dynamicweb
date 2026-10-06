@@ -72,3 +72,18 @@ class CompatConfig(AppConfig):
 
         if not hasattr(auth_admin, 'csrf_protect_m'):
             auth_admin.csrf_protect_m = options.csrf_protect_m
+
+        # Django 6's change list templates read "cl.opts"; the django-cms 3.11
+        # page tree view only passes "opts", which breaks the page list.
+        from types import SimpleNamespace
+        from cms.admin.pageadmin import BasePageAdmin
+
+        changelist_view = BasePageAdmin.changelist_view
+
+        def changelist_view_with_cl(self, request, extra_context=None):
+            response = changelist_view(self, request, extra_context)
+            if hasattr(response, 'context_data'):
+                response.context_data.setdefault('cl', SimpleNamespace(opts=self.model._meta))
+            return response
+
+        BasePageAdmin.changelist_view = changelist_view_with_cl
