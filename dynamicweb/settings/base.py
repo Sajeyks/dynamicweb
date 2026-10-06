@@ -10,7 +10,13 @@ import os
 
 # dotenv
 import dotenv
+import django.utils.encoding
 from django.utils.translation import ugettext_lazy as _
+
+# The unmaintained aldryn-* packages still import this Django 2 helper
+# (removed in Django 3.0); on Python 3 it is a no-op.
+if not hasattr(django.utils.encoding, 'python_2_unicode_compatible'):
+    django.utils.encoding.python_2_unicode_compatible = lambda cls: cls
 
 logger = logging.getLogger(__name__)
 
@@ -268,6 +274,7 @@ USE_I18N = True
 
 USE_L10N = True
 
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 USE_TZ = True
 
 FORMAT_MODULE_PATH = [
@@ -519,6 +526,9 @@ META_SITE_NAME = "ungleich"
 META_INCLUDE_KEYWORDS = ["ungleich", "hosting", "switzerland",
                          "Schweiz", "Swiss", "cdist"]
 META_USE_SITES = True
+
+# django-multisite's SiteID is a lazy object, not an int
+SILENCED_SYSTEM_CHECKS = ['sites.E101']
 
 PARLER_LANGUAGES = {SITE_ID: ({'code': 'en-us'}, {'code': 'de'},)}
 AUTH_USER_MODEL = 'membership.CustomUser'
