@@ -1,6 +1,6 @@
 # Running dynamicweb with Docker Compose
 
-Postgres 16, Redis, the web app (Django 6.1, Python 3.12) and a Celery worker in one stack. Only Docker is needed.
+Postgres 18, Redis, the web app (Django 6.1, Python 3.12) and a Celery worker in one stack. Only Docker is needed.
 
 ## Quick start (VPS or local)
 

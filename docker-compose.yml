@@ -14,13 +14,13 @@ x-app: &app
 
 services:
   db:
-    image: postgres:16-alpine
+    image: postgres:18-alpine
     environment:
       POSTGRES_DB: app
       POSTGRES_USER: app
       POSTGRES_PASSWORD: app
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql
       # any *.sql / *.sql.gz here is restored on the first start (empty pgdata)
       - ./db-init:/docker-entrypoint-initdb.d:ro
 
