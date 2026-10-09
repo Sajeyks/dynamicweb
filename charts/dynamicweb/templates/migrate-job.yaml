@@ -1,0 +1,25 @@
+# Runs after the first install and before each upgrade. Web pods don't migrate.
+# (After install it needs Redis, which the app uses while loading, so it waits for it.)
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-migrate
+  annotations:
+    "helm.sh/hook": post-install,pre-upgrade
+    "helm.sh/hook-delete-policy": before-hook-creation
+spec:
+  backoffLimit: 2
+  template:
+    spec:
+      {{- include "dw.pod" . | nindent 6 }}
+      restartPolicy: Never
+      initContainers:
+        - name: wait-for-redis
+          image: redis:6-alpine
+          command: [sh, -c, "until redis-cli -h redis ping; do sleep 2; done"]
+      containers:
+        - name: migrate
+          image: {{ include "dw.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env: [{name: ROLE, value: migrate}]
+          envFrom: [{secretRef: {name: {{ .Values.existingSecret }}}}]

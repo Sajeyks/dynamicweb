@@ -1,0 +1,39 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: {{ .Release.Name }}-web}
+spec:
+  replicas: {{ .Values.web.replicas }}
+  selector: {matchLabels: {app: {{ .Release.Name }}-web}}
+  template:
+    metadata: {labels: {app: {{ .Release.Name }}-web}}
+    spec:
+      {{- include "dw.pod" . | nindent 6 }}
+      containers:
+        - name: web
+          image: {{ include "dw.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env: [{name: RUN_MIGRATIONS, value: "False"}]   # the migrate Job does it
+          envFrom: [{secretRef: {name: {{ .Values.existingSecret }}}}]
+          ports: [{containerPort: 8000}]
+          readinessProbe: {tcpSocket: {port: 8000}, periodSeconds: 10}
+          volumeMounts: [{name: media, mountPath: /usr/src/app/media}]
+      volumes:
+        - name: media
+          persistentVolumeClaim: {claimName: {{ .Release.Name }}-media}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: {{ .Release.Name }}-web}
+spec:
+  selector: {app: {{ .Release.Name }}-web}
+  ports: [{port: 80, targetPort: 8000}]
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: {name: {{ .Release.Name }}-media}
+spec:
+  accessModes: [{{ .Values.media.accessMode }}]
+  {{- with .Values.media.storageClass }}
+  storageClassName: {{ . }}
+  {{- end }}
+  resources: {requests: {storage: {{ .Values.media.size }}}}

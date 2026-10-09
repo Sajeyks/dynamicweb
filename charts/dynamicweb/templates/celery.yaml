@@ -1,0 +1,16 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: {{ .Release.Name }}-celery}
+spec:
+  replicas: {{ .Values.celery.replicas }}
+  selector: {matchLabels: {app: {{ .Release.Name }}-celery}}
+  template:
+    metadata: {labels: {app: {{ .Release.Name }}-celery}}
+    spec:
+      {{- include "dw.pod" . | nindent 6 }}
+      containers:
+        - name: celery
+          image: {{ include "dw.image" . }}
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env: [{name: ROLE, value: celery}]
+          envFrom: [{secretRef: {name: {{ .Values.existingSecret }}}}]

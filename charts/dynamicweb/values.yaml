@@ -1,0 +1,24 @@
+image:
+  repository: REGISTRY/dynamicweb
+  tag: VERSION
+  pullPolicy: IfNotPresent
+
+# Secret holding the app's environment (kubectl create secret generic ... --from-env-file=...)
+# It must exist before the install. See K8S.md.
+existingSecret: dynamicweb
+
+# One host per domain in UNGLEICH_SITE_CONFIGS (add the www. variants)
+ingress:
+  className: nginx
+  hosts: [ungleich.ch, www.ungleich.ch]
+  tlsSecret: ""            # set to enable TLS for the hosts above
+
+web:
+  replicas: 1
+celery:
+  replicas: 1
+
+media:
+  size: 5Gi
+  accessMode: ReadWriteOnce   # ReadWriteMany if web.replicas > 1
+  storageClass: ""
