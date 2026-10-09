@@ -28,6 +28,22 @@ spec:
   selector: {app: redis}
   ports: [{port: 6379}]
 ---
+# Run once per release, after the database is restored and before the web pods start.
+apiVersion: batch/v1
+kind: Job
+metadata: {name: dynamicweb-migrate}
+spec:
+  backoffLimit: 2
+  template:
+    spec:
+      enableServiceLinks: false   # else a Service named "postgres" injects POSTGRES_PORT=tcp://...
+      restartPolicy: Never
+      containers:
+        - name: migrate
+          image: REGISTRY/dynamicweb:VERSION
+          env: [{name: ROLE, value: migrate}]
+          envFrom: [{secretRef: {name: dynamicweb}}]
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata: {name: dynamicweb-web}
@@ -37,9 +53,11 @@ spec:
   template:
     metadata: {labels: {app: dynamicweb-web}}
     spec:
+      enableServiceLinks: false
       containers:
         - name: web
           image: REGISTRY/dynamicweb:VERSION
+          env: [{name: RUN_MIGRATIONS, value: "False"}]   # the migrate Job does it
           envFrom: [{secretRef: {name: dynamicweb}}]
           ports: [{containerPort: 8000}]
           readinessProbe: {tcpSocket: {port: 8000}, periodSeconds: 10}
@@ -64,6 +82,7 @@ spec:
   template:
     metadata: {labels: {app: dynamicweb-celery}}
     spec:
+      enableServiceLinks: false
       containers:
         - name: celery
           image: REGISTRY/dynamicweb:VERSION
