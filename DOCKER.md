@@ -7,7 +7,7 @@ Postgres 18, Redis, the web app (Django 6.1, Python 3.12) and a Celery worker in
 ```sh
 git clone <this repo> && cd dynamicweb
 docker compose up -d --build
-docker compose logs -f web      # ready when it prints "Starting development server"
+docker compose logs -f web      # ready when it prints "Listening at"
 ```
 
 The first start takes a few minutes (image build, migrations, secret key, sample data).
@@ -61,25 +61,27 @@ Checklist:
   CMS; nothing is created for you). Sample data is skipped anyway when it finds page content.
 - `DEBUG=False` loads the production settings and turns off the `/dev-sites/` switcher,
   so reach each site by its real domain name.
-- The web container runs Django's `runserver`; put a real web server or proxy in front
-  for real traffic.
+- The web container runs gunicorn (static files via WhiteNoise); put a TLS-terminating proxy in
+  front. Behind one that sets `X-Forwarded-Proto`, set `BEHIND_TLS_PROXY=True`.
 
 ## Image and Kubernetes
 
-One image, `dynamicweb:latest`, serves both roles; only the command differs:
+One image, `dynamicweb:latest`, serves every role; the `ROLE` variable picks it (compose sets
+`ROLE=celery` on the worker):
 
-- web: `sh start-web.sh` (port 8000)
-- celery: `celery -A dynamicweb worker -l info`
+- `web` (default): migrations, then gunicorn on port 8000
+- `celery`: the Celery worker
+- `migrate`: run the migrations and exit
 
-The image's entrypoint (`/entrypoint.sh`) writes the DB settings from the environment and waits
-for Postgres before running the command, so in Kubernetes set `args:`, not `command:`
-(`command:` replaces the entrypoint). Configuration is the environment variables in
-`.env.docker`: use a ConfigMap and a Secret, and set `DJANGO_SECRET_KEY` there.
+Don't override `command:` or `args:` in Kubernetes; `ROLE` is all that is needed.
+See [K8S.md](K8S.md) for the Kubernetes deployment.
 
 ## Configuration
 
 - `.env.docker`: committed dev defaults. `.env`: your overrides (git-ignored).
 - Add a site: add it to `UNGLEICH_SITE_CONFIGS` (a `Site` row is created on start).
+- Web server tuning: `GUNICORN_WORKERS` (3), `GUNICORN_TIMEOUT` (120). `RUN_MIGRATIONS=False`
+  skips the start-up migrations.
 - Sample data off: `SEED_DUMMY_DATA=False`. Remove it later:
   `docker compose exec web python manage.py seed_dummy_data --purge`.
 - Restore a real dump: put a `.sql` or `.sql.gz` file in `db-init/`, then
