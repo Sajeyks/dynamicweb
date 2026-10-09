@@ -28,13 +28,13 @@ services:
 
   web:
     <<: *app
-    command: sh start-web.sh
     ports:
       - "8000:8000"
 
   celery:
     <<: *app
-    command: celery -A dynamicweb worker -l info
+    environment:
+      ROLE: celery
 
 volumes:
   pgdata:

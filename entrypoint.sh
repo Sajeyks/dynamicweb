@@ -47,4 +47,15 @@ for _ in range(60):
 sys.exit("postgres at %s:%s not reachable" % (host, port))
 PYEOF
 
-exec "$@"
+# Explicit arguments win (docker compose run web python manage.py shell);
+# otherwise ROLE decides what this container does: web (default), celery, or
+# migrate (run the migrations and exit).
+if [ "$#" -gt 0 ]; then
+    exec "$@"
+fi
+case "${ROLE:-web}" in
+    web)     exec sh start-web.sh ;;
+    celery)  exec celery -A dynamicweb worker -l "${CELERY_LOGLEVEL:-info}" ;;
+    migrate) MIGRATE_ONLY=True exec sh start-web.sh ;;
+    *)       echo "unknown ROLE '$ROLE' (web, celery, migrate)" >&2; exit 1 ;;
+esac
