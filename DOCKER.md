@@ -89,3 +89,15 @@ docker compose logs -f web celery    # logs
 docker compose up -d --build         # after code changes (code is baked into the image)
 docker compose down                  # stop, keep data (-v wipes it)
 ```
+
+## Troubleshooting
+
+- **The build fails at `apk add` with "temporary error (try again later)"**, or hangs there:
+  the server's DNS is IPv6-only, which containers on Docker's default network cannot use.
+  Give Docker IPv4 resolvers and rebuild:
+
+  ```sh
+  echo '{"dns": ["1.1.1.1", "9.9.9.9"]}' > /etc/docker/daemon.json   # merge if the file exists
+  systemctl restart docker
+  docker compose up -d --build
+  ```
