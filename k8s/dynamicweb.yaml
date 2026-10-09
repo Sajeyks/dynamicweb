@@ -1,0 +1,87 @@
+# Apply with: kubectl apply -f k8s/dynamicweb.yaml   (see K8S.md)
+# Edit: the image (3 places) and the ingress hosts. Needs the Secret "dynamicweb".
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata: {name: dynamicweb-media}
+spec:
+  accessModes: [ReadWriteOnce]      # ReadWriteMany if you run more than one web replica
+  resources: {requests: {storage: 5Gi}}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: redis}
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: redis}}
+  template:
+    metadata: {labels: {app: redis}}
+    spec:
+      containers:
+        - name: redis
+          image: redis:6-alpine
+          ports: [{containerPort: 6379}]
+---
+apiVersion: v1
+kind: Service
+metadata: {name: redis}
+spec:
+  selector: {app: redis}
+  ports: [{port: 6379}]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: dynamicweb-web}
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: dynamicweb-web}}
+  template:
+    metadata: {labels: {app: dynamicweb-web}}
+    spec:
+      containers:
+        - name: web
+          image: REGISTRY/dynamicweb:VERSION
+          envFrom: [{secretRef: {name: dynamicweb}}]
+          ports: [{containerPort: 8000}]
+          readinessProbe: {tcpSocket: {port: 8000}, periodSeconds: 10}
+          volumeMounts: [{name: media, mountPath: /usr/src/app/media}]
+      volumes:
+        - name: media
+          persistentVolumeClaim: {claimName: dynamicweb-media}
+---
+apiVersion: v1
+kind: Service
+metadata: {name: dynamicweb-web}
+spec:
+  selector: {app: dynamicweb-web}
+  ports: [{port: 80, targetPort: 8000}]
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata: {name: dynamicweb-celery}
+spec:
+  replicas: 1
+  selector: {matchLabels: {app: dynamicweb-celery}}
+  template:
+    metadata: {labels: {app: dynamicweb-celery}}
+    spec:
+      containers:
+        - name: celery
+          image: REGISTRY/dynamicweb:VERSION
+          env: [{name: ROLE, value: celery}]
+          envFrom: [{secretRef: {name: dynamicweb}}]
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata: {name: dynamicweb}
+spec:
+  ingressClassName: nginx           # your ingress controller
+  # tls: [{secretName: dynamicweb-tls, hosts: [ungleich.ch]}]
+  rules:
+    - host: ungleich.ch             # one rule per domain in UNGLEICH_SITE_CONFIGS
+      http:
+        paths:
+          - {path: /, pathType: Prefix, backend: {service: {name: dynamicweb-web, port: {number: 80}}}}
+    - host: www.ungleich.ch
+      http:
+        paths:
+          - {path: /, pathType: Prefix, backend: {service: {name: dynamicweb-web, port: {number: 80}}}}
