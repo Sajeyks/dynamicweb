@@ -64,6 +64,18 @@ Checklist:
 - The web container runs Django's `runserver`; put a real web server or proxy in front
   for real traffic.
 
+## Image and Kubernetes
+
+One image, `dynamicweb:latest`, serves both roles; only the command differs:
+
+- web: `sh start-web.sh` (port 8000)
+- celery: `celery -A dynamicweb worker -l info`
+
+The image's entrypoint (`/entrypoint.sh`) writes the DB settings from the environment and waits
+for Postgres before running the command, so in Kubernetes set `args:`, not `command:`
+(`command:` replaces the entrypoint). Configuration is the environment variables in
+`.env.docker`: use a ConfigMap and a Secret, and set `DJANGO_SECRET_KEY` there.
+
 ## Configuration
 
 - `.env.docker`: committed dev defaults. `.env`: your overrides (git-ignored).

@@ -1,5 +1,6 @@
 x-app: &app
   build: .
+  image: dynamicweb:latest   # one image; web and celery differ only by command
   env_file:
     - .env.docker
     - path: .env          # optional local overrides
