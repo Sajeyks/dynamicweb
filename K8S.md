@@ -2,11 +2,9 @@
 
 The Helm chart in [charts/dynamicweb/](charts/dynamicweb/) runs the web app, a Celery worker,
 Redis, a volume for uploaded media and an Ingress, and runs the database migrations as a Job
-before each install or upgrade. PostgreSQL 18 is **not** in the chart: bring your own (an
-operator such as CloudNativePG, a managed service, or any Postgres) and point the app at it.
+before each install or upgrade. PostgreSQL 18 is **not** in the chart: create it and point the app at it.
 
-> Tested on a local `kind` cluster with a scratch Postgres. Not tested on your cluster, your
-> ingress controller or real data.
+> Tested on a local `kind` cluster with a scratch Postgres.
 
 ## Steps
 
