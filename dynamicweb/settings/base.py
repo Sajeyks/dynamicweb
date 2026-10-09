@@ -172,6 +172,7 @@ INSTALLED_APPS = (
 )
 
 MIDDLEWARE = (
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'utils.middleware.MultipleProxyMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -441,6 +442,9 @@ TEXT_SAVE_IMAGE_FUNCTION = (
 TEXT_ADDITIONAL_TAGS = ('iframe',)
 TEXT_ADDITIONAL_ATTRIBUTES = ('scrolling', 'allowfullscreen', 'frameborder')
 USE_X_FORWARDED_HOST = True
+# Behind a TLS-terminating proxy/ingress that sets X-Forwarded-Proto
+if bool_env('BEHIND_TLS_PROXY'):
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 # Django Bootstrap - Settings
 # Added Configuration for bootstrap static files to load over https.
