@@ -255,7 +255,11 @@ CMS_TEMPLATES = (
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'app',
+        'NAME': env('POSTGRES_DB', 'app'),
+        'USER': env('POSTGRES_USER', 'app'),
+        'PASSWORD': env('POSTGRES_PASSWORD', 'app'),
+        'HOST': env('POSTGRES_HOST', 'db'),
+        'PORT': env('POSTGRES_PORT', '5432'),
     }
 }
 

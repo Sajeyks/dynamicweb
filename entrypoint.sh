@@ -20,19 +20,6 @@ if [ -z "${DJANGO_SECRET_KEY:-}" ]; then
     export DJANGO_SECRET_KEY
 fi
 
-cat > dynamicweb/settings/dynamic.py <<PYEOF
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': '${POSTGRES_DB:-app}',
-        'USER': '${POSTGRES_USER:-app}',
-        'PASSWORD': '${POSTGRES_PASSWORD:-app}',
-        'HOST': '${POSTGRES_HOST:-db}',
-        'PORT': '${POSTGRES_PORT:-5432}',
-    }
-}
-PYEOF
-
 # Wait for postgres to accept connections
 python - <<'PYEOF'
 import os, socket, sys, time
