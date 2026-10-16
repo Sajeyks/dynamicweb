@@ -76,6 +76,8 @@ One image, `dynamicweb:latest`, serves every role; the `ROLE` variable picks it 
 The entrypoint only picks the role, creates a secret key if `DJANGO_SECRET_KEY` is empty and waits for
 Postgres. The settings read `POSTGRES_*` directly, so you can also override `command:` (for example
 `python manage.py migrate` in an init container); then set `DJANGO_SECRET_KEY` yourself.
+`migrate` is the project's own: it also copes with a restored old database and creates the sites
+from `UNGLEICH_SITE_CONFIGS`.
 See [K8S.md](K8S.md) for the Kubernetes deployment.
 
 ## Configuration
