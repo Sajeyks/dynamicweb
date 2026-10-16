@@ -2,8 +2,8 @@
 
 It replaces Django's own "migrate", so "python manage.py migrate" is all that has to run:
 - brings the old django-reversion 1.x tables to the schema of the squashed 3.x migration
-- skips the migration-history consistency check on old databases, which record some
-  migrations as applied before the (newer) migrations they now depend on
+- skips the migration-history consistency check when it fails, as it does on old databases
+  that record some migrations as applied before the (newer) migrations they now depend on
 - makes sure every site in UNGLEICH_SITE_CONFIGS exists
 """
 import json
@@ -12,6 +12,7 @@ import os
 from django.contrib.sites.models import Site
 from django.core.management.commands import migrate
 from django.db import connection
+from django.db.migrations.exceptions import InconsistentMigrationHistory
 from django.db.migrations.loader import MigrationLoader
 from django.db.migrations.recorder import MigrationRecorder
 
@@ -51,5 +52,8 @@ class Command(migrate.Command):
                 for sql in REVERSION_FIXES:
                     cursor.execute(sql)
             recorder.record_applied('reversion', REVERSION_SQUASH)
-        if applied.filter(app='cmsplugin_filer_image').exists():
+        # Only an old history fails this; a healthy database keeps Django's check.
+        try:
+            MigrationLoader(connection).check_consistent_history(connection)
+        except InconsistentMigrationHistory:
             MigrationLoader.check_consistent_history = lambda *args, **kwargs: None
