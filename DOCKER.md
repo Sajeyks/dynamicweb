@@ -73,7 +73,9 @@ One image, `dynamicweb:latest`, serves every role; the `ROLE` variable picks it 
 - `celery`: the Celery worker
 - `migrate`: run the migrations and exit
 
-Don't override `command:` or `args:` in Kubernetes; `ROLE` is all that is needed.
+The entrypoint only picks the role, creates a secret key if `DJANGO_SECRET_KEY` is empty and waits for
+Postgres. The settings read `POSTGRES_*` directly, so you can also override `command:` (for example
+`python manage.py migrate` in an init container); then set `DJANGO_SECRET_KEY` yourself.
 See [K8S.md](K8S.md) for the Kubernetes deployment.
 
 ## Configuration
