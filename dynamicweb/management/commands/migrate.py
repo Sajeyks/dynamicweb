@@ -4,6 +4,7 @@ It replaces Django's own "migrate", so "python manage.py migrate" is all that ha
 - brings the old django-reversion 1.x tables to the schema of the squashed 3.x migration
 - skips the migration-history consistency check when it fails, as it does on old databases
   that record some migrations as applied before the (newer) migrations they now depend on
+- gives pages that have no tree node one (see give_orphan_pages_a_node) before cms 0020
 - makes sure every site in UNGLEICH_SITE_CONFIGS exists
 """
 import json
