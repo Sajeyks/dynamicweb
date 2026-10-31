@@ -12,6 +12,7 @@ import os
 from django.contrib.sites.models import Site
 from django.core.management.commands import migrate
 from django.db import connection
+from django.db.migrations.executor import MigrationExecutor
 from django.db.migrations.exceptions import InconsistentMigrationHistory
 from django.db.migrations.loader import MigrationLoader
 from django.db.migrations.recorder import MigrationRecorder
@@ -35,10 +36,34 @@ class Command(migrate.Command):
         dry_run = options['plan'] or options['check_unapplied']
         if not dry_run:
             self.prepare_old_database()
+            if not options['app_label'] and not self.cms_tree_done():
+                # cms 0020 makes cms_page.node NOT NULL; stop before it to fix the pages
+                # that 0018/0019 could not give a node
+                MigrationExecutor(connection).migrate([('cms', '0019_set_pagenode')])
+                self.give_orphan_pages_a_node()
         super().handle(*args, **options)
-        if not dry_run:
+        if not dry_run and not options["app_label"]:
             for domain in json.loads(os.environ.get('UNGLEICH_SITE_CONFIGS') or '{}'):
                 Site.objects.get_or_create(domain=domain, defaults={'name': domain})
+
+    @staticmethod
+    def cms_tree_done():
+        return MigrationRecorder(connection).migration_qs.filter(
+            app='cms', name='0020_old_tree_cleanup').exists()
+
+    def give_orphan_pages_a_node(self):
+        """Old databases have public pages that no draft page points to; cms 0019 gives
+        nodes only to drafts and their public copies. Give each such page a node of its own
+        (nothing is deleted), so that cms 0020 can make the column required."""
+        with connection.cursor() as cursor:
+            cursor.execute('SELECT id, site_id, path, depth, numchild FROM cms_page '
+                           'WHERE node_id IS NULL ORDER BY path')
+            for page_id, site_id, path, depth, numchild in cursor.fetchall():
+                cursor.execute('INSERT INTO cms_treenode (site_id, path, depth, numchild) '
+                               'VALUES (%s, %s, %s, %s) RETURNING id', [site_id, path, depth, numchild])
+                cursor.execute('UPDATE cms_page SET node_id = %s WHERE id = %s',
+                               [cursor.fetchone()[0], page_id])
+                self.stdout.write('  cms page %s had no tree node; gave it one' % page_id)
 
     def prepare_old_database(self):
         recorder = MigrationRecorder(connection)
