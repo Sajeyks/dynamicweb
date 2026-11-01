@@ -40,7 +40,13 @@ class Command(migrate.Command):
             if not options['app_label'] and not self.cms_tree_done():
                 # cms 0020 makes cms_page.node NOT NULL; stop before it to fix the pages
                 # that 0018/0019 could not give a node
-                MigrationExecutor(connection).migrate([('cms', '0019_set_pagenode')])
+                executor = MigrationExecutor(connection)
+                # forward steps only: asking for 0019 would also roll back whatever
+                # an old database already has applied on top of it
+                plan = [step for step in executor.migration_plan([('cms', '0019_set_pagenode')])
+                        if not step[1]]
+                if plan:
+                    executor.migrate(None, plan=plan)
                 self.give_orphan_pages_a_node()
         super().handle(*args, **options)
         if not dry_run and not options["app_label"]:
