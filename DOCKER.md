@@ -85,6 +85,8 @@ See [K8S.md](K8S.md) for the Kubernetes deployment.
 
 - `.env.docker`: committed dev defaults. `.env`: your overrides (git-ignored).
 - Add a site: add it to `UNGLEICH_SITE_CONFIGS` (a `Site` row is created on start).
+- Show an existing site on another host (a demo domain): `UNGLEICH_SITE_ALIASES={"demo.example.org":"datacenterlight.ch"}`.
+  `migrate` creates the alias and the host is added to `ALLOWED_HOSTS`. Unknown hosts are redirected to datacenterlight.ch.
 - Web server tuning: `GUNICORN_WORKERS` (3), `GUNICORN_TIMEOUT` (120).
 - Sample data off: `SEED_DUMMY_DATA=False`. Remove it later:
   `docker compose exec web python manage.py seed_dummy_data --purge`.

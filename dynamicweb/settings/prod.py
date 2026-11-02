@@ -26,3 +26,6 @@ ALLOWED_HOSTS = [
     ".hack4glarus.ch",
     ".xn--nglarus-n2a.ch"
 ]
+
+# hosts that UNGLEICH_SITE_ALIASES maps onto a site are allowed as well
+ALLOWED_HOSTS += list(json.loads(env('UNGLEICH_SITE_ALIASES', '{}')))

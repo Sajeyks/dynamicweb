@@ -5,7 +5,8 @@ It replaces Django's own "migrate", so "python manage.py migrate" is all that ha
 - skips the migration-history consistency check when it fails, as it does on old databases
   that record some migrations as applied before the (newer) migrations they now depend on
 - gives pages that have no tree node one (see give_orphan_pages_a_node) before cms 0020
-- makes sure every site in UNGLEICH_SITE_CONFIGS exists
+- makes sure every site in UNGLEICH_SITE_CONFIGS exists, and every host in
+  UNGLEICH_SITE_ALIASES ({"alias host": "site domain"}) shows that site
 """
 import json
 import os
@@ -17,6 +18,7 @@ from django.db.migrations.executor import MigrationExecutor
 from django.db.migrations.exceptions import InconsistentMigrationHistory
 from django.db.migrations.loader import MigrationLoader
 from django.db.migrations.recorder import MigrationRecorder
+from multisite.models import Alias
 
 REVERSION_SQUASH = '0001_squashed_0004_auto_20160611_1202'
 REVERSION_FIXES = (
@@ -52,6 +54,8 @@ class Command(migrate.Command):
         if not dry_run and not options["app_label"]:
             for domain in json.loads(os.environ.get('UNGLEICH_SITE_CONFIGS') or '{}'):
                 Site.objects.get_or_create(domain=domain, defaults={'name': domain})
+            for alias, domain in json.loads(os.environ.get('UNGLEICH_SITE_ALIASES') or '{}').items():
+                Alias.objects.get_or_create(domain=alias, defaults={'site': Site.objects.get(domain=domain)})
 
     @staticmethod
     def cms_tree_done():
