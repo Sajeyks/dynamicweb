@@ -403,6 +403,8 @@ CACHES = {
         'LOCATION': env('CACHE_URL', 'redis://redis:6379/1'),
     }
 }
+if env('CACHE_URL') == 'locmem://':   # image build: no Redis to talk to
+    CACHES['default'] = {'BACKEND': 'django.core.cache.backends.locmem.LocMemCache'}
 
 if LOGIN_URL is None:
     LOGIN_URL = APP_ROOT_ENDPOINT + 'login/'
@@ -416,7 +418,7 @@ if LOGIN_REDIRECT_URL is None:
 
 STATIC_URL = '/static/'
 
-STATIC_ROOT = os.path.join(PROJECT_DIR, 'static')
+STATIC_ROOT = env('STATIC_ROOT', os.path.join(PROJECT_DIR, 'static'))
 
 MEDIA_ROOT = os.path.join(PROJECT_DIR, 'media')
 MEDIA_URL = APP_ROOT_ENDPOINT + 'media/'

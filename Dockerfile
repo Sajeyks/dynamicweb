@@ -22,4 +22,14 @@ RUN LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "pip install --no-cache-dir -r require
 COPY ./ .
 COPY entrypoint.sh /
 
+# Static files are collected at build time into /app/static (served by the hosting).
+# The settings need these values to load; the real ones come at run time.
+ENV STATIC_ROOT=/app/static
+RUN CACHE_URL=locmem:// OPENNEBULA_DOMAIN=test_domain \
+    OPENNEBULA_USERNAME=build OPENNEBULA_PASSWORD=build OPENNEBULA_PROTOCOL=http \
+    OPENNEBULA_PORT=2633 OPENNEBULA_ENDPOINT=/RPC2 DJANGO_SECRET_KEY=build UNGLEICH_SITE_CONFIGS='{}' LDAP_CUSTOMER_GROUP_ID=0 \
+    LDAP_DEFAULT_START_UID=0 PRE_EU_VAT_RATE=0 VM_BASE_PRICE=0 \
+    RECAPTCHA_PUBLIC_KEY=build RECAPTCHA_PRIVATE_KEY=build \
+    python manage.py collectstatic --noinput -v0
+
 ENTRYPOINT ["/entrypoint.sh" ]
