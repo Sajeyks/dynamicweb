@@ -48,6 +48,9 @@ before each install or upgrade. PostgreSQL 18 is **not** in the chart: create it
   same uploads, so the storage class has to support it).
 - **Keep the original `Host` header** at the ingress (the default). The site is chosen from the host,
   and every domain must be in `UNGLEICH_SITE_CONFIGS` and `ALLOWED_HOSTS` (`dynamicweb/settings/prod.py`).
+  An unknown host is redirected to datacenterlight.ch. To show an existing site on another host
+  (a demo domain), add `UNGLEICH_SITE_ALIASES={"demo.example.org":"datacenterlight.ch"}` to the Secret and
+  run the migrate Job again; the host is also allowed in `ALLOWED_HOSTS`.
 - **The Secret must exist before `helm install`** (the Job reads it).
 - **Logs:** `kubectl logs deploy/dynamicweb-web`, `deploy/dynamicweb-celery`.
 - **Why a database Service named `postgres` is safe:** the pods set `enableServiceLinks: false`;
