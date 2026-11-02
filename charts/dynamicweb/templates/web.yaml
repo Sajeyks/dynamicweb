@@ -12,7 +12,6 @@ spec:
         - name: web
           image: {{ include "dw.image" . }}
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          env: [{name: RUN_MIGRATIONS, value: "False"}]   # the migrate Job does it
           envFrom: [{secretRef: {name: {{ .Values.existingSecret }}}}]
           ports: [{containerPort: 8000}]
           readinessProbe: {tcpSocket: {port: 8000}, periodSeconds: 10}

@@ -43,6 +43,6 @@ fi
 case "${ROLE:-web}" in
     web)     exec sh start-web.sh ;;
     celery)  exec celery -A dynamicweb worker -l "${CELERY_LOGLEVEL:-info}" ;;
-    migrate) MIGRATE_ONLY=True exec sh start-web.sh ;;
+    migrate) exec python manage.py migrate --noinput ;;
     *)       echo "unknown ROLE '$ROLE' (web, celery, migrate)" >&2; exit 1 ;;
 esac

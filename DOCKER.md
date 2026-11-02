@@ -69,14 +69,15 @@ Checklist:
 One image, `dynamicweb:latest`, serves every role; the `ROLE` variable picks it (compose sets
 `ROLE=celery` on the worker):
 
-- `web` (default): migrations, then gunicorn on port 8000
+- `web` (default): gunicorn on port 8000 (IPv4 and IPv6). It does not migrate: run `migrate` first
+  (compose has a `migrate` service that web and celery wait for)
 - `celery`: the Celery worker
 - `migrate`: run the migrations and exit
 
 The entrypoint only picks the role, creates a secret key if `DJANGO_SECRET_KEY` is empty and waits for
 Postgres. The settings read `POSTGRES_*` directly, so you can also override `command:` (for example
 `python manage.py migrate` in an init container); then set `DJANGO_SECRET_KEY` yourself.
-`migrate` is the project's own: it also copes with a restored old database and creates the sites
+Static files are collected into `/app/static` when the image is built. `migrate` is the project's own: it also copes with a restored old database and creates the sites
 from `UNGLEICH_SITE_CONFIGS`.
 See [K8S.md](K8S.md) for the Kubernetes deployment.
 
@@ -84,8 +85,7 @@ See [K8S.md](K8S.md) for the Kubernetes deployment.
 
 - `.env.docker`: committed dev defaults. `.env`: your overrides (git-ignored).
 - Add a site: add it to `UNGLEICH_SITE_CONFIGS` (a `Site` row is created on start).
-- Web server tuning: `GUNICORN_WORKERS` (3), `GUNICORN_TIMEOUT` (120). `RUN_MIGRATIONS=False`
-  skips the start-up migrations.
+- Web server tuning: `GUNICORN_WORKERS` (3), `GUNICORN_TIMEOUT` (120).
 - Sample data off: `SEED_DUMMY_DATA=False`. Remove it later:
   `docker compose exec web python manage.py seed_dummy_data --purge`.
 - Restore a real dump: put a `.sql` or `.sql.gz` file in `db-init/`, then

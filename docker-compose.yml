@@ -26,8 +26,16 @@ services:
   redis:
     image: redis:6-alpine
 
+  migrate:
+    <<: *app
+    environment:
+      ROLE: migrate
+    restart: "no"
+
   web:
     <<: *app
+    depends_on:
+      migrate: {condition: service_completed_successfully}
     ports:
       - "8000:8000"
 
@@ -35,6 +43,8 @@ services:
     <<: *app
     environment:
       ROLE: celery
+    depends_on:
+      migrate: {condition: service_completed_successfully}
 
 volumes:
   pgdata:
