@@ -55,7 +55,9 @@ class Command(migrate.Command):
             for domain in json.loads(os.environ.get('UNGLEICH_SITE_CONFIGS') or '{}'):
                 Site.objects.get_or_create(domain=domain, defaults={'name': domain})
             for alias, domain in json.loads(os.environ.get('UNGLEICH_SITE_ALIASES') or '{}').items():
-                Alias.objects.get_or_create(domain=alias, defaults={'site': Site.objects.get(domain=domain)})
+                # no redirect to the site's canonical domain: the alias host is to be served
+                Alias.objects.update_or_create(domain=alias, defaults={
+                    'site': Site.objects.get(domain=domain), 'redirect_to_canonical': False})
 
     @staticmethod
     def cms_tree_done():
