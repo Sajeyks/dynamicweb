@@ -21,6 +21,8 @@ RUN LIBRARY_PATH=/lib:/usr/lib /bin/sh -c "pip install --no-cache-dir -r require
 
 COPY ./ .
 COPY entrypoint.sh /
+# readable for any user, whatever the file modes (umask) were where the image is built
+RUN chmod -R a+rX /usr/src/app && chmod a+rx /entrypoint.sh
 
 # Static files are collected at build time into /app/static (served by the hosting).
 # The settings need these values to load; the real ones come at run time.
