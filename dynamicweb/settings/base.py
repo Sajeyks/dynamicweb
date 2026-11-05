@@ -710,6 +710,24 @@ if ENABLE_LOGGING:
         'handlers': handlers_dict,
         'loggers': loggers_dict
     }
+else:
+    # Django only prints errors (tracebacks of 500s) to the console when DEBUG is on, so
+    # send them to stderr, where "kubectl logs" and "docker compose logs" show them.
+    LOGGING = {
+        'version': 1,
+        'disable_existing_loggers': False,
+        'formatters': {
+            'standard': {
+                'format': '%(asctime)s %(levelname)-8s [%(name)s] %(message)s',
+            }
+        },
+        'handlers': {
+            'console': {'class': 'logging.StreamHandler', 'formatter': 'standard'},
+        },
+        'loggers': {
+            'django': {'handlers': ['console'], 'level': 'WARNING'},
+        },
+    }
 
 TEST_MANAGE_SSH_KEY_PUBKEY = env('TEST_MANAGE_SSH_KEY_PUBKEY')
 TEST_MANAGE_SSH_KEY_HOST = env('TEST_MANAGE_SSH_KEY_HOST')
