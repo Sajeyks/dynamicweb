@@ -318,10 +318,10 @@ class PaymentOrderView(FormView):
 
     @method_decorator(cache_control(no_cache=True, must_revalidate=True, no_store=True))
     def get(self, request, *args, **kwargs):
-        request.session.pop('vat_validation_status')
-        request.session.pop('card_id')
-        request.session.pop('token')
-        request.session.pop('id_payment_method')
+        request.session.pop('vat_validation_status', None)
+        request.session.pop('card_id', None)
+        request.session.pop('token', None)
+        request.session.pop('id_payment_method', None)
         logger.debug("Session: %s" % str(request.session))
         for key, value in request.session.items():
             logger.debug("Session: %s %s" % (key, value))
@@ -329,8 +329,8 @@ class PaymentOrderView(FormView):
                 or 'product_slug' in kwargs):
             request.session['generic_payment_type'] = 'generic'
             if 'generic_payment_details' in request.session:
-                request.session.pop('generic_payment_details')
-                request.session.pop('product_id')
+                request.session.pop('generic_payment_details', None)
+                request.session.pop('product_id', None)
             if 'product_slug' in kwargs:
                 logger.debug("Product slug is " + kwargs['product_slug'])
                 try:
