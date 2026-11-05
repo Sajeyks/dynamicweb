@@ -291,7 +291,8 @@ class StripeUtils(object):
                 self.stripe.Plan.create(
                     amount=amount,
                     interval=plan_interval,
-                    name=name,
+                    # Plans take a product, a plain `name` is no longer accepted
+                    product={'name': name},
                     currency=self.CURRENCY,
                     id=stripe_plan_id)
                 stripe_plan_db_obj = StripePlan.objects.create(
@@ -362,7 +363,8 @@ class StripeUtils(object):
         ))
         subscription_result = self.stripe.Subscription.create(
             customer=customer, items=plans, trial_end=trial_end,
-            coupon=coupon,
+            # the `coupon` parameter was replaced by `discounts`
+            discounts=[{'coupon': coupon}] if coupon else [],
             default_tax_rates=tax_rates,
             payment_behavior='allow_incomplete',
             default_payment_method=default_payment_method
