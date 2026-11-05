@@ -554,6 +554,9 @@ REGISTRATION_MESSAGE = {
 }
 STRIPE_API_PRIVATE_KEY = env('STRIPE_API_PRIVATE_KEY')
 STRIPE_API_PUBLIC_KEY = env('STRIPE_API_PUBLIC_KEY')
+# stripe-python sends the newest API version of its release, the code is written
+# for the objects of this one (invoice.payment_intent, line item plan/type, ...)
+STRIPE_API_VERSION = env('STRIPE_API_VERSION', default='2020-08-27')
 STRIPE_API_PRIVATE_KEY_TEST = env('STRIPE_API_PRIVATE_KEY_TEST')
 
 ANONYMOUS_USER_NAME = 'anonymous@ungleich.ch'
