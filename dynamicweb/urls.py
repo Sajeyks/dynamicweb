@@ -18,6 +18,7 @@ from django.views.generic import RedirectView
 from django.urls import reverse_lazy
 
 urlpatterns = [
+    re_path(r'^open_api/auth/', include('rest_framework.urls')),
     re_path(r'^index.html$', LandingView.as_view()),
     re_path(r'^open_api/',
         include('opennebula_api.urls', namespace='opennebula_api')),

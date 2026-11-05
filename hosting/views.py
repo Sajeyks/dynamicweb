@@ -493,6 +493,7 @@ class SSHKeyDeleteView(LoginRequiredMixin, DeleteView):
         return super(SSHKeyDeleteView, self).delete(request, *args, **kwargs)
 
 
+@method_decorator(decorators, name='dispatch')
 class SSHKeyListView(LoginRequiredMixin, ListView):
     template_name = "hosting/user_keys.html"
     login_url = reverse_lazy('hosting:login')
@@ -506,7 +507,6 @@ class SSHKeyListView(LoginRequiredMixin, ListView):
         self.queryset = UserHostingKey.objects.filter(user=user)
         return super(SSHKeyListView, self).get_queryset()
 
-    @method_decorator(decorators)
     def render_to_response(self, context, **response_kwargs):
         if not self.queryset:
             return HttpResponseRedirect(reverse('hosting:choice_ssh_keys'))
@@ -549,7 +549,7 @@ class SettingsView(LoginRequiredMixin, FormView):
     form_class = BillingAddressForm
     permission_required = ['view_usercarddetail']
 
-    def get_form(self, form_class):
+    def get_form(self, form_class=None):
         """
         Check if the user already saved contact details. If so, then show
         the form populated with those details, to let user change them.
@@ -559,6 +559,8 @@ class SettingsView(LoginRequiredMixin, FormView):
             user = CustomUser.objects.get(username=username)
         else:
             user = self.request.user
+        if form_class is None:
+            form_class = self.get_form_class()
         return form_class(
             instance=user.billing_addresses.first(),
             **self.get_form_kwargs())
