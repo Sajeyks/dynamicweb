@@ -1,4 +1,5 @@
 from django.urls import re_path
+from utils.views import LogoutView
 from django.contrib.auth import views as auth_views
 
 from utils.views import SSHKeyCreateView, AskSSHKeyView
@@ -71,7 +72,7 @@ urlpatterns = [
         name='reset_password'),
     re_path(r'reset-password-confirm/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$',
         PasswordResetConfirmView.as_view(), name='reset_password_confirm'),
-    re_path(r'^logout/?$', auth_views.LogoutView.as_view(
+    re_path(r'^logout/?$', LogoutView.as_view(
         next_page='/hosting/login?logged_out=true'), name='logout'),
     re_path(r'^validate/(?P<validate_slug>.*)/$',
         SignupValidatedView.as_view(), name='validate')

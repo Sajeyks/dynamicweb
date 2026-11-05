@@ -1,4 +1,5 @@
 from django.urls import re_path
+from utils.views import LogoutView
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth import views as auth_views
 
@@ -24,7 +25,7 @@ urlpatterns = [
     re_path(_(r'contact/?$'), ContactView.as_view(), name='contact'),
     re_path(_(r'login/?$'), LoginView.as_view(), name='login'),
     re_path(_(r'signup/?$'), SignupView.as_view(), name='signup'),
-    re_path(r'^logout/?$', auth_views.LogoutView.as_view(
+    re_path(r'^logout/?$', LogoutView.as_view(
         next_page='/digitalglarus/login?logged_out=true'), name='logout'),
     re_path(r'reset-password/?$', PasswordResetView.as_view(), name='reset_password'),
     re_path(r'reset-password-confirm/(?P<uidb64>[0-9A-Za-z]+)-(?P<token>.+)/$',

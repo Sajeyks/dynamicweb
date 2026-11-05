@@ -11,6 +11,7 @@ from django.shortcuts import render
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.translation import gettext_lazy as _
+from django.contrib.auth import views as auth_views
 from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_control
 from django.views.generic import FormView, CreateView
@@ -268,3 +269,10 @@ class AskSSHKeyView(SSHKeyCreateView):
     def post(self, request, *args, **kwargs):
         self.success_url = self.request.session.get("order_confirm_url")
         return super(AskSSHKeyView, self).post(self, request, *args, **kwargs)
+
+class LogoutView(auth_views.LogoutView):
+    """Django 5 dropped logging out with GET, but the logout links of the pages are plain links"""
+    http_method_names = ['get', 'post', 'options']
+
+    def get(self, request, *args, **kwargs):
+        return self.post(request, *args, **kwargs)
