@@ -288,7 +288,7 @@ class StripeCustomer(models.Model):
         stripe_data = stripe_utils.create_customer(
             id_payment_method, email, customer_name)
         if stripe_data.get('response_object'):
-            stripe_cus_id = stripe_data.get('response_object').get('id')
+            stripe_cus_id = stripe_data.get('response_object').id
             return stripe_cus_id
         else:
             return None
@@ -313,7 +313,7 @@ class StripeCustomer(models.Model):
             stripe_utils = StripeUtils()
             stripe_data = stripe_utils.create_customer(token, email, user.name)
             if stripe_data.get('response_object'):
-                stripe_cus_id = stripe_data.get('response_object').get('id')
+                stripe_cus_id = stripe_data.get('response_object').id
                 if hasattr(user, 'stripecustomer'):
                     # User already had a Stripe account and we are here
                     # because the account was deleted in dashboard

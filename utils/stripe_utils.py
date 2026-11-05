@@ -7,6 +7,7 @@ from django.conf import settings
 from datacenterlight.models import StripePlan
 
 stripe.api_key = settings.STRIPE_API_PRIVATE_KEY
+stripe.api_version = settings.STRIPE_API_VERSION
 logger = logging.getLogger(__name__)
 
 
@@ -91,8 +92,10 @@ class StripeUtils(object):
             customer=stripe_customer_id,
         )
         if set_as_default:
-            customer.invoice_settings.default_payment_method = id_payment_method
-            customer.save()
+            stripe.Customer.modify(
+                stripe_customer_id,
+                invoice_settings={'default_payment_method': id_payment_method}
+            )
         return True
 
     @handleStripeError
@@ -101,9 +104,7 @@ class StripeUtils(object):
         if card_id.startswith("pm"):
             logger.debug("PaymentMethod %s detached %s" % (card_id,
                                                            stripe_customer_id))
-            pm = stripe.PaymentMethod.retrieve(card_id)
             stripe.PaymentMethod.detach(card_id)
-            pm.delete()
         else:
             logger.debug("card %s detached %s" % (card_id, stripe_customer_id))
             card = customer.sources.retrieve(card_id)
@@ -223,7 +224,7 @@ class StripeUtils(object):
         except stripe.InvalidRequestError:
             customer = self.create_customer(token, user.email, user.name)
             user.stripecustomer.stripe_id = customer.get(
-                'response_object').get('id')
+                'response_object').id
             user.stripecustomer.save()
         if type(customer) is dict:
             customer = customer['response_object']

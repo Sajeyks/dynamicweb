@@ -385,7 +385,7 @@ class MonthlyHostingBill(AssignPermissionsMixin, models.Model):
                     # response for an invoice
                     description="" if item.description is None else item.description,
                     discountable=item.discountable,
-                    metadata=json.dumps(item.metadata),
+                    metadata=json.dumps(item.metadata.to_dict()),
                     period_start=datetime.utcfromtimestamp(item.period.start).replace(tzinfo=pytz.utc),                                            period_end=datetime.utcfromtimestamp(item.period.end).replace(tzinfo=pytz.utc),
                     proration=item.proration,
                     quantity=item.quantity,

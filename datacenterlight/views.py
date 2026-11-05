@@ -1032,7 +1032,8 @@ class OrderConfirmationView(DetailView, FormView):
                     stripe_api_cus_id=stripe_api_cus_id,
                     card_details_response=json.dumps(card_details_response),
                     stripe_subscription_obj=json.dumps(
-                        stripe_subscription_obj) if stripe_customer_obj else '',
+                        stripe_subscription_obj.to_dict()
+                    ) if stripe_customer_obj else '',
                     stripe_onetime_charge=json.dumps(
                         stripe_onetime_charge) if stripe_onetime_charge else '',
                     gp_details=json.dumps(gp_details) if gp_details else '',
