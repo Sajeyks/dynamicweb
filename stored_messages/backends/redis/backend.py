@@ -78,12 +78,12 @@ class RedisBackend(StoredMessagesBackend):
         return Message(id=msg_id, message=msg_text, level=level, tags=extra_tags, date=r, url=url)
 
     def inbox_list(self, user):
-        if user.is_anonymous():
+        if user.is_anonymous:
             return []
         return self._list('user:%d:notifications', user)
 
     def inbox_purge(self, user):
-        if user.is_authenticated():
+        if user.is_authenticated:
             self.client.delete('user:%d:notifications' % user.pk)
             self.client.delete('user:%d:notificationsidx' % user.pk)
             signals.inbox_purged.send(sender=self.__class__, user=user)

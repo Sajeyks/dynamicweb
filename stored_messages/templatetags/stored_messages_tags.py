@@ -15,7 +15,7 @@ def stored_messages_list(context, num_elements=10):
     """
     if "user" in context:
         user = context["user"]
-        if user.is_authenticated():
+        if user.is_authenticated:
             qs = Inbox.objects.select_related("message").filter(user=user)
             return {
                 "messages": qs[:num_elements],
@@ -30,7 +30,7 @@ def stored_messages_count(context):
     """
     if "user" in context:
         user = context["user"]
-        if user.is_authenticated():
+        if user.is_authenticated:
             return Inbox.objects.select_related("message").filter(user=user).count()
 
 
@@ -41,7 +41,7 @@ def stored_messages_archive(context, num_elements=10):
     """
     if "user" in context:
         user = context["user"]
-        if user.is_authenticated():
+        if user.is_authenticated:
             qs = MessageArchive.objects.select_related("message").filter(user=user)
             return {
                 "messages": qs[:num_elements],

@@ -13,6 +13,7 @@ from django.http import (
 )
 from django.shortcuts import render
 from django.utils.translation import get_language, gettext_lazy as _
+from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_control
 from django.views.generic import FormView, CreateView, DetailView
 
@@ -131,7 +132,7 @@ class IndexView(CreateView):
         if (value > 2000) or (value < 10):
             raise ValidationError(_('Invalid storage size'))
 
-    @cache_control(no_cache=True, must_revalidate=True, no_store=True)
+    @method_decorator(cache_control(no_cache=True, must_revalidate=True, no_store=True))
     def get(self, request, *args, **kwargs):
         clear_all_session_vars(request)
         return HttpResponseRedirect(reverse('datacenterlight:cms_index'))
@@ -242,7 +243,7 @@ class PaymentOrderView(FormView):
     template_name = 'datacenterlight/landing_payment.html'
 
     def get_form_class(self):
-        if self.request.user.is_authenticated():
+        if self.request.user.is_authenticated:
             return BillingAddressForm
         else:
             return BillingAddressFormSignup
@@ -254,7 +255,7 @@ class PaymentOrderView(FormView):
         else:
             billing_address_data = {}
 
-        if self.request.user.is_authenticated():
+        if self.request.user.is_authenticated:
             if billing_address_data:
                 billing_address_form = BillingAddressForm(
                     initial=billing_address_data
@@ -315,7 +316,7 @@ class PaymentOrderView(FormView):
 
         return context
 
-    @cache_control(no_cache=True, must_revalidate=True, no_store=True)
+    @method_decorator(cache_control(no_cache=True, must_revalidate=True, no_store=True))
     def get(self, request, *args, **kwargs):
         request.session.pop('vat_validation_status')
         request.session.pop('card_id')
@@ -403,7 +404,7 @@ class PaymentOrderView(FormView):
                 context = self.get_context_data()
                 context['login_form'] = login_form
                 return self.render_to_response(context)
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             address_form = BillingAddressForm(
                 data=request.POST,
             )
@@ -478,7 +479,7 @@ class PaymentOrderView(FormView):
                 id_payment_method = address_form.cleaned_data.get('card')
             request.session["id_payment_method"] = id_payment_method
             logger.debug("id_payment_method is %s" % id_payment_method)
-            if request.user.is_authenticated():
+            if request.user.is_authenticated:
                 this_user = {
                     'email': request.user.email,
                     'name': request.user.name
@@ -585,7 +586,7 @@ class OrderConfirmationView(DetailView, FormView):
         kwargs.update({'request': self.request})
         return kwargs
 
-    @cache_control(no_cache=True, must_revalidate=True, no_store=True)
+    @method_decorator(cache_control(no_cache=True, must_revalidate=True, no_store=True))
     def get(self, request, *args, **kwargs):
         context = {}
         # this is amount to be charge/subscribed before VAT and discount
@@ -762,7 +763,7 @@ class OrderConfirmationView(DetailView, FormView):
                 'msg_body': _("Your product will be provisioned as soon as "
                                  "we receive the payment."),
                 'redirect': reverse('hosting:invoices') if
-                request.user.is_authenticated() else
+                request.user.is_authenticated else
                 reverse('datacenterlight:index')
             },
             'stripe_key': settings.STRIPE_API_PUBLIC_KEY,
@@ -1046,7 +1047,7 @@ class OrderConfirmationView(DetailView, FormView):
                     latest_invoice.payment_intent
                 )
                 # TODO: requires_attention is probably wrong value to compare
-                if request.user.is_authenticated():
+                if request.user.is_authenticated:
                     if 'generic_payment_details' in request.session:
                         redirect_url = reverse('hosting:invoices')
                     else:
@@ -1128,7 +1129,7 @@ class OrderConfirmationView(DetailView, FormView):
             'status': True,
             'redirect': (
                 reverse('hosting:virtual_machines')
-                if request.user.is_authenticated()
+                if request.user.is_authenticated
                 else reverse('datacenterlight:index')
             ),
             'msg_title': str(_('Thank you for the order.')),
@@ -1592,7 +1593,7 @@ def do_provisioning(request, stripe_api_cus_id, card_details_response,
         logger.debug("Sent user/admin emails")
         if real_request:
             clear_all_session_vars(real_request)
-            if real_request.user.is_authenticated():
+            if real_request.user.is_authenticated:
                 redirect_url = reverse('hosting:invoices')
         logger.debug("redirect_url = %s " % redirect_url)
         response = {

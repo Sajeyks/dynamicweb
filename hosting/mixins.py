@@ -21,7 +21,7 @@ class ProcessVMSelectionMixin(object):
         request.session['template'] = data
         request.session['specs'] = configuration.serialize()
 
-        if not request.user.is_authenticated():
+        if not request.user.is_authenticated:
             request.session['next'] = reverse('hosting:payment')
             return redirect(reverse('hosting:login'))
         return redirect(reverse('hosting:payment'))

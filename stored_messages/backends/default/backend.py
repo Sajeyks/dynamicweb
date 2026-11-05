@@ -12,13 +12,13 @@ class DefaultBackend(StoredMessagesBackend):
 
     """
     def inbox_list(self, user):
-        if user.is_anonymous():
+        if user.is_anonymous:
             return []
         inbox = Inbox.objects.filter(user=user).select_related("message")
         return [m.message for m in inbox]
 
     def inbox_purge(self, user):
-        if user.is_authenticated():
+        if user.is_authenticated:
             Inbox.objects.filter(user=user).delete()
             signals.inbox_purged.send(sender=self.__class__, user=user)
 

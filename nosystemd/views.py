@@ -24,8 +24,8 @@ class LandingView(TemplateView):
 
     def get_context_data(self, *args, **kwargs):
 
-        allow_donation = self.request.user.is_anonymous() or \
-            (self.request.user.is_authenticated() and
+        allow_donation = self.request.user.is_anonymous or \
+            (self.request.user.is_authenticated and
              not DonatorStatus.objects.filter(user=self.request.user).exists())
 
         total_donations_amount = Donation.get_total_donations_amount()

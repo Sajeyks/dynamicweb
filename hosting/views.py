@@ -278,7 +278,7 @@ class SignupView(HostingContextMixin, CreateView):
 
     @method_decorator(decorators)
     def get(self, request, *args, **kwargs):
-        if self.request.user.is_authenticated():
+        if self.request.user.is_authenticated:
             return HttpResponseRedirect(self.get_success_url())
         return super(SignupView, self).get(request, *args, **kwargs)
 
@@ -355,7 +355,7 @@ class SignupValidatedView(SignupValidateView, HostingContextMixin):
 
     @method_decorator(decorators)
     def get(self, request, *args, **kwargs):
-        if self.request.user.is_authenticated():
+        if self.request.user.is_authenticated:
             return HttpResponseRedirect(reverse_lazy('hosting:dashboard'))
         return super(SignupValidatedView, self).get(request, *args, **kwargs)
 

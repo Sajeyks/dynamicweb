@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.views.generic import View
+from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_control
 from django.conf import settings
 from django.db.models import Q
@@ -43,7 +44,7 @@ class CreditCardView(View):
         context['form'] = PaymentForm()
         return context
 
-    @cache_control(no_cache=True, must_revalidate=True)
+    @method_decorator(cache_control(no_cache=True, must_revalidate=True))
     def get(self, request, time=None):
         context = self._get_context(request, time)
         next = request.session.get('next')
@@ -83,7 +84,7 @@ class LoginRegistrationView(View):
         login_form = LoginForm()
         register_form = RegisterForm()
         request.session['next'] = None
-        if request.user.is_authenticated():
+        if request.user.is_authenticated:
             return redirect("membership")
         else:
             return render(request, 'templates/login.html',

@@ -11,6 +11,7 @@ from django.shortcuts import render
 from django.utils.encoding import force_bytes
 from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.utils.translation import gettext_lazy as _
+from django.utils.decorators import method_decorator
 from django.views.decorators.cache import cache_control
 from django.views.generic import FormView, CreateView
 
@@ -67,9 +68,9 @@ class LoginViewMixin(FormView):
 
         return HttpResponseRedirect(self.get_success_url())
 
-    @cache_control(no_cache=True, must_revalidate=True, no_store=True)
+    @method_decorator(cache_control(no_cache=True, must_revalidate=True, no_store=True))
     def get(self, request, *args, **kwargs):
-        if self.request.user.is_authenticated():
+        if self.request.user.is_authenticated:
             return HttpResponseRedirect(self.get_success_url())
 
         return super(LoginViewMixin, self).get(request, *args, **kwargs)
@@ -225,7 +226,7 @@ class SSHKeyCreateView(FormView):
                 'form': UserHostingKeyForm(request=self.request),
             })
 
-        if self.request.user.is_authenticated():
+        if self.request.user.is_authenticated:
             owner = self.request.user
             manager = OpenNebulaManager(
                 email=owner.username,
@@ -254,7 +255,7 @@ class AskSSHKeyView(SSHKeyCreateView):
     success_url = reverse_lazy('datacenterlight:order_confirmation')
     context_object_name = "dcl_vm_buy_add_ssh_key"
 
-    @cache_control(no_cache=True, must_revalidate=True, no_store=True)
+    @method_decorator(cache_control(no_cache=True, must_revalidate=True, no_store=True))
     def get(self, request, *args, **kwargs):
         context = {
             'site_url': reverse_lazy('datacenterlight:index'),
