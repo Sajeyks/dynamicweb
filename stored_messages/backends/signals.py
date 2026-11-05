@@ -1,7 +1,7 @@
 from django.dispatch import Signal
 
-inbox_stored = Signal(providing_args=["user", "message"])
-inbox_deleted = Signal(providing_args=["user", "message_id"])
-inbox_purged = Signal(providing_args=["user"])
+inbox_stored = Signal()
+inbox_deleted = Signal()
+inbox_purged = Signal()
 
-archive_stored = Signal(providing_args=["user", "message"])
+archive_stored = Signal()
